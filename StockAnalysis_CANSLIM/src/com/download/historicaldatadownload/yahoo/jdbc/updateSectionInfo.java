@@ -19,6 +19,7 @@ import java.util.Date;
 
 import javax.naming.spi.DirStateFactory.Result;
 
+import com.download.exception.StockSplitException;
 import com.download.historicaldatadownload.yahoo.jdbc.dao.CodeListsDao;
 
 public class updateSectionInfo {
@@ -135,24 +136,20 @@ public class updateSectionInfo {
 		try {
 			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
 			for (String code : codeLists) {
-				// if (Integer.parseInt(code) > 9992) {
 				setCode(code);
 				update(code, con);
 				ifUpdateOver = false;
 				System.out.print(code + " is updated, ");
 				System.out.println(codeLists.size() - count++ + " to go!");
-				// }
 			}
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			if (con != null) {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -172,25 +169,12 @@ public class updateSectionInfo {
 			Integer recordNumber = findRecordNumber(code);
 			Integer loop = recordNumber / 50 + 1;
 			for (page = 1; page < loop && ifUpdateOver == false; page++) {
+
+				// preventing URL connection dead
 				while (ifReaded.equals(false)) {
 					try {
 						set.disconnect();
-						String getQuotes = "http://info.finance.yahoo.co.jp/history/?code="
-								+ code
-								+ ".T&sy="
-								+ startYear
-								+ "&sm="
-								+ startMonth
-								+ "&sd="
-								+ startDay
-								+ "&ey="
-								+ year
-								+ "&em="
-								+ month
-								+ "&ed="
-								+ day
-								+ "&tm=d&p=" + getPage();
-						url = new URL(getQuotes);
+						url = new URL(getQuotesUrl);
 						set = (HttpURLConnection) url.openConnection();
 						set.setReadTimeout(1000 * 30);
 						set.connect();
@@ -206,6 +190,9 @@ public class updateSectionInfo {
 					insertDayQuoteToDB(input, code, con);
 				}
 			}
+		} catch (StockSplitException e) {
+			e.printStackTrace();
+			CreateQuotesTableFromUrl.createNewQuotesTable(code, con);
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -232,7 +219,7 @@ public class updateSectionInfo {
 	}
 
 	public static void insertDayQuoteToDB(String input, String code,
-			Connection con) {
+			Connection con) throws StockSplitException {
 		String string1 = "";
 		String date = "";
 		if (input.startsWith("</tr>") && ifUpdateOver == false) {
@@ -313,7 +300,8 @@ public class updateSectionInfo {
 					}
 				}
 			} else {
-				createNewQuotesTable(code, con);
+				throw new com.download.exception.StockSplitException(code
+						+ " is splited, needed to be created again!");
 			}
 		}
 	}
@@ -390,47 +378,6 @@ public class updateSectionInfo {
 			for (int i = 0; i < quotes.size(); i++) {
 				stmt.setInt(i + 3, quotes.get(i));
 			}
-			stmt.execute();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static void createNewQuotesTable(String code, Connection con) {
-		deleteQuotesTable(code, con);
-		String sqlCreateTable = "CREATE TABLE IF NOT EXISTS `TokyoStockExchange_test`.`"
-				+ "?_HistoricalQuotes_Tokyo"
-				+ "` ("
-				+ "`Country` VARCHAR(50) NOT NULL Default ?,"
-				+ "`Local_Code` INT NOT NULL Default ?,"
-				+ "`Name_English` VARCHAR(100) NOT NULL Default ?,"
-				+ "`Date` DATE NOT NULL,"
-				+ "`Open` INT NOT NULL,"
-				+ "`High` INT NOT NULL,"
-				+ "`Low` INT NOT NULL,"
-				+ "`Close` INT NOT NULL,"
-				+ "`Volume` INT NOT NULL,"
-				+ "`AdjClose` INT NOT NULL,"
-				+ "PRIMARY KEY (`Date`))"
-				+ "ENGINE = InnoDB;";
-		
-		try {
-			URL url = new URL(getQuotesUrl);
-			HttpURLConnection set = (HttpURLConnection) url.openConnection();
-			set.setRequestProperty("Accept-Language", "jp");
-			set.setReadTimeout(1000 * 30);
-			BufferedReader fi = null;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
-	public static void deleteQuotesTable(String code, Connection con) {
-		String deleteQutoesTalbeSql = "DROP TABLE ?_HistoricalQuotes_Tokyo";
-		try {
-			PreparedStatement stmt = con.prepareStatement(deleteQutoesTalbeSql);
-			stmt.setInt(1, Integer.valueOf(code));
 			stmt.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();

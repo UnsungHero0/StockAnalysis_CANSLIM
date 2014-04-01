@@ -8,17 +8,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
-
-import javax.swing.JFileChooser;
-import javax.swing.JInternalFrame;
-
-import org.omg.CORBA.TIMEOUT;
 
 public class downLoadAll {
 

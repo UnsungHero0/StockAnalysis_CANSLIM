@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 
-public class InsertCsvToTable {
+public class CreateSectionTableFromCsv {
 
 	private final String sqlDelete = "truncate Section_Tokyo";
 	private final String sqlDrop = "DROP TABLE Section_Tokyo";
@@ -42,14 +42,15 @@ public class InsertCsvToTable {
 			+ "33_Sector_code,33_Sector_name,17_Sector_code,17_Sector_name,"
 			+ "Size_Code_New_Index_Series,Size_New_Index_Series)";
 
-	public InsertCsvToTable() {
+	public CreateSectionTableFromCsv() {
 		// TODO Auto-generated constructor stub
 	}
 
 	public static void main(String args[]) {
-
+		
+		String address = "/Users/Daytona/Documents/workspace/StockAnalyzeJapan/RawData/TokyoSectionCategory.csv";
 		Connection con = null;
-		InsertCsvToTable self = new InsertCsvToTable();
+		CreateSectionTableFromCsv self = new CreateSectionTableFromCsv();
 		try {
 			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
 			PreparedStatement stmt = con.prepareStatement(self.getSqlDelete());
@@ -58,7 +59,6 @@ public class InsertCsvToTable {
 			System.out.println(self.getSqlInsert());
 
 			stmt = con.prepareStatement(self.getSqlInsert());
-			String address = "/Users/Daytona/Documents/workspace/StockAnalyzeJapan/RawData/TokyoSectionCategory.csv";
 			stmt.setString(1, address);
 			stmt.setInt(2, 0);
 			stmt.execute();

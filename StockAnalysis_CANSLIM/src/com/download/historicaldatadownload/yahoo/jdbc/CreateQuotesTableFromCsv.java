@@ -7,15 +7,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CreateQuotesTable {
+public class CreateQuotesTableFromCsv {
 
-	public CreateQuotesTable() {
-		// TODO Auto-generated constructor stub
+	public CreateQuotesTableFromCsv() {
 	}
 
 	public static void main(String args[]) {
-		// TODO
-
 		File fileList[] = (new File(
 				"/Users/Daytona/Documents/workspace/StockAnalyzeJapan/Result"))
 				.listFiles();
