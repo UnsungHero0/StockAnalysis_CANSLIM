@@ -59,13 +59,6 @@ public class FinancialStatementYahooJDBCImpl {
 			}
 			System.out.println("OK! " + (codeList.size()- (++count)) + " to go");
 		}
-		
-		
-		
-		
-		
-		
-		
 	}
 	
 	public DataSource getDataSource(){
