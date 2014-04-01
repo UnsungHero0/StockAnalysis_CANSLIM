@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.TreeMap;
-
 import javax.sql.DataSource;
 
 import com.download.historicaldatadownload.yahoo.jdbc.DataSourceUtil;

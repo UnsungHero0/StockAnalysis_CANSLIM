@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -67,7 +66,6 @@ public class FinancialStatementYahooJDBCUrlDao {
 		}
 		try {
 			if (ifHasInfo == true) {
-				// System.out.println("code : " + code + "  " + ifHasInfo);
 				String input = "";
 				String charset = "";
 				while ((input = fi.readLine()) != null) {

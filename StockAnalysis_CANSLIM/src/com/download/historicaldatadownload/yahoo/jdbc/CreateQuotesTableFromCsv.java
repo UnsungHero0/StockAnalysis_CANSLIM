@@ -1,7 +1,6 @@
 package com.download.historicaldatadownload.yahoo.jdbc;
 
 import java.io.File;
-import java.security.interfaces.RSAKey;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -1,12 +1,5 @@
 package com.download.historicaldatadownload.yahoo.jdbc;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,10 +10,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.naming.spi.DirStateFactory.Result;
-
 import com.download.exception.StockSplitException;
 import com.download.historicaldatadownload.yahoo.jdbc.dao.CodeListsDao;
+import com.download.historicaldatadownload.yahoo.jdbc.dao.UrlDao;
 
 public class updateSectionInfo {
 
@@ -136,11 +128,13 @@ public class updateSectionInfo {
 		try {
 			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
 			for (String code : codeLists) {
+				if (Integer.valueOf(code) >= 2200) {
 				setCode(code);
 				update(code, con);
 				ifUpdateOver = false;
 				System.out.print(code + " is updated, ");
 				System.out.println(codeLists.size() - count++ + " to go!");
+				}
 			}
 
 		} catch (SQLException e) {
@@ -159,46 +153,54 @@ public class updateSectionInfo {
 	public static void update(String code, Connection con) {
 
 		try {
-			latestDate = findLatestDateInDB(code, con);
-			URL url = new URL(getQuotesUrl);
-			HttpURLConnection set = (HttpURLConnection) url.openConnection();
-			set.setRequestProperty("Accept-Language", "jp");
-			set.setReadTimeout(1000 * 30);
-			BufferedReader fi = null;
-			Boolean ifReaded = false;
-			Integer recordNumber = findRecordNumber(code);
-			Integer loop = recordNumber / 50 + 1;
-			for (page = 1; page < loop && ifUpdateOver == false; page++) {
-
-				// preventing URL connection dead
-				while (ifReaded.equals(false)) {
-					try {
-						set.disconnect();
-						url = new URL(getQuotesUrl);
-						set = (HttpURLConnection) url.openConnection();
-						set.setReadTimeout(1000 * 30);
-						set.connect();
-						fi = new BufferedReader(new InputStreamReader(
-								set.getInputStream()));
-						ifReaded = true;
-					} catch (SocketTimeoutException e) {
-						System.out.println("time out " + loop);
+			if (tableIsExist(code, con)) {
+				latestDate = findLatestDateInDB(code, con);
+				Integer recordNumber = findRecordNumber(code);
+				Integer loop = recordNumber / 50 + 1;
+				for (page = 1; page < loop && ifUpdateOver == false; page++) {
+					String getQuotesUrl = "http://info.finance.yahoo.co.jp/history/?code="
+							+ getCode()
+							+ ".T&sy="
+							+ startYear
+							+ "&sm="
+							+ startMonth
+							+ "&sd="
+							+ startDay
+							+ "&ey="
+							+ year
+							+ "&em="
+							+ month
+							+ "&ed="
+							+ day
+							+ "&tm=d&p="
+							+ getPage();
+					ArrayList<String> inputList = UrlDao.getUrlBuffer(getQuotesUrl);
+					for (String input : inputList) {
+						insertDayQuoteToDB(input, code, con);
 					}
 				}
-				String input = "";
-				while ((input = fi.readLine()) != null) {
-					insertDayQuoteToDB(input, code, con);
-				}
+			} else {
+				CreateQuotesTableFromUrl.createNewQuotesTable(code, con);
 			}
 		} catch (StockSplitException e) {
 			e.printStackTrace();
 			CreateQuotesTableFromUrl.createNewQuotesTable(code, con);
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
+		}
+	}
+
+	public static Boolean tableIsExist(String code, Connection con) {
+		Boolean result = false;
+		try {
+			String findTableSql = "SHOW TABLES LIKE '" + code
+					+ "_HistoricalQuotes_Tokyo'";
+			ResultSet rs = con.prepareStatement(findTableSql).executeQuery();
+			if (rs.next()) {
+				result = true;
+			}
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return result;
 	}
 
 	public static Date findLatestDateInDB(String code, Connection con) {
@@ -223,53 +225,48 @@ public class updateSectionInfo {
 		String string1 = "";
 		String date = "";
 		if (input.startsWith("</tr>") && ifUpdateOver == false) {
-			if (!input.contains("分割")) {
-				String inputRow[] = input.split("</tr><tr><td>");
-				for (String string : inputRow) {
-					// System.out.println(string);
-					// System.out.println(string.charAt(0));
-					try {
-						if (Character.isDigit(string.charAt(0))) {
-							if (string.contains("</table>")) {
-								string = string.substring(0,
-										string.length() - 13);
-							}
-							if (string.contains("class")) {
-								// System.out.println(string);
-								string1 = string.substring(0,
-										string.indexOf("class") - 14);
-								// System.out.println(string1);
-								string = string.substring(
-										string.indexOf("\">") + 6,
-										string.length());
-								// System.out.println(string);
-								string1 += "</td><td>";
-								String inputArray[] = string1
-										.split("</td><td>");
-								ArrayList<Integer> result = new ArrayList<>();
-								for (int i = 0; i < inputArray.length; i++) {
-									if (i == 0) {
-										String elementString = inputArray[0];
-										date = turnToYear(elementString);
-									} else {
-										String elementString = subComma(inputArray[i]);
-										result.add(Integer
-												.parseInt(elementString));
-									}
+			String inputRow[] = input.split("</tr><tr><td>");
+			for (String string : inputRow) {
+				// System.out.println(string);
+				// System.out.println(string.charAt(0));
+				try {
+					if (Character.isDigit(string.charAt(0))) {
+						if (string.contains("</table>")) {
+							string = string.substring(0, string.length() - 13);
+						}
+						if (string.contains("class") && !string.contains("分割")) {
+							// System.out.println(string);
+							string1 = string.substring(0,
+									string.indexOf("class") - 14);
+							// System.out.println(string1);
+							string = string.substring(
+									string.indexOf("\">") + 6, string.length());
+							// System.out.println(string);
+							string1 += "</td><td>";
+							String inputArray[] = string1.split("</td><td>");
+							ArrayList<Integer> result = new ArrayList<>();
+							for (int i = 0; i < inputArray.length; i++) {
+								if (i == 0) {
+									String elementString = inputArray[0];
+									date = turnToYear(elementString);
+								} else {
+									String elementString = subComma(inputArray[i]);
+									result.add(Integer.parseInt(elementString));
 								}
-								try {
-									SimpleDateFormat sdf = new SimpleDateFormat(
-											"yyyy/MM/dd");
-									Date dateNow = sdf.parse(date);
-									if (!dateNow.after(latestDate)) {
-										ifUpdateOver = true;
-										break;
-									}
-								} catch (ParseException e) {
-									e.printStackTrace();
-								}
-								insertIntoDB(date, result, code, con);
 							}
+							try {
+								SimpleDateFormat sdf = new SimpleDateFormat(
+										"yyyy/MM/dd");
+								Date dateNow = sdf.parse(date);
+								if (!dateNow.after(latestDate)) {
+									ifUpdateOver = true;
+									break;
+								}
+							} catch (ParseException e) {
+								e.printStackTrace();
+							}
+							insertIntoDB(date, result, code, con);
+						} else if (!string.contains("分割")) {
 							string = string.substring(0, string.length() - 5);
 							string += "</td><td>";
 							String inputArray[] = string.split("</td><td>");
@@ -295,31 +292,26 @@ public class updateSectionInfo {
 								e.printStackTrace();
 							}
 							insertIntoDB(date, result, code, con);
+						} else {
+							System.out.println(string);
+							throw new StockSplitException("stock " + code
+									+ " is splited, need to be updated");
 						}
-					} catch (StringIndexOutOfBoundsException e) {
 					}
+				} catch (StringIndexOutOfBoundsException e) {
 				}
-			} else {
-				throw new com.download.exception.StockSplitException(code
-						+ " is splited, needed to be created again!");
 			}
 		}
 	}
 
 	public static int findRecordNumber(String code) {
 		int result = 0;
-		try {
-			URL url = new URL("http://info.finance.yahoo.co.jp/history/?code="
-					+ code + ".T&sy=1983&sm=1&sd=1&ey=" + year + "&em=" + month
-					+ "&ed=" + day + "&tm=d&p=1");
-			HttpURLConnection set = (HttpURLConnection) url.openConnection();
-			set.setRequestProperty("Accept-Language", "jp");
-			set.connect();
-			BufferedReader fi = new BufferedReader(new InputStreamReader(
-					set.getInputStream()));
-			String input;
-
-			while ((input = fi.readLine()) != null) {
+			String urlString = "http://info.finance.yahoo.co.jp/history/?code="
+					+ code + ".T&sy=1983&sm=1&sd=1&ey=" + year
+					+ "&em=" + month + "&ed=" + day
+					+ "&tm=d&p=1";
+			ArrayList<String> inputList = UrlDao.getUrlBuffer(urlString);
+			for (String input : inputList) {
 				if (input.contains("stocksHistoryPageing")) {
 					int endpoint = input.indexOf("件中");
 					int startpoint = input.indexOf("件");
@@ -328,12 +320,6 @@ public class updateSectionInfo {
 					break;
 				}
 			}
-
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		return result;
 	}
 
@@ -383,5 +369,4 @@ public class updateSectionInfo {
 			e.printStackTrace();
 		}
 	}
-
 }

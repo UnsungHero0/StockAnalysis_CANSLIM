@@ -26,7 +26,7 @@ public class MarketValueDao {
 			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
 			for (int i = 0; i < 12; i++) {
 				Double result1 = self.getMarketValue(codeList, i, con);
-				// System.out.println(result1);
+				System.out.println(result1);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

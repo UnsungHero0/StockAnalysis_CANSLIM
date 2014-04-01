@@ -3,11 +3,7 @@ package com.download.financialstatementdownload.yahoo.jdbc;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-
 import javax.sql.DataSource;
-
-import org.omg.PortableServer.ID_ASSIGNMENT_POLICY_ID;
-
 import com.download.historicaldatadownload.yahoo.jdbc.DataSourceUtil;
 import com.download.historicaldatadownload.yahoo.jdbc.dao.CodeListsDao;
 

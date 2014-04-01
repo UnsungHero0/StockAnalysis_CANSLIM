@@ -18,7 +18,6 @@ package com.download.historicaldatadownload.yahoo;
 //================================================================C
 import java.net.*;
 import java.io.*;
-import java.util.*;
 
 public class Sample {
 	public static void main(String[] args) throws MalformedURLException,

@@ -2,18 +2,12 @@ package com.analysis;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 
 import com.analysis.mathematics.CorrelationCoefficientCalculator;
 import com.analysis.model.GetPairHistoricalDataFromCsv;
 import com.analysis.model.StockHistoricalPrice;
-import com.analysis.model.StockPairDailyQuote;
-import com.analysis.model.StockPairDailyQuoteResult;
 import com.analysis.model.StockPairDailyQuoteResultImpl;
 
 /**
@@ -69,7 +63,6 @@ public class QuoteCorrelationCoefficient {
 							Integer lowLimit = -10;
 							StockPairDailyQuoteResultImpl spdqr = new StockPairDailyQuoteResultImpl();
 							spdqr = new StockPairDailyQuoteResultImpl(pairDailyQuote.getPairQuote(), lowLimit, upperLimit);
-							
 							}
 						} catch (IndexOutOfBoundsException e) {
 						System.out.println("wrong with " + element1 + " and "

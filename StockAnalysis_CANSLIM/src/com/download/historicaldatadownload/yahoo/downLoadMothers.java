@@ -14,7 +14,6 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
-import javax.swing.JInternalFrame;
 
 public class downLoadMothers {
 
@@ -22,7 +21,7 @@ public class downLoadMothers {
 		URL url;
 		JFileChooser j1 = new JFileChooser();
 		//点击按钮
-		int n = j1.showOpenDialog(null);
+		j1.showOpenDialog(null);
 		String filename = j1.getSelectedFile().toString();
 		System.out.println(filename);
 		String inputAddress = filename;
@@ -225,9 +224,8 @@ public class downLoadMothers {
 		try {
 			FileReader fr = new FileReader(address);
 			BufferedReader br = new BufferedReader(fr);
-			String nextline = "";
 			br.readLine();
-			while ((nextline = br.readLine()) != null) {
+			while (br.readLine() != null) {
 				result++;
 			}
 			br.close();

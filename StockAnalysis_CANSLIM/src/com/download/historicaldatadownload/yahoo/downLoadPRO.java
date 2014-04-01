@@ -14,7 +14,6 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
-import javax.swing.JInternalFrame;
 
 public class downLoadPRO {
 
@@ -225,9 +224,8 @@ public class downLoadPRO {
 		try {
 			FileReader fr = new FileReader(address);
 			BufferedReader br = new BufferedReader(fr);
-			String nextline = "";
 			br.readLine();
-			while ((nextline = br.readLine()) != null) {
+			while (br.readLine() != null) {
 				result++;
 			}
 			br.close();

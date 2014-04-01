@@ -1,11 +1,7 @@
 package com.download.financialstatementdownload.yahoo.jdbc;
 
-import java.awt.Checkbox;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,7 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.download.historicaldatadownload.yahoo.downLoadJapaneseToEnglish;
 import com.download.historicaldatadownload.yahoo.jdbc.DataSourceUtil;
 
 /**
@@ -26,8 +21,6 @@ import com.download.historicaldatadownload.yahoo.jdbc.DataSourceUtil;
  */
 
 public class FinancialStatementYahooJDBCUpdateData {
-
-	private static final Exception ex = null;
 
 	public FinancialStatementYahooJDBCUpdateData() {
 		// TODO Auto-generated constructor stub

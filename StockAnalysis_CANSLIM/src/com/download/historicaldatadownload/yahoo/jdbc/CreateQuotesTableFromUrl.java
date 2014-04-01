@@ -1,12 +1,5 @@
 package com.download.historicaldatadownload.yahoo.jdbc;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import com.download.exception.StockSplitException;
+import com.download.historicaldatadownload.yahoo.jdbc.dao.UrlDao;
 
 public class CreateQuotesTableFromUrl {
 
@@ -100,74 +93,30 @@ public class CreateQuotesTableFromUrl {
 
 	public static void createNewQuotesTable(String code, Connection con) {
 		setCode(code);
-		String getQuotesUrl = "http://info.finance.yahoo.co.jp/history/?code="
-				+ CreateQuotesTableFromUrl.code
-				+ ".T&sy="
-				+ startYear
-				+ "&sm="
-				+ startMonth
-				+ "&sd="
-				+ startDay
-				+ "&ey="
-				+ year
-				+ "&em="
-				+ month
-				+ "&ed="
-				+ day
-				+ "&tm=d&p=" + page;
 		deleteQuotesTable(code, con);
 		initialNewQuotesTable(code, con);
-		try {
-			URL url = new URL(getQuotesUrl);
-			HttpURLConnection set = (HttpURLConnection) url.openConnection();
-			set.setRequestProperty("Accept-Language", "jp");
-			set.setReadTimeout(1000 * 30);
-			BufferedReader fi = null;
-			Integer recordNumber = findRecordNumber(code);
-			Integer loop = recordNumber / 50 + 1;
-			System.out.print("stock " + code + " start to update.. " + loop + ": ");
-			for (page = 1; page <= loop; page++) {
-				Boolean ifReaded = false;
-				getQuotesUrl = "http://info.finance.yahoo.co.jp/history/?code="
-						+ getCode()
-						+ ".T&sy="
-						+ startYear
-						+ "&sm="
-						+ startMonth
-						+ "&sd="
-						+ startDay
-						+ "&ey="
-						+ year
-						+ "&em="
-						+ month
-						+ "&ed="
-						+ day
-						+ "&tm=d&p=" + page;
-				// preventing URL connection dead
-				while (ifReaded.equals(false)) {
-					try {
-						System.out.print(page + " ");
-						url = new URL(getQuotesUrl);
-						set = (HttpURLConnection) url.openConnection();
-						set.setReadTimeout(1000 * 30);
-						set.connect();
-						fi = new BufferedReader(new InputStreamReader(
-								set.getInputStream()));
-						ifReaded = true;
-					} catch (SocketTimeoutException e) {
-						System.out.println("time out " + loop);
-					}
-				}
-				String input = "";
-				while ((input = fi.readLine()) != null) {
-					insertDayQuoteToDB(input, code, con);
-				}
+		Integer recordNumber = findRecordNumber(code);
+		Integer loop = recordNumber / 50 + 1;
+		System.out.print("stock " + code + " start to update.. " + loop + ": ");
+		for (page = 1; page <= loop; page++) {
+			String getQuotesUrl = "http://info.finance.yahoo.co.jp/history/?code="
+					+ getCode()
+					+ ".T&sy="
+					+ startYear
+					+ "&sm="
+					+ startMonth
+					+ "&sd="
+					+ startDay
+					+ "&ey="
+					+ year
+					+ "&em="
+					+ month
+					+ "&ed=" + day + "&tm=d&p=" + page;
+			ArrayList<String> inputList = UrlDao.getUrlBuffer(getQuotesUrl);
+			for (String input : inputList) {
+				insertDayQuoteToDB(input, code, con);
 			}
-			set.disconnect();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.print(page + " ");
 		}
 		System.out.println("\n" + "stock " + code + " is finished");
 	}
@@ -204,31 +153,18 @@ public class CreateQuotesTableFromUrl {
 
 	public static int findRecordNumber(String code) {
 		int result = 0;
-		try {
-			URL url = new URL("http://info.finance.yahoo.co.jp/history/?code="
-					+ code + ".T&sy=1983&sm=1&sd=1&ey=" + year + "&em=" + month
-					+ "&ed=" + day + "&tm=d&p=1");
-			HttpURLConnection set = (HttpURLConnection) url.openConnection();
-			set.setRequestProperty("Accept-Language", "jp");
-			set.connect();
-			BufferedReader fi = new BufferedReader(new InputStreamReader(
-					set.getInputStream()));
-			String input;
-
-			while ((input = fi.readLine()) != null) {
-				if (input.contains("stocksHistoryPageing")) {
-					int endpoint = input.indexOf("件中");
-					int startpoint = input.indexOf("件");
-					result = Integer.valueOf(input.substring(startpoint + 2,
-							endpoint));
-					break;
-				}
+		String urlString = "http://info.finance.yahoo.co.jp/history/?code="
+				+ code + ".T&sy=1983&sm=1&sd=1&ey=" + year + "&em=" + month
+				+ "&ed=" + day + "&tm=d&p=1";
+		ArrayList<String> inputList = UrlDao.getUrlBuffer(urlString);
+		for (String input : inputList) {
+			if (input.contains("stocksHistoryPageing")) {
+				int endpoint = input.indexOf("件中");
+				int startpoint = input.indexOf("件");
+				result = Integer.valueOf(input.substring(startpoint + 2,
+						endpoint));
+				break;
 			}
-
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		return result;
 	}
@@ -267,21 +203,21 @@ public class CreateQuotesTableFromUrl {
 								}
 							}
 							insertIntoDB(date, result, code, con);
-						} else if (!string.contains("分割")){
-						string = string.substring(0, string.length() - 5);
-						string += "</td><td>";
-						String inputArray[] = string.split("</td><td>");
-						ArrayList<Integer> result = new ArrayList<>();
-						for (int i = 0; i < inputArray.length; i++) {
-							if (i == 0) {
-								String elementString = inputArray[0];
-								date = turnToYear(elementString);
-							} else {
-								String elementString = subComma(inputArray[i]);
-								result.add(Integer.parseInt(elementString));
+						} else if (!string.contains("分割")) {
+							string = string.substring(0, string.length() - 5);
+							string += "</td><td>";
+							String inputArray[] = string.split("</td><td>");
+							ArrayList<Integer> result = new ArrayList<>();
+							for (int i = 0; i < inputArray.length; i++) {
+								if (i == 0) {
+									String elementString = inputArray[0];
+									date = turnToYear(elementString);
+								} else {
+									String elementString = subComma(inputArray[i]);
+									result.add(Integer.parseInt(elementString));
+								}
 							}
-						}
-						insertIntoDB(date, result, code, con);
+							insertIntoDB(date, result, code, con);
 						}
 					}
 				} catch (StringIndexOutOfBoundsException e) {

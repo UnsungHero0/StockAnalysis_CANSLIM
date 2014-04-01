@@ -1,30 +1,14 @@
 package com.download.historicaldatadownload.yahoo;
 
-import java.awt.List;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.security.cert.TrustAnchor;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
 import javax.sql.DataSource;
-
-import com.analysis.date.DateOperation;
 import com.download.historicaldatadownload.yahoo.jdbc.DataSourceUtil;
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 

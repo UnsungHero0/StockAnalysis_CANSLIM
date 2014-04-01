@@ -213,9 +213,8 @@ public class downLoadFirstSectionDomestic {
 		try {
 			FileReader fr = new FileReader(address);
 			BufferedReader br = new BufferedReader(fr);
-			String nextline = "";
 			br.readLine();
-			while ((nextline = br.readLine()) != null) {
+			while (br.readLine() != null) {
 				result++;
 			}
 			br.close();
