@@ -25,12 +25,24 @@ public class UrlDao {
 				result = new ArrayList<>();
 				URL url = new URL(urlString);
 				set = (HttpURLConnection) url.openConnection();
-				set.setRequestProperty("Accept-Language", "jp");
 				set.setReadTimeout(1000 * 30);
 				set.connect();
 				fi = new BufferedReader(new InputStreamReader(
 						set.getInputStream()));
-				String input;
+				String input = null;
+				String charset = null;
+				while ((input = fi.readLine()) != null) {
+					if (input.contains("charset=")) {
+						charset = input.substring(
+								input.indexOf("charset=") + 8, input.length());
+						Integer indexOfInvoke = charset.indexOf("\"");
+						charset = charset.substring(0, indexOfInvoke);
+						break;
+					}
+				}
+				set = (HttpURLConnection) url.openConnection();
+				fi = new BufferedReader(new InputStreamReader(
+						set.getInputStream(), charset));
 				while ((input = fi.readLine()) != null) {
 					result.add(input);
 				}

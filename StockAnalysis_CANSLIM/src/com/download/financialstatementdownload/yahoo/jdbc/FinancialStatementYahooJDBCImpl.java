@@ -38,9 +38,6 @@ public class FinancialStatementYahooJDBCImpl {
 		
 		//new FinancialStatementYahooJDBCUpdateData()
 		//.FinancialStatemetYahooJDBCUpdateDataImpl("1853");
-		
-
-		
 		// get code list for table section_tokyo
 		ArrayList<String> codeList = new ArrayList<>();
 		codeList = new CodeListsDao().getCodeLists();
