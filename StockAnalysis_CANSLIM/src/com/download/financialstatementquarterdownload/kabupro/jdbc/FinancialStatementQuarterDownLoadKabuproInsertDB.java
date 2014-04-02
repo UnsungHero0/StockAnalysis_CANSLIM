@@ -49,7 +49,6 @@ public class FinancialStatementQuarterDownLoadKabuproInsertDB {
 
 	public static void createTable(Connection con) {
 		try {
-			System.out.println(createQuarterFinancialStatementSql);
 			con.prepareStatement(createQuarterFinancialStatementSql).execute();
 		} catch (SQLException e) {
 			e.printStackTrace();

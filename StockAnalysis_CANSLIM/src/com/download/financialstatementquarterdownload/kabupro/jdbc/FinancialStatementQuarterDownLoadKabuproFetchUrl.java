@@ -35,23 +35,27 @@ public class FinancialStatementQuarterDownLoadKabuproFetchUrl {
 		newRecord = cloneRecord(inputRecord);
 		if (inputRecord != null) {
 			for (String input : inputArray) {
-				if (i == 5) {
-					i = 0;
-					if (!(newRecord.getFiscal_Year().contains("修") || newRecord
-							.getFiscal_Year().contains("予"))) {
-						result.add(newRecord);
-						// System.out.println(newRecord.getFieldsForSqlDB());
-					} else {
-						preRecord.put(newRecord.getAnnouncement_Date(),
-								newRecord);
-						// System.out.println(newRecord.getFieldsForSqlDB());
-					}
-					newRecord = new FinancialStatementQuarterDownLoadKabuproRecord();
-					newRecord = cloneRecord(inputRecord);
-				}
 				if (input.contains("<tr>") && input.contains("pdf")) {
 					String inputList[] = input.split("</a>");
 					for (String element : inputList) {
+						if (element.contains("htm")) {
+							i = 0;
+							element = element.substring(element
+									.indexOf("htm") + 4);
+							setValueIndex4(element, newRecord);
+							if (!(newRecord.getFiscal_Year().contains("修") || newRecord
+									.getFiscal_Year().contains("予"))) {
+								result.add(newRecord);
+								// System.out.println(newRecord.getFieldsForSqlDB());
+							} else {
+								preRecord.put(newRecord.getAnnouncement_Date(),
+										newRecord);
+								// System.out.println(newRecord.getFieldsForSqlDB());
+							}
+							newRecord = new FinancialStatementQuarterDownLoadKabuproRecord();
+							newRecord = cloneRecord(inputRecord);
+							break;
+						}
 						element = element.substring(element.indexOf("pdf") + 4)
 								.trim();
 						if (element.contains(">")) {
@@ -94,8 +98,8 @@ public class FinancialStatementQuarterDownLoadKabuproFetchUrl {
 									| InvocationTargetException e) {
 								e.printStackTrace();
 							}
-							i++;
 						}
+						i++;
 					}
 				}
 			}
@@ -113,6 +117,11 @@ public class FinancialStatementQuarterDownLoadKabuproFetchUrl {
 				result.add(preRecord.get(maxDate));
 			}
 		}
+		/*
+		for (FinancialStatementQuarterDownLoadKabuproRecord record : result) {
+			System.out.println(record.getValuesForSqlDB());
+		}
+		*/
 		return result;
 	}
 
