@@ -124,16 +124,16 @@ public class updateSectionInfo {
 		ArrayList<String> codeLists = clDao.getCodeLists();
 		Connection con = null;
 		System.out.println("start updating quotes...");
-		int count = 0;
 		try {
 			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
 			for (String code : codeLists) {
-				if (Integer.valueOf(code) >= 2200) {
-				setCode(code);
-				update(code, con);
-				ifUpdateOver = false;
-				System.out.print(code + " is updated, ");
-				System.out.println(codeLists.size() - count++ + " to go!");
+				if (Integer.valueOf(code) >= 3840) {
+					setCode(code);
+					update(code, con);
+					ifUpdateOver = false;
+					System.out.print(code + " is updated, ");
+					System.out.println(codeLists.size()
+							- codeLists.indexOf(code) + " to go!");
 				}
 			}
 
@@ -148,6 +148,7 @@ public class updateSectionInfo {
 				}
 			}
 		}
+		System.out.println("finished");
 	}
 
 	public static void update(String code, Connection con) {
@@ -174,7 +175,8 @@ public class updateSectionInfo {
 							+ day
 							+ "&tm=d&p="
 							+ getPage();
-					ArrayList<String> inputList = UrlDao.getUrlBuffer(getQuotesUrl);
+					ArrayList<String> inputList = UrlDao
+							.getUrlBuffer(getQuotesUrl);
 					for (String input : inputList) {
 						insertDayQuoteToDB(input, code, con);
 					}
@@ -306,20 +308,19 @@ public class updateSectionInfo {
 
 	public static int findRecordNumber(String code) {
 		int result = 0;
-			String urlString = "http://info.finance.yahoo.co.jp/history/?code="
-					+ code + ".T&sy=1983&sm=1&sd=1&ey=" + year
-					+ "&em=" + month + "&ed=" + day
-					+ "&tm=d&p=1";
-			ArrayList<String> inputList = UrlDao.getUrlBuffer(urlString);
-			for (String input : inputList) {
-				if (input.contains("stocksHistoryPageing")) {
-					int endpoint = input.indexOf("件中");
-					int startpoint = input.indexOf("件");
-					result = Integer.valueOf(input.substring(startpoint + 2,
-							endpoint));
-					break;
-				}
+		String urlString = "http://info.finance.yahoo.co.jp/history/?code="
+				+ code + ".T&sy=1983&sm=1&sd=1&ey=" + year + "&em=" + month
+				+ "&ed=" + day + "&tm=d&p=1";
+		ArrayList<String> inputList = UrlDao.getUrlBuffer(urlString);
+		for (String input : inputList) {
+			if (input.contains("stocksHistoryPageing")) {
+				int endpoint = input.indexOf("件中");
+				int startpoint = input.indexOf("件");
+				result = Integer.valueOf(input.substring(startpoint + 2,
+						endpoint));
+				break;
 			}
+		}
 		return result;
 	}
 

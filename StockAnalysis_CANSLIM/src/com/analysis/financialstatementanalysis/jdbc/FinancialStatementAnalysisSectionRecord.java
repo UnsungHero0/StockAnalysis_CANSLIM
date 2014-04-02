@@ -72,7 +72,4 @@ public class FinancialStatementAnalysisSectionRecord {
 	public void setrSI(Float rSI) {
 		this.rSI = rSI;
 	}
-	
-	
-	
 }

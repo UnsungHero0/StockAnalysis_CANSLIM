@@ -22,6 +22,7 @@ public class UrlDao {
 		HttpURLConnection set = null;
 		while (ifReaded == false) {
 			try {
+				result = new ArrayList<>();
 				URL url = new URL(urlString);
 				set = (HttpURLConnection) url.openConnection();
 				set.setRequestProperty("Accept-Language", "jp");
@@ -29,6 +30,10 @@ public class UrlDao {
 				set.connect();
 				fi = new BufferedReader(new InputStreamReader(
 						set.getInputStream()));
+				String input;
+				while ((input = fi.readLine()) != null) {
+					result.add(input);
+				}
 				ifReaded = true;
 			} catch (SocketTimeoutException e) {
 				set.disconnect();
@@ -40,15 +45,6 @@ public class UrlDao {
 				set.disconnect();
 				e.printStackTrace();
 			}
-		}
-
-		try {
-			String input;
-			while ((input = fi.readLine()) != null) {
-				result.add(input);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		return result;
 	}

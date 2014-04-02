@@ -37,12 +37,15 @@ public class FinancialStatementAnalysisImpl {
 				record.setSector_Name(section.get(code));
 				resultMap.put(code, record);
 			}
-			
-			resultMap = new FinancialStatementAnalysisEPSBPS().getEPSAndBPS(
-					resultMap, con);
+			String form = "consolidate";
+			resultMap = new FinancialStatementAnalysisGrowthRate()
+					.getGrowthRate(resultMap, "eps", form, con);
+			resultMap = new FinancialStatementAnalysisGrowthRate()
+					.getGrowthRate(resultMap, "bps", form, con);
+			resultMap = new FinancialStatementAnalysisGrowthRate()
+					.getGrowthRate(resultMap, "sales", form, con);
 			resultMap = new FinancialStatementAnalysisRSI().calculateRSI(
 					resultMap, con);
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -57,8 +60,6 @@ public class FinancialStatementAnalysisImpl {
 
 		ArrayList<Entry<String, FinancialStatementAnalysisRecord>> resultEntrySet = new ArrayList<>(
 				resultMap.entrySet());
-		System.out.println(resultEntrySet.size());
-		System.out.println(resultEntrySet.get(0).getValue().getLocal_Code());
 
 		Collections
 				.sort(resultEntrySet,
@@ -75,26 +76,24 @@ public class FinancialStatementAnalysisImpl {
 							}
 						});
 		Collections
-		.sort(resultEntrySet,
-				new Comparator<Entry<String, FinancialStatementAnalysisRecord>>() {
-					public int compare(
-							Entry<String, FinancialStatementAnalysisRecord> o1,
-							Entry<String, FinancialStatementAnalysisRecord> o2) {
-						return o2
-								.getValue()
-								.getSector_Name()
-								.compareTo(
-										o1.getValue()
-												.getSector_Name());
-					}
-				});
-		System.out.println(resultEntrySet.get(0).getValue().getLocal_Code());
+				.sort(resultEntrySet,
+						new Comparator<Entry<String, FinancialStatementAnalysisRecord>>() {
+							public int compare(
+									Entry<String, FinancialStatementAnalysisRecord> o1,
+									Entry<String, FinancialStatementAnalysisRecord> o2) {
+								return o2
+										.getValue()
+										.getSector_Name()
+										.compareTo(
+												o1.getValue().getSector_Name());
+							}
+						});
 
 		for (Entry<String, FinancialStatementAnalysisRecord> record : resultEntrySet) {
 			if (record.getValue().getePSAverageGrowthRate() >= 0.25
-					&& record.getValue().getRSIInAllStock() >= 80) {
+					&& record.getValue().getRSIInAllStock() >= 85) {
 				boolean ifqualified = true;
-				for (Float value : record.getValue().getePSArray()) {
+				for (Float value : record.getValue().getePSGrowthRateArray()) {
 					if (value < 0.20f) {
 						ifqualified = false;
 						break;
@@ -107,6 +106,9 @@ public class FinancialStatementAnalysisImpl {
 							+ "  "
 							+ (int) (record.getValue()
 									.getePSAverageGrowthRate() * 100)
+							+ "%  "
+							+ (int) (record.getValue()
+									.getSalesAverageGrowthRate() * 100)
 							+ "%  "
 							+ (int) (record.getValue()
 									.getbPSAverageGrowthRate() * 100) + "%  "
