@@ -10,6 +10,8 @@ import java.util.Map.Entry;
 
 import javax.sql.DataSource;
 
+import recycling.FinancialStatementAnalysisRSI;
+
 import com.download.historicaldatadownload.yahoo.jdbc.DataSourceUtil;
 import com.download.historicaldatadownload.yahoo.jdbc.dao.CodeListsDao;
 import com.download.historicaldatadownload.yahoo.jdbc.dao.SectionDao;
@@ -38,14 +40,16 @@ public class FinancialStatementAnalysisImpl {
 				resultMap.put(code, record);
 			}
 			String form = "consolidate";
-			resultMap = new FinancialStatementAnalysisGrowthRate()
+			/*resultMap = new FinancialStatementAnalysisYearlyGrowthRate()
 					.getGrowthRate(resultMap, "eps", form, con);
-			resultMap = new FinancialStatementAnalysisGrowthRate()
+			resultMap = new FinancialStatementAnalysisYearlyGrowthRate()
 					.getGrowthRate(resultMap, "bps", form, con);
-			resultMap = new FinancialStatementAnalysisGrowthRate()
+			resultMap = new FinancialStatementAnalysisYearlyGrowthRate()
 					.getGrowthRate(resultMap, "sales", form, con);
 			resultMap = new FinancialStatementAnalysisRSI().calculateRSI(
-					resultMap, con);
+					resultMap, con);*/
+			resultMap = new FinancialStatementAnalysisQuarterGrowthRate()
+					.getQuarterGrowthRate(resultMap, "Net_Income", con);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -90,6 +94,7 @@ public class FinancialStatementAnalysisImpl {
 						});
 
 		for (Entry<String, FinancialStatementAnalysisRecord> record : resultEntrySet) {
+			/*
 			if (record.getValue().getePSAverageGrowthRate() >= 0.25
 					&& record.getValue().getRSIInAllStock() >= 85) {
 				boolean ifqualified = true;
@@ -99,25 +104,32 @@ public class FinancialStatementAnalysisImpl {
 						break;
 					}
 				}
-				if (ifqualified == true)
+				if (ifqualified == true)*/
 					System.out.print(record.getValue().getLocal_Code()
 							+ "  "
+							/*
 							+ record.getValue().getSector_Name()
-							+ "  "
+							+ "  EPS_AVE "
 							+ (int) (record.getValue()
 									.getePSAverageGrowthRate() * 100)
-							+ "%  "
+							+ "%  YearSALES_AVE "
 							+ (int) (record.getValue()
 									.getSalesAverageGrowthRate() * 100)
-							+ "%  "
+							+ "%  BPS_AVE "
 							+ (int) (record.getValue()
-									.getbPSAverageGrowthRate() * 100) + "%  "
+									.getbPSAverageGrowthRate() * 100) 
+							+ "%  RSI "
 							+ record.getValue().getRSIInAllStock().intValue()
+							*/
+							+"  QuarterSLAES_AVE "
+							+ (int) (record.getValue()
+									.getNet_IncomeQuarterAverageGrowthRate() * 100)
+							+ "%  "
 							+ "\n");
 			}
 		}
 
-	}
+	//}
 
 	public static DataSource getDataSource() {
 		return DataSourceUtil.getTokyoDataSourceRoot();

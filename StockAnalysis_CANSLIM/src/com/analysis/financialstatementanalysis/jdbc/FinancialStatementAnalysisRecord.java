@@ -3,7 +3,7 @@ package com.analysis.financialstatementanalysis.jdbc;
 import java.util.ArrayList;
 
 public class FinancialStatementAnalysisRecord {
-	
+	//Array earlier -> later
 	private String Local_Code = "";
 	private String Form = "";
 	private ArrayList<Float> salesArray = new ArrayList<>();
@@ -11,14 +11,73 @@ public class FinancialStatementAnalysisRecord {
 	private Float salesAverageGrowthRate = 0.0f;
 	private ArrayList<Float> ePSArray = new ArrayList<>();
 	private ArrayList<Float> ePSGrowthRateArray = new ArrayList<>();
-	private Float ePSAverageGrowthRate = (float) 0.0;
+	private Float ePSAverageGrowthRate = 0f;
 	private ArrayList<Float> bPSArray = new ArrayList<>();
 	private ArrayList<Float> bPSGrowthRateArray = new ArrayList<>();
-	private Float bPSAverageGrowthRate = (float) 0.0;
+	private Float bPSAverageGrowthRate = 0f;
 	private String sector_Name = "";
-	private Float rSIInAllStock = (float) 0.0;
-	private Float rSIInDepartment = (float) 0.0;
+	private Float rSIInAllStock = 0f;
+	private Float rSIInDepartment = 0f;
+	private ArrayList<Float> salesQuarterArray = new ArrayList<>();
+	private ArrayList<Float> salesQuarterGrowthRateArray = new ArrayList<>();
+	private Float salesQuarterAverageGrowthRate = 0f;
+	private ArrayList<Float> net_IncomeQuarterArray = new ArrayList<>();
+	private ArrayList<Float> net_IncomeQuarterGrowthRateArray = new ArrayList<>();
+	private Float net_IncomeQuarterAverageGrowthRate = 0f;
 	
+	
+	
+	public ArrayList<Float> getSalesQuarterArray() {
+		return salesQuarterArray;
+	}
+
+	public void setSalesQuarterArray(ArrayList<Float> salesQuarterArray) {
+		this.salesQuarterArray = salesQuarterArray;
+	}
+
+	public ArrayList<Float> getSalesQuarterGrowthRateArray() {
+		return salesQuarterGrowthRateArray;
+	}
+
+	public void setSalesQuarterGrowthRateArray(
+			ArrayList<Float> salesQuarterGrowthRateArray) {
+		this.salesQuarterGrowthRateArray = salesQuarterGrowthRateArray;
+	}
+
+	public Float getSalesQuarterAverageGrowthRate() {
+		return salesQuarterAverageGrowthRate;
+	}
+
+	public void setSalesQuarterAverageGrowthRate(Float salesQuarterAverageGrowthRate) {
+		this.salesQuarterAverageGrowthRate = salesQuarterAverageGrowthRate;
+	}
+
+	public ArrayList<Float> getNet_IncomeQuarterArray() {
+		return net_IncomeQuarterArray;
+	}
+
+	public void setNet_IncomeQuarterArray(ArrayList<Float> net_IncomeQuarterArray) {
+		this.net_IncomeQuarterArray = net_IncomeQuarterArray;
+	}
+
+	public ArrayList<Float> getNet_IncomeQuarterGrowthRateArray() {
+		return net_IncomeQuarterGrowthRateArray;
+	}
+
+	public void setNet_IncomeQuarterGrowthRateArray(
+			ArrayList<Float> net_IncomeQuarterGrowthRateArray) {
+		this.net_IncomeQuarterGrowthRateArray = net_IncomeQuarterGrowthRateArray;
+	}
+
+	public Float getNet_IncomeQuarterAverageGrowthRate() {
+		return net_IncomeQuarterAverageGrowthRate;
+	}
+
+	public void setNet_IncomeQuarterAverageGrowthRate(
+			Float net_IncomeQuarterAverageGrowthRate) {
+		this.net_IncomeQuarterAverageGrowthRate = net_IncomeQuarterAverageGrowthRate;
+	}
+
 	public ArrayList<Float> getSalesArray() {
 		return salesArray;
 	}

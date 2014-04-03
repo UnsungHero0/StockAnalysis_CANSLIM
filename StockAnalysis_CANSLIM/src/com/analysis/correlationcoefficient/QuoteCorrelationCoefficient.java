@@ -1,4 +1,4 @@
-package com.analysis;
+package com.analysis.correlationcoefficient;
 
 import java.io.File;
 import java.util.ArrayList;
