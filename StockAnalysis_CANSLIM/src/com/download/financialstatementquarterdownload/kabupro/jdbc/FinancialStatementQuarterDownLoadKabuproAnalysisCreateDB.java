@@ -3,7 +3,7 @@ package com.download.financialstatementquarterdownload.kabupro.jdbc;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.jdbc.util.JDBCUtil;
 import com.namespace.DBNameSpace;
@@ -17,7 +17,7 @@ public class FinancialStatementQuarterDownLoadKabuproAnalysisCreateDB {
 	public static void createAnalysisDB(Connection con) {
 		if (JDBCUtil
 				.hasTable(DBNameSpace.getQuarterfinancialstatementDb(), con)) {
-			ArrayList<FinancialStatementQuarterDownLoadKabuproAnalysisRecord> result = new ArrayList<>();
+			HashMap<String,FinancialStatementQuarterDownLoadKabuproAnalysisRecord> result = new HashMap<>();
 
 			System.out.println("start to fetch raw data from DB");
 			result = FinancialStatementQuarterDownLoadKabuproAnalysisFetchRawData
@@ -29,7 +29,7 @@ public class FinancialStatementQuarterDownLoadKabuproAnalysisCreateDB {
 			System.out.println("over\n");
 
 			System.out.println("insert data into DB");
-			FinancialStatementQuarterDownLoadKabuproAnalysisInsertInertDB
+			FinancialStatementQuarterDownLoadKabuproAnalysisInsertDB
 					.insetIntoDB(result, con);
 			System.out.println("over\n");
 		}
@@ -51,10 +51,10 @@ public class FinancialStatementQuarterDownLoadKabuproAnalysisCreateDB {
 
 		String createTableSql = "CREATE TABLE IF NOT EXISTS "
 				+ DBNameSpace.getQuarterfinancialstatementanalysisDb() + " "
-				+ "( Country VARCHAR(50) NOT NULL Default 'Tokyo', "
+				+ "(Country VARCHAR(50) NOT NULL Default 'Japan', "
 				+ "Local_Code VARCHAR(20) NOT NULL, "
 				+ "Name_English VARCHAR(100) NOT NULL, "
-				+ "Analysis_Type VARCHAR(30) NOT NULL, " + fields
+				+ "Analysis_Type VARCHAR(100) NOT NULL, " + fields
 				+ "CONSTRAINT ID PRIMARY KEY (Local_Code, Analysis_Type));";
 		System.out.println(createTableSql);
 		try {
