@@ -51,7 +51,7 @@ public class FinancialStatementQuarterDownLoadKabuproAnalysisCreateDB {
 
 		String createTableSql = "CREATE TABLE IF NOT EXISTS "
 				+ DBNameSpace.getQuarterfinancialstatementanalysisDb() + " "
-				+ "(Country VARCHAR(50) NOT NULL Default 'Japan', "
+				+ "( Country VARCHAR(50) NOT NULL Default 'Tokyo', "
 				+ "Local_Code VARCHAR(20) NOT NULL, "
 				+ "Name_English VARCHAR(100) NOT NULL, "
 				+ "Analysis_Type VARCHAR(100) NOT NULL, " + fields

@@ -38,7 +38,6 @@ public class FinancialStatementQuarterDownLoadKabuproAnalysisInsertDB {
 				+ field
 				+ " VALUES "
 				+ value;
-			System.out.println(sql);
 			con.prepareStatement(sql).execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -50,7 +49,6 @@ public class FinancialStatementQuarterDownLoadKabuproAnalysisInsertDB {
 				+ field
 				+ " VALUES "
 				+ value;
-			System.out.println(sql);
 			con.prepareStatement(sql).execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -62,7 +60,6 @@ public class FinancialStatementQuarterDownLoadKabuproAnalysisInsertDB {
 				+ field
 				+ " VALUES "
 				+ value;
-			System.out.println(sql);
 			con.prepareStatement(sql).execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -74,7 +71,6 @@ public class FinancialStatementQuarterDownLoadKabuproAnalysisInsertDB {
 				+ field
 				+ " VALUES "
 				+ value;
-			System.out.println(sql);
 			con.prepareStatement(sql).execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -86,7 +82,6 @@ public class FinancialStatementQuarterDownLoadKabuproAnalysisInsertDB {
 				+ field
 				+ " VALUES "
 				+ value;
-			System.out.println(sql);
 			con.prepareStatement(sql).execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
