@@ -130,7 +130,7 @@ public class FinancialStatementQuarterDownLoadKabuproFetchUrl {
 		if (!(input.contains("修") || input.contains("予"))) {
 			record.setFiscal_Year(input.substring(0, 4));
 			if (input.contains("通期")) {
-				record.setPeriod("Final");
+				record.setPeriod("Quarter4");
 				record.setFiscal_Year(input.substring(0, 4) + "0101");
 			} else if (input.contains("第3")) {
 				record.setPeriod("Quarter3");
@@ -144,7 +144,7 @@ public class FinancialStatementQuarterDownLoadKabuproFetchUrl {
 			}
 		} else {
 			record.setFiscal_Year(input);
-			record.setPeriod("Final_Prediction");
+			record.setPeriod("Quarter4_Prediction");
 		}
 		return record;
 	}
