@@ -24,8 +24,8 @@ public class FinancialStatementAnalysisRecord {
 	private ArrayList<Float> net_IncomeQuarterArray = new ArrayList<>();
 	private ArrayList<Float> net_IncomeQuarterGrowthRateArray = new ArrayList<>();
 	private Float net_IncomeQuarterAverageGrowthRate = 0f;
-	
-	
+	private Double FiftyWeekAverageVolume = 0.0;
+	private Float todayToFiftyWeeksAverage = 0f;
 	
 	public ArrayList<Float> getSalesQuarterArray() {
 		return salesQuarterArray;
@@ -235,6 +235,22 @@ public class FinancialStatementAnalysisRecord {
 		this.rSIInDepartment = rSIStrengthInDepartment;
 	}
 
+
+	public Double getFiftyWeekAverageVolume() {
+		return FiftyWeekAverageVolume;
+	}
+
+	public void setFiftyWeekAverageVolume(Double fiftyWeekAverageVolume) {
+		FiftyWeekAverageVolume = fiftyWeekAverageVolume;
+	}
+
+	public Float getTodayToFiftyWeeksAverage() {
+		return todayToFiftyWeeksAverage;
+	}
+
+	public void setTodayToFiftyWeeksAverage(Float todayToFiftyWeeksAverage) {
+		this.todayToFiftyWeeksAverage = todayToFiftyWeeksAverage;
+	}
 
 	public FinancialStatementAnalysisRecord() {
 		// TODO Auto-generated constructor stub
