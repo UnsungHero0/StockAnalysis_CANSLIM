@@ -33,8 +33,8 @@ public class FinancialStatementAnalysisVolume {
 				System.out.print((int) (percente * 100) + "%-> ");
 				i++;
 			}
-			System.out.println("100%");
 		}
+		System.out.println("100%");
 		return record;
 	}
 
@@ -55,9 +55,16 @@ public class FinancialStatementAnalysisVolume {
 			stmt.setInt(2, Integer.valueOf(record.getLocal_Code()));
 			rs = stmt.executeQuery();
 			if (rs.next()) {
-				record.setTodayToFiftyWeeksAverage((float) (rs
-						.getDouble("result") / record
+				record.setTodayToFiftyWeeksAverage((float) ((rs
+						.getDouble("result") - record
+						.getFiftyWeekAverageVolume())/ record
 						.getFiftyWeekAverageVolume()));
+				/*
+				if (record.getTodayToFiftyWeeksAverage() > 0.7)
+				System.out.println(record.getLocal_Code() + "  " + record.getFiftyWeekAverageVolume() + "  " + rs
+						.getDouble("result") + "  "+ record.getTodayToFiftyWeeksAverage());
+						*/
+
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

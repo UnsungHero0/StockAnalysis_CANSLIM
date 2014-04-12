@@ -26,7 +26,6 @@ public class FinancialStatementAnalysisImpl {
 				.getCodeListsFromFinancialStatement();
 		HashMap<String, FinancialStatementAnalysisRecord> resultMap = new HashMap<>();
 		Connection con = null;
-
 		try {
 			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
 			new SectionDao(con);
@@ -38,20 +37,16 @@ public class FinancialStatementAnalysisImpl {
 				resultMap.put(code, record);
 			}
 			String form = "consolidate";
-
 			resultMap = new FinancialStatementAnalysisYearlyGrowthRate()
 					.getGrowthRate(resultMap, "eps", form, con);
 			resultMap = new FinancialStatementAnalysisYearlyGrowthRate()
 					.getGrowthRate(resultMap, "bps", form, con);
 			resultMap = new FinancialStatementAnalysisYearlyGrowthRate()
 					.getGrowthRate(resultMap, "sales", form, con);
-
 			resultMap = new FinancialStatementAnalysisRSI().calculateRSI(
 					resultMap, con);
-
 			resultMap = new FinancialStatementAnalysisQuarterGrowthRate()
 					.getQuarterGrowthRate(resultMap, "Net_Income", con);
-
 			resultMap = FinancialStatementAnalysisVolume.getVolumeInfo(
 					resultMap, con);
 
@@ -92,20 +87,20 @@ public class FinancialStatementAnalysisImpl {
 									Entry<String, FinancialStatementAnalysisRecord> o2) {
 								return o2
 										.getValue()
-										.getTodayToFiftyWeeksAverage()
+										.getRSIInAllStock()
 										.compareTo(
 												o1.getValue()
-														.getTodayToFiftyWeeksAverage());
+														.getRSIInAllStock());
 							}
 						});
 
 		for (Entry<String, FinancialStatementAnalysisRecord> record : resultEntrySet) {
 
-			if (record.getValue().getePSAverageGrowthRate() <= 0.25
-					&& record.getValue().getRSIInAllStock() <= 85) {
+			if (record.getValue().getePSAverageGrowthRate() >= 0.25
+					&& record.getValue().getRSIInAllStock() >= 85) {
 				boolean ifqualified = true;
 				for (Float value : record.getValue().getePSGrowthRateArray()) {
-					if (value > 0.20f) {
+					if (value < 0.20f) {
 						ifqualified = false;
 						break;
 					}
@@ -141,7 +136,7 @@ public class FinancialStatementAnalysisImpl {
 									+ " Volume "
 									+ (int) (record.getValue()
 											.getTodayToFiftyWeeksAverage() * 100)
-									+ "%" + "\n");
+									+ "%" + "  " + record.getValue().getFiftyWeekAverageVolume() + "\n");
 			}
 		}
 
