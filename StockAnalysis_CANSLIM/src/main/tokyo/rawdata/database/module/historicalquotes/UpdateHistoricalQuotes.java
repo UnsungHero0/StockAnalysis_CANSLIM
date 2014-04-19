@@ -1,6 +1,7 @@
-package impl.update;
+package module.historicalquotes;
 
-import java.sql.Connection;
+import impl.update.UpdateSectionInfoMultiThreadVersion;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,14 +11,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import module.historicalquotes.CreateQuotesTableFromUrl;
-import module.historicalquotes.StockSplitException;
 import dao.UrlDao;
-import datasource.DataSourceUtil;
-import jdbcdao.CodeListsDao;
 
-public class updateSectionInfo {
-
+public class UpdateHistoricalQuotes {
 	private final static String year = String.valueOf(Calendar.getInstance()
 			.get(Calendar.YEAR));
 	private final static String month = String.valueOf(Calendar.getInstance()
@@ -27,13 +23,14 @@ public class updateSectionInfo {
 	private final static String startYear = "1983";
 	private final static String startMonth = "1";
 	private final static String startDay = "1";
-	private static String code = "";
-	private static Integer page = 1;
-	private static Date latestDate = new Date();
-	private static Boolean ifUpdateOver = false;
+	private Boolean ifUpdateOver = false;
 
-	public updateSectionInfo() {
-		// TODO Auto-generated constructor stub
+	public Boolean getIfUpdateOver() {
+		return ifUpdateOver;
+	}
+
+	public void setIfUpdateOver(Boolean ifUpdateOver) {
+		this.ifUpdateOver = ifUpdateOver;
 	}
 
 	public static String getYear() {
@@ -60,111 +57,31 @@ public class updateSectionInfo {
 		return startDay;
 	}
 
-	public static String getSqlquotesurl() {
-		return getQuotesUrl;
-	}
-
-	public static String getCode() {
-		return code;
-	}
-
-	public static void setCode(String code) {
-		updateSectionInfo.code = code;
-	}
-
-	public static Integer getPage() {
-		return page;
-	}
-
-	public static void setPage(Integer page) {
-		updateSectionInfo.page = page;
-	}
-
-	public static Date getLatestDate() {
-		return latestDate;
-	}
-
-	public static void setLatestDate(Date latestDate) {
-		updateSectionInfo.latestDate = latestDate;
-	}
-
-	public static Boolean getIfUpdateOver() {
-		return ifUpdateOver;
-	}
-
-	public static void setIfUpdateOver(Boolean ifUpdateOver) {
-		updateSectionInfo.ifUpdateOver = ifUpdateOver;
-	}
-
-	private static String getQuotesUrl = "http://info.finance.yahoo.co.jp/history/?code="
-			+ getCode()
-			+ ".T&sy="
-			+ startYear
-			+ "&sm="
-			+ startMonth
-			+ "&sd="
-			+ startDay
-			+ "&ey="
-			+ year
-			+ "&em="
-			+ month
-			+ "&ed="
-			+ day
-			+ "&tm=d&p=" + getPage();
-
-	public static String getGetQuotesUrl() {
-		return getQuotesUrl;
-	}
-
-	public static void setGetQuotesUrl(String getQuotesUrl) {
-		updateSectionInfo.getQuotesUrl = getQuotesUrl;
-	}
-	
-	public static void main(String args[]) {
-		update();
-	}
-
-	public static void update() {
-		CodeListsDao clDao = new CodeListsDao();
-		ArrayList<String> codeLists = clDao.getCodeLists();
-		Connection con = null;
-		System.out.println("start updating quotes...");
-		try {
-			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
-			for (String code : codeLists) {
-				if(Integer.valueOf(code) > 0) {
-					setCode(code);
-					update(code, con);
-					ifUpdateOver = false;
-					System.out.print(year + "/" + month + "/" + day + "  :  " + code + " is updated, ");
-					System.out.println(codeLists.size()
-							- codeLists.indexOf(code) + " to go!");
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			if (con != null) {
-				try {
-					con.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+	public void updateCode(ArrayList<String> codeList, String threadName) {
+		for (String code : codeList) {
+			update(code);
+			ifUpdateOver = false;
+			UpdateSectionInfoMultiThreadVersion.count--;
+			synchronized (UpdateSectionInfoMultiThreadVersion.count) {
+				System.out
+						.println(threadName + ": " + year + "/" + month + "/"
+								+ day + "  :  " + code + " is updated, "
+								+ UpdateSectionInfoMultiThreadVersion.count
+								+ " to go!");
 			}
 		}
-		System.out.println("finished");
+
 	}
 
-	public static void update(String code, Connection con) {
-
+	public void update(String code) {
 		try {
-			if (tableIsExist(code, con)) {
-				latestDate = findLatestDateInDB(code, con);
+			if (tableIsExist(code)) {
+				Date latestDate = findLatestDateInDB(code);
 				Integer recordNumber = findRecordNumber(code);
 				Integer loop = recordNumber / 50 + 1;
-				for (page = 1; page < loop && ifUpdateOver == false; page++) {
+				for (int page = 1; page < loop && ifUpdateOver == false; page++) {
 					String getQuotesUrl = "http://info.finance.yahoo.co.jp/history/?code="
-							+ getCode()
+							+ code
 							+ ".T&sy="
 							+ startYear
 							+ "&sm="
@@ -174,32 +91,35 @@ public class updateSectionInfo {
 							+ "&ey="
 							+ year
 							+ "&em="
-							+ month
-							+ "&ed="
-							+ day
-							+ "&tm=d&p="
-							+ getPage();
+							+ month + "&ed=" + day + "&tm=d&p=" + page;
 					ArrayList<String> inputList = UrlDao
 							.getUrlBuffer(getQuotesUrl);
 					for (String input : inputList) {
-						insertDayQuoteToDB(input, code, con);
+						insertDayQuoteToDB(input, code, latestDate);
 					}
 				}
 			} else {
-				CreateQuotesTableFromUrl.createNewQuotesTable(code, con);
+				synchronized (UpdateSectionInfoMultiThreadVersion.con) {
+					CreateQuotesTableFromUrl.createNewQuotesTable(code,
+							UpdateSectionInfoMultiThreadVersion.con);
+				}
 			}
 		} catch (StockSplitException e) {
 			e.printStackTrace();
-			//CreateQuotesTableFromUrl.createNewQuotesTable(code, con);
+			// CreateQuotesTableFromUrl.createNewQuotesTable(code, con);
 		}
 	}
 
-	public static Boolean tableIsExist(String code, Connection con) {
+	public static Boolean tableIsExist(String code) {
 		Boolean result = false;
 		try {
 			String findTableSql = "SHOW TABLES LIKE '" + code
 					+ "_HistoricalQuotes_Tokyo'";
-			ResultSet rs = con.prepareStatement(findTableSql).executeQuery();
+			ResultSet rs = null;
+			synchronized (UpdateSectionInfoMultiThreadVersion.con) {
+				rs = UpdateSectionInfoMultiThreadVersion.con.prepareStatement(
+						findTableSql).executeQuery();
+			}
 			if (rs.next()) {
 				result = true;
 			}
@@ -209,15 +129,19 @@ public class updateSectionInfo {
 		return result;
 	}
 
-	public static Date findLatestDateInDB(String code, Connection con) {
+	public static Date findLatestDateInDB(String code) {
 		Date date = new Date();
 		try {
 			String selectLatestDaySql = "SELECT MAX(Date) Date FROM "
 					+ "?_HistoricalQuotes_Tokyo";
-
-			PreparedStatement stmt = con.prepareStatement(selectLatestDaySql);
-			stmt.setInt(1, Integer.parseInt(code));
-			ResultSet rs = stmt.executeQuery();
+			PreparedStatement stmt = null;
+			ResultSet rs = null;
+			synchronized (UpdateSectionInfoMultiThreadVersion.con) {
+				stmt = UpdateSectionInfoMultiThreadVersion.con
+						.prepareStatement(selectLatestDaySql);
+				stmt.setInt(1, Integer.parseInt(code));
+				rs = stmt.executeQuery();
+			}
 			rs.next();
 			date = rs.getDate("Date");
 		} catch (SQLException e) {
@@ -226,8 +150,8 @@ public class updateSectionInfo {
 		return date;
 	}
 
-	public static void insertDayQuoteToDB(String input, String code,
-			Connection con) throws StockSplitException {
+	public void insertDayQuoteToDB(String input, String code, Date latestDate)
+			throws StockSplitException {
 		String string1 = "";
 		String date = "";
 		if (input.startsWith("</tr>") && ifUpdateOver == false) {
@@ -271,7 +195,7 @@ public class updateSectionInfo {
 							} catch (ParseException e) {
 								e.printStackTrace();
 							}
-							insertIntoDB(date, result, code, con);
+							insertIntoDB(date, result, code);
 						} else if (!string.contains("分割")) {
 							string = string.substring(0, string.length() - 5);
 							string += "</td><td>";
@@ -297,7 +221,7 @@ public class updateSectionInfo {
 							} catch (ParseException e) {
 								e.printStackTrace();
 							}
-							insertIntoDB(date, result, code, con);
+							insertIntoDB(date, result, code);
 						} else {
 							System.out.println(string);
 							throw new StockSplitException("stock " + code
@@ -358,18 +282,22 @@ public class updateSectionInfo {
 	}
 
 	public static void insertIntoDB(String date, ArrayList<Integer> quotes,
-			String code, Connection con) {
+			String code) {
 		String insertOneDayQuoteSql = "INSERT INTO ?_HistoricalQuotes_Tokyo"
 				+ "(Date, Open, High, Low, Close, Volume, AdjClose) VALUES "
 				+ "(?,?,?,?,?,?,?)";
 		try {
-			PreparedStatement stmt = con.prepareStatement(insertOneDayQuoteSql);
-			stmt.setInt(1, Integer.parseInt(code));
-			stmt.setString(2, date);
-			for (int i = 0; i < quotes.size(); i++) {
-				stmt.setInt(i + 3, quotes.get(i));
+			PreparedStatement stmt = null;
+			synchronized (UpdateSectionInfoMultiThreadVersion.con) {
+				stmt = UpdateSectionInfoMultiThreadVersion.con
+						.prepareStatement(insertOneDayQuoteSql);
+				stmt.setInt(1, Integer.parseInt(code));
+				stmt.setString(2, date);
+				for (int i = 0; i < quotes.size(); i++) {
+					stmt.setInt(i + 3, quotes.get(i));
+				}
+				stmt.execute();
 			}
-			stmt.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
