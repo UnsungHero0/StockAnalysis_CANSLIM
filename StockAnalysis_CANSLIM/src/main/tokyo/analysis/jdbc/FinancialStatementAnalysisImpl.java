@@ -21,7 +21,13 @@ public class FinancialStatementAnalysisImpl {
 	}
 
 	public static void main(String args[]) {
+		ThreadEvenNumberOutput threadEven = new ThreadEvenNumberOutput();
+		ThreadOddNumberOutput threadOdd = new ThreadOddNumberOutput();
+		threadEven.start();
+		threadOdd.start();
+	}
 
+	public static ArrayList<Entry<String, FinancialStatementAnalysisRecord>> evenNumberOutput() {
 		ArrayList<String> codeList = new CodeListsDao()
 				.getCodeListsFromFinancialStatement();
 		HashMap<String, FinancialStatementAnalysisRecord> resultMap = new HashMap<>();
@@ -61,24 +67,16 @@ public class FinancialStatementAnalysisImpl {
 				}
 			}
 		}
+		print(filter(sort(new ArrayList<>(resultMap.entrySet()))));
+		return null;
+	}
 
-		ArrayList<Entry<String, FinancialStatementAnalysisRecord>> resultEntrySet = new ArrayList<>(
-				resultMap.entrySet());
+	public static DataSource getDataSource() {
+		return DataSourceUtil.getTokyoDataSourceRoot();
+	}
 
-		Collections
-				.sort(resultEntrySet,
-						new Comparator<Entry<String, FinancialStatementAnalysisRecord>>() {
-							public int compare(
-									Entry<String, FinancialStatementAnalysisRecord> o1,
-									Entry<String, FinancialStatementAnalysisRecord> o2) {
-								return o2
-										.getValue()
-										.getePSAverageGrowthRate()
-										.compareTo(
-												o1.getValue()
-														.getePSAverageGrowthRate());
-							}
-						});
+	public static ArrayList<Entry<String, FinancialStatementAnalysisRecord>> sort(
+			ArrayList<Entry<String, FinancialStatementAnalysisRecord>> resultEntrySet) {
 		Collections
 				.sort(resultEntrySet,
 						new Comparator<Entry<String, FinancialStatementAnalysisRecord>>() {
@@ -93,11 +91,16 @@ public class FinancialStatementAnalysisImpl {
 														.getTodayToFiftyWeeksAverage());
 							}
 						});
+		return resultEntrySet;
+	}
 
+	public static ArrayList<Entry<String, FinancialStatementAnalysisRecord>> filter(
+			ArrayList<Entry<String, FinancialStatementAnalysisRecord>> resultEntrySet) {
+		ArrayList<Entry<String, FinancialStatementAnalysisRecord>> result = new ArrayList<>();
 		for (Entry<String, FinancialStatementAnalysisRecord> record : resultEntrySet) {
-
 			if (record.getValue().getePSAverageGrowthRate() >= 0.25
-					&& record.getValue().getRSIInAllStock() >= 0) {
+					&& record.getValue().getRSIInAllStock() >= 85
+					&& record.getValue().getTodayToFiftyWeeksAverage() >= 0.7) {
 				boolean ifqualified = true;
 				for (Float value : record.getValue().getePSGrowthRateArray()) {
 					if (value < 0.20f) {
@@ -105,45 +108,78 @@ public class FinancialStatementAnalysisImpl {
 						break;
 					}
 				}
-				if (ifqualified == true)
-					System.out
-							.print(record.getValue().getLocal_Code()
-									+ "  "
-									+ record.getValue().getSector_Name()
-									+ "  EPS_AVE "
-									+ (int) (record.getValue()
-											.getePSAverageGrowthRate() * 100)
-									+ "%  YearSALES_AVE "
-									+ (int) (record.getValue()
-											.getSalesAverageGrowthRate() * 100)
-									+ "%  BPS_AVE "
-									+ (int) (record.getValue()
-											.getbPSAverageGrowthRate() * 100)
 
-									+ "%  RSI "
-									+ record.getValue().getRSIInAllStock()
-											.intValue()
-									+ "  QuarterSLAES_AVE "
-									+ (int) (record
-											.getValue()
-											.getNet_IncomeQuarterAverageGrowthRate() * 100)
-									+ "%  "
-									+ "  EPS / BPS "
-									+ (int) (record.getValue()
-											.getePSAverageGrowthRate() / record
-											.getValue()
-											.getbPSAverageGrowthRate())
-									+ " Volume "
-									+ (int) (record.getValue()
-											.getTodayToFiftyWeeksAverage() * 100)
-									+ "%" + "  " + record.getValue().getFiftyWeekAverageVolume() + "\n");
+				if (ifqualified == true) {
+					result.add(record);
+				}
+
 			}
 		}
-
+		return result;
 	}
 
-	public static DataSource getDataSource() {
-		return DataSourceUtil.getTokyoDataSourceRoot();
+	public static void print(
+			ArrayList<Entry<String, FinancialStatementAnalysisRecord>> resultEntrySet) {
+		for (Entry<String, FinancialStatementAnalysisRecord> record : resultEntrySet) {
+			System.out
+					.print(record.getValue().getLocal_Code()
+							+ "  "
+							+ record.getValue().getSector_Name()
+							+ "  EPS_AVE "
+							+ (int) (record.getValue()
+									.getePSAverageGrowthRate() * 100)
+							+ "%  YearSALES_AVE "
+							+ (int) (record.getValue()
+									.getSalesAverageGrowthRate() * 100)
+							+ "%  BPS_AVE "
+							+ (int) (record.getValue()
+									.getbPSAverageGrowthRate() * 100)
+
+							+ "%  RSI "
+							+ record.getValue().getRSIInAllStock().intValue()
+							+ "  QuarterSLAES_AVE "
+							+ (int) (record.getValue()
+									.getNet_IncomeQuarterAverageGrowthRate() * 100)
+							+ "%  "
+							+ "  EPS / BPS "
+							+ (int) (record.getValue()
+									.getePSAverageGrowthRate() / record
+									.getValue().getbPSAverageGrowthRate())
+							+ " Volume "
+							+ (int) (record.getValue()
+									.getTodayToFiftyWeeksAverage() * 100) + "%"
+							+ "  "
+							+ record.getValue().getFiftyWeekAverageVolume()
+							+ "\n");
+		}
+	}
+}
+
+class ThreadEvenNumberOutput extends Thread {
+	public ThreadEvenNumberOutput() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
+	public void run() {
+		FinancialStatementAnalysisImpl.evenNumberOutput();
+	}
+}
+
+class ThreadOddNumberOutput extends Thread {
+	public ThreadOddNumberOutput() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public void run() {
+		System.out.println("I am odd");
+		try {
+			Thread.sleep(7000);// 主线程挂起7秒
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println("\nI am odd");
+		//FinancialStatementAnalysisImpl.evenNumberOutput();
+	}
 }

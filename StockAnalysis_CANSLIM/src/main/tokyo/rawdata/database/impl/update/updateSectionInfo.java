@@ -119,8 +119,12 @@ public class updateSectionInfo {
 	public static void setGetQuotesUrl(String getQuotesUrl) {
 		updateSectionInfo.getQuotesUrl = getQuotesUrl;
 	}
-
+	
 	public static void main(String args[]) {
+		update();
+	}
+
+	public static void update() {
 		CodeListsDao clDao = new CodeListsDao();
 		ArrayList<String> codeLists = clDao.getCodeLists();
 		Connection con = null;
