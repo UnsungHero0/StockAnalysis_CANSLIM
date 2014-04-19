@@ -132,7 +132,7 @@ public class updateSectionInfo {
 		try {
 			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
 			for (String code : codeLists) {
-				if(Integer.valueOf(code) > 0) {
+				if(Integer.valueOf(code) > 6265) {
 					setCode(code);
 					update(code, con);
 					ifUpdateOver = false;
