@@ -61,49 +61,48 @@ public class UpdateSectionInfoMultiThreadVersion {
 			interval = count / splitNumber;
 		} else {
 			interval = count / splitNumber + 1;
-			ArrayList<ArrayList<String>> codeListGroup = new ArrayList<>();
-			for (int i = 0; i < splitNumber; i++) {
-				ArrayList<String> newList = new ArrayList<>();
-				for (int j = 0; j < interval
-						&& (i * interval + j) < codeLists.size(); j++) {
-					newList.add(codeLists.get(i * interval + j));
-				}
-				codeListGroup.add(newList);
+		}
+		ArrayList<ArrayList<String>> codeListGroup = new ArrayList<>();
+		for (int i = 0; i < splitNumber; i++) {
+			ArrayList<String> newList = new ArrayList<>();
+			for (int j = 0; j < interval
+					&& (i * interval + j) < codeLists.size(); j++) {
+				newList.add(codeLists.get(i * interval + j));
 			}
-			ArrayList<updateThread> threadGroup = new ArrayList<>();
-			for (int i = 1; i <= splitNumber; i++) {
-				updateThread thread = new updateThread("Thread" + i,
-						codeListGroup.get(i - 1));
-				System.out.println("Thread" + i + " is created!");
-				threadGroup.add(thread);
+			codeListGroup.add(newList);
+		}
+		ArrayList<updateThread> threadGroup = new ArrayList<>();
+		for (int i = 1; i <= splitNumber; i++) {
+			updateThread thread = new updateThread("Thread" + i,
+					codeListGroup.get(i - 1));
+			System.out.println("Thread" + i + " is created!");
+			threadGroup.add(thread);
+		}
+		try {
+			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
+			for (updateThread thread : threadGroup) {
+				thread.start();
+				System.out.println(thread.getName() + " is starting");
 			}
-			try {
-				con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
-				for (updateThread thread : threadGroup) {
-					thread.start();
-					System.out.println(thread.getName() + " is starting");
-				}
-				for (updateThread thread : threadGroup) {
-					thread.join();
-				}
-				System.out.println("finished");
+			for (updateThread thread : threadGroup) {
+				thread.join();
+			}
+			System.out.println("finished");
 
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} finally {
-				if (con != null) {
-					try {
-						con.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			if (con != null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
 				}
 			}
 		}
 	}
-
 }
 
 class updateThread extends Thread {
@@ -120,8 +119,7 @@ class updateThread extends Thread {
 
 	public void run() {
 		UpdateHistoricalQuotes update = new UpdateHistoricalQuotes();
-		update.updateCode(codeList,
-				super.getName());
+		update.updateCode(codeList, super.getName());
 	}
 
 }

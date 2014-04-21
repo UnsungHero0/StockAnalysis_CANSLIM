@@ -34,29 +34,38 @@ public class StockPairDailyQuoteResultImpl {
 
 		ArrayList<Integer> keyList = turnToIntegerList(lowLimit, upperLimit);
 		for (Integer key : keyList) {
-			key = key * 13 *5;
+			// key = key;
 			ArrayList<StockDailyQuote> newQuoteA = new ArrayList<>();
 			ArrayList<StockDailyQuote> newQuoteB = new ArrayList<>();
-			if (key < 0) {
-				newQuoteA = new ArrayList<>( originalData
+			if (key < 0
+					&& (originalData.getQuoteA().getQuote().size()
+							- Math.abs(key) > 2)) {
+				newQuoteA = new ArrayList<>(originalData
 						.getQuoteA()
 						.getQuote()
-						.subList(0, originalData.getQuoteA().getQuote().size()  - Math.abs(key)) );
-				newQuoteB = new ArrayList<>( originalData
+						.subList(
+								0,
+								originalData.getQuoteA().getQuote().size()
+										- Math.abs(key)));
+				newQuoteB = new ArrayList<>(originalData
 						.getQuoteB()
 						.getQuote()
 						.subList(Math.abs(key),
-								originalData.getQuoteB().getQuote().size() ) );
-			} else {
-				newQuoteB = new ArrayList<>( originalData
+								originalData.getQuoteB().getQuote().size()));
+			} else if (originalData.getQuoteB().getQuote().size()
+					- Math.abs(key) > 2) {
+				newQuoteB = new ArrayList<>(originalData
 						.getQuoteB()
 						.getQuote()
-						.subList(0, originalData.getQuoteB().getQuote().size()  - Math.abs(key)) );
-				newQuoteA = new ArrayList<>( originalData
+						.subList(
+								0,
+								originalData.getQuoteB().getQuote().size()
+										- Math.abs(key)));
+				newQuoteA = new ArrayList<>(originalData
 						.getQuoteA()
 						.getQuote()
 						.subList(Math.abs(key),
-								originalData.getQuoteA().getQuote().size() ));
+								originalData.getQuoteA().getQuote().size()));
 			}
 			ArrayList<Double> quoteA = new ArrayList<>();
 			ArrayList<Double> quoteB = new ArrayList<>();
@@ -67,9 +76,8 @@ public class StockPairDailyQuoteResultImpl {
 				quoteB.add(quote.getAdjClose());
 			}
 			CorrelationCoefficientCalculator ccc = new CorrelationCoefficientCalculator();
-			Double result = ccc.getCorrelationCoefficient(
-					quoteA, quoteB);
-			System.out.println(key + " " + quoteA.size() + "  " + result);
+			Double result = ccc.getCorrelationCoefficient(quoteA, quoteB);
+			//System.out.println(key + " " + quoteA.size() + "  " + result);
 			// TODO
 		}
 
@@ -118,23 +126,29 @@ public class StockPairDailyQuoteResultImpl {
 		SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd");
 		ArrayList<StockDailyQuote> newQuoteA;
 		ArrayList<StockDailyQuote> newQuoteB;
-		System.out.println(spdq.getQuoteA().getQuote().size());
+		//System.out.println(spdq.getQuoteA().getQuote().size());
 		if (dayDif < 0) {
-			newQuoteA = new ArrayList<>( spdq
+			newQuoteA = new ArrayList<>(spdq
 					.getQuoteA()
 					.getQuote()
-					.subList(0, spdq.getQuoteA().getQuote().size() - 1 - Math.abs(dayDif)) );
-			newQuoteB = new ArrayList<>( spdq
+					.subList(
+							0,
+							spdq.getQuoteA().getQuote().size() - 1
+									- Math.abs(dayDif)));
+			newQuoteB = new ArrayList<>(spdq
 					.getQuoteB()
 					.getQuote()
 					.subList(Math.abs(dayDif),
-							spdq.getQuoteB().getQuote().size() - 1) );
+							spdq.getQuoteB().getQuote().size() - 1));
 		} else {
-			newQuoteB = new ArrayList<>( spdq
+			newQuoteB = new ArrayList<>(spdq
 					.getQuoteB()
 					.getQuote()
-					.subList(0, spdq.getQuoteB().getQuote().size() - 1 - Math.abs(dayDif)) );
-			newQuoteA = new ArrayList<>( spdq
+					.subList(
+							0,
+							spdq.getQuoteB().getQuote().size() - 1
+									- Math.abs(dayDif)));
+			newQuoteA = new ArrayList<>(spdq
 					.getQuoteA()
 					.getQuote()
 					.subList(Math.abs(dayDif),
@@ -159,8 +173,8 @@ public class StockPairDailyQuoteResultImpl {
 		 */
 		spdq.getQuoteA().setQuote(newQuoteA);
 		spdq.getQuoteB().setQuote(newQuoteB);
-		System.out.println("new " + spdq.getQuoteA().getQuote().size());
-		System.out.println("new " + spdq.getQuoteB().getQuote().size());
+		//System.out.println("new " + spdq.getQuoteA().getQuote().size());
+		//System.out.println("new " + spdq.getQuoteB().getQuote().size());
 		/*
 		 * StockPairDailyQuote result = new StockPairDailyQuote();
 		 * result.setDayDif(dayDif); result = copyBasicInfo(spdq); Date

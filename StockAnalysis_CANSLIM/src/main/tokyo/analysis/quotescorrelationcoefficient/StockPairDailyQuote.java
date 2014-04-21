@@ -116,8 +116,8 @@ public class StockPairDailyQuote {
 		}
 		*/
 		
-		System.out.println(newQuoteA.size());
-		System.out.println(newQuoteB.size());
+		//System.out.println(newQuoteA.size());
+		//System.out.println(newQuoteB.size());
 
 		quoteA.setQuote(newQuoteA);
 		quoteB.setQuote(newQuoteB);
