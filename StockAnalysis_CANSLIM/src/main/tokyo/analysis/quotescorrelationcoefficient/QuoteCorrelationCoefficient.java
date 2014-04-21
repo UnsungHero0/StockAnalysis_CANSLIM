@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import jdbcdao.CodeListsDao;
 import mathematics.CorrelationCoefficientCalculator;
 
 
@@ -29,6 +30,8 @@ public class QuoteCorrelationCoefficient {
 			if (file.getName().contains("csv"))
 				addressList.add(file.getAbsolutePath());
 		}
+		
+		ArrayList<String> codelList = new CodeListsDao().getCodeLists();
 
 		ArrayList<ArrayList<String>> finalResult = new ArrayList<>();
 		for (int i = 0; i < addressList.size() - 2; i++) {

@@ -87,17 +87,22 @@ public class StockPairDailyQuote {
 		ArrayList<StockDailyQuote> newQuoteB = new ArrayList<>();
 
 		for (StockDailyQuote sdqA : quoteA.getQuote()) {
-			Boolean ifcontain = false;
+			//Boolean ifcontain = false;
 			for (StockDailyQuote sdqB : quoteB.getQuote()) {
 				if (sdqA.getDate().equals(sdqB.getDate())) {
-					ifcontain = true;
+					newQuoteA.add(sdqA);
+					newQuoteB.add(sdqB);
+					//ifcontain = true;
 					break;
 				}
 			}
+			/*
 			if (ifcontain.equals(true))
 				newQuoteA.add(sdqA);
+				*/
 		}
 
+		/*
 		for (StockDailyQuote sdqB : quoteB.getQuote()) {
 			Boolean ifcontain = false;
 			for (StockDailyQuote sdqA : quoteA.getQuote()) {
@@ -109,6 +114,10 @@ public class StockPairDailyQuote {
 			if (ifcontain.equals(true))
 				newQuoteB.add(sdqB);
 		}
+		*/
+		
+		System.out.println(newQuoteA.size());
+		System.out.println(newQuoteB.size());
 
 		quoteA.setQuote(newQuoteA);
 		quoteB.setQuote(newQuoteB);

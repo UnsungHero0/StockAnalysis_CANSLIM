@@ -27,4 +27,14 @@ public class GetPairHistoricalDataFromCsv {
 		setPairQuote(pairDailyQuote);
 	}
 	
+	public void fetchPairFromJDBC(StockHistoricalPrice quote1,
+			StockHistoricalPrice quote2) {
+		ArrayList<StockHistoricalPrice> result = new ArrayList<>();
+		result.add(quote1);
+		result.add(quote2);
+		StockPairDailyQuote pairDailyQuote = new StockPairDailyQuote();
+		pairDailyQuote.StockPairDailyQuoteWithSameDuration(result);
+		setPairQuote(pairDailyQuote);
+	}
+	
 }

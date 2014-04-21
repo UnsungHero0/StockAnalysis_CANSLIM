@@ -3,12 +3,10 @@ package quotescorrelationcoefficient;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
 import commontool.DateOperation;
-
 import mathematics.CorrelationCoefficientCalculator;
 
 public class StockPairDailyQuoteResultImpl {
@@ -23,11 +21,12 @@ public class StockPairDailyQuoteResultImpl {
 			Integer lowLimit, Integer upperLimit) {
 		this.result = new StockPairDailyQuoteResult();
 		this.result = copyBasicInfo(originalData);
+
 		dayDifImpl(originalData, lowLimit, upperLimit);
-		//TODO date 2014.2.22
-		//weekDifImpl(originalData, lowLimit, upperLimit);
-		//monthDifImpl(originalData, lowLimit, upperLimit);
-		//yearDifImpl(originalData, lowLimit, upperLimit);
+		// TODO date 2014.2.22
+		// weekDifImpl(originalData, lowLimit, upperLimit);
+		// monthDifImpl(originalData, lowLimit, upperLimit);
+		// yearDifImpl(originalData, lowLimit, upperLimit);
 	}
 
 	public void dayDifImpl(StockPairDailyQuote originalData, Integer lowLimit,
@@ -35,22 +34,43 @@ public class StockPairDailyQuoteResultImpl {
 
 		ArrayList<Integer> keyList = turnToIntegerList(lowLimit, upperLimit);
 		for (Integer key : keyList) {
-			StockPairDailyQuote sdpq = new StockPairDailyQuote();
-			sdpq.setDayDif(key);
-			sdpq = dayDifPairQuote(originalData, key);
+			key = key * 13 *5;
+			ArrayList<StockDailyQuote> newQuoteA = new ArrayList<>();
+			ArrayList<StockDailyQuote> newQuoteB = new ArrayList<>();
+			if (key < 0) {
+				newQuoteA = new ArrayList<>( originalData
+						.getQuoteA()
+						.getQuote()
+						.subList(0, originalData.getQuoteA().getQuote().size()  - Math.abs(key)) );
+				newQuoteB = new ArrayList<>( originalData
+						.getQuoteB()
+						.getQuote()
+						.subList(Math.abs(key),
+								originalData.getQuoteB().getQuote().size() ) );
+			} else {
+				newQuoteB = new ArrayList<>( originalData
+						.getQuoteB()
+						.getQuote()
+						.subList(0, originalData.getQuoteB().getQuote().size()  - Math.abs(key)) );
+				newQuoteA = new ArrayList<>( originalData
+						.getQuoteA()
+						.getQuote()
+						.subList(Math.abs(key),
+								originalData.getQuoteA().getQuote().size() ));
+			}
 			ArrayList<Double> quoteA = new ArrayList<>();
 			ArrayList<Double> quoteB = new ArrayList<>();
-			for (StockDailyQuote quote: sdpq.getQuoteA().getQuote()) {
+			for (StockDailyQuote quote : newQuoteA) {
 				quoteA.add(quote.getAdjClose());
 			}
-			for (StockDailyQuote quote: sdpq.getQuoteB().getQuote()) {
+			for (StockDailyQuote quote : newQuoteB) {
 				quoteB.add(quote.getAdjClose());
 			}
 			CorrelationCoefficientCalculator ccc = new CorrelationCoefficientCalculator();
-			sdpq.setCorrelationCoefficient(ccc.getCorrelationCoefficient(quoteA, quoteB));
-			getResult().getDayDifResult().put(key, sdpq);
-			System.out.println(key +  " " + sdpq.getCorrelationCoefficient());
-			//TODO 
+			Double result = ccc.getCorrelationCoefficient(
+					quoteA, quoteB);
+			System.out.println(key + " " + quoteA.size() + "  " + result);
+			// TODO
 		}
 
 	}
@@ -94,38 +114,84 @@ public class StockPairDailyQuoteResultImpl {
 	public static StockPairDailyQuote dayDifPairQuote(StockPairDailyQuote spdq,
 			Integer dayDif) {
 
-		StockPairDailyQuote result = new StockPairDailyQuote();
-		result.setDayDif(dayDif);
-		result = copyBasicInfo(spdq);
-		Date startDateA = null, startDateB = null, endDateA = null, endDateB = null;
 		DateOperation dO = new DateOperation();
-		if (dayDif >= 0) {
-			startDateA = dO.changeExchangeDay(result.getStart(), -dayDif);
-			endDateA = dO.changeExchangeDay(result.getEnd(), -dayDif);
-			startDateB = result.getStart();
-			endDateB = result.getEnd();
+		SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd");
+		ArrayList<StockDailyQuote> newQuoteA;
+		ArrayList<StockDailyQuote> newQuoteB;
+		System.out.println(spdq.getQuoteA().getQuote().size());
+		if (dayDif < 0) {
+			newQuoteA = new ArrayList<>( spdq
+					.getQuoteA()
+					.getQuote()
+					.subList(0, spdq.getQuoteA().getQuote().size() - 1 - Math.abs(dayDif)) );
+			newQuoteB = new ArrayList<>( spdq
+					.getQuoteB()
+					.getQuote()
+					.subList(Math.abs(dayDif),
+							spdq.getQuoteB().getQuote().size() - 1) );
 		} else {
-			startDateA = result.getStart();
-			endDateA = result.getEnd();
-			startDateB = dO.changeExchangeDay(result.getStart(), dayDif);
-			endDateB = dO.changeExchangeDay(result.getEnd(), dayDif);
-			}
-		
-		ArrayList<StockDailyQuote> shpA = new ArrayList<>();
-		ArrayList<StockDailyQuote> shpB = new ArrayList<>();
-		shpA = result.getRawQuoteA().getSubQuote(startDateA, endDateA);
-		shpB = result.getRawQuoteB().getSubQuote(startDateB, endDateB);
+			newQuoteB = new ArrayList<>( spdq
+					.getQuoteB()
+					.getQuote()
+					.subList(0, spdq.getQuoteB().getQuote().size() - 1 - Math.abs(dayDif)) );
+			newQuoteA = new ArrayList<>( spdq
+					.getQuoteA()
+					.getQuote()
+					.subList(Math.abs(dayDif),
+							spdq.getQuoteA().getQuote().size() - 1));
+		}
+		/*
+		 * try { // for (StockDailyQuote quoteA : spdq.getQuoteA().getQuote()) {
+		 * Boolean ifFind = false; for (int i = 0, j = 0; i <
+		 * spdq.getQuoteA().getQuote().size(); i++) { Date dateA =
+		 * sdf.parse(spdq.getQuoteA().getQuote().get(i) .getDate()); if(ifFind
+		 * == true) { ifFind = false; } else { j = 0; } System.out.println(j);
+		 * for (; j < spdq.getQuoteA().getQuote().size(); j++) { Date dateB =
+		 * sdf.parse(spdq.getQuoteA().getQuote().get(j) .getDate());
+		 * //System.out.println("loop"); if
+		 * (dateA.equals(dO.changeExchangeDay(dateB, dayDif))) {
+		 * newQuoteA.add(spdq.getQuoteA().getQuote().get(i));
+		 * newQuoteB.add(spdq.getQuoteA().getQuote().get(j));
+		 * System.out.print(sdf.format(dateA) + "  ");
+		 * System.out.println(sdf.format(dateB)); ifFind = true; break; } } } }
+		 * catch (ParseException e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); }
+		 */
+		spdq.getQuoteA().setQuote(newQuoteA);
+		spdq.getQuoteB().setQuote(newQuoteB);
+		System.out.println("new " + spdq.getQuoteA().getQuote().size());
+		System.out.println("new " + spdq.getQuoteB().getQuote().size());
+		/*
+		 * StockPairDailyQuote result = new StockPairDailyQuote();
+		 * result.setDayDif(dayDif); result = copyBasicInfo(spdq); Date
+		 * startDateA = null, startDateB = null, endDateA = null, endDateB =
+		 * null; DateOperation dO = new DateOperation(); if (dayDif >= 0) {
+		 * startDateA = dO.changeExchangeDay(result.getStart(), -dayDif);
+		 * endDateA = dO.changeExchangeDay(result.getEnd(), -dayDif); startDateB
+		 * = result.getStart(); endDateB = result.getEnd(); } else { startDateA
+		 * = result.getStart(); endDateA = result.getEnd(); startDateB =
+		 * dO.changeExchangeDay(result.getStart(), dayDif); endDateB =
+		 * dO.changeExchangeDay(result.getEnd(), dayDif); }
+		 * 
+		 * ArrayList<StockDailyQuote> shpA = new ArrayList<>();
+		 * ArrayList<StockDailyQuote> shpB = new ArrayList<>(); shpA =
+		 * result.getRawQuoteA().getSubQuote(startDateA, endDateA); shpB =
+		 * result.getRawQuoteB().getSubQuote(startDateB, endDateB);
+		 * 
+		 * result.getQuoteA().setQuote(shpA); result.getQuoteB().setQuote(shpB);
+		 * System.out.println(result.getQuoteA().getQuote().size());
+		 * System.out.println(result.getQuoteB().getQuote().size());
+		 * System.out.println("here4");
+		 * 
+		 * ArrayList<StockHistoricalPrice> tempHistoricalPrices =
+		 * coordinateDate( result.getQuoteA(), result.getQuoteB(), dayDif);
+		 * 
+		 * result.setQuoteA(tempHistoricalPrices.get(0));
+		 * result.setQuoteB(tempHistoricalPrices.get(1));
+		 */
 
-		result.getQuoteA().setQuote(shpA);
-		result.getQuoteB().setQuote(shpB);
+		return spdq;
 
-		ArrayList<StockHistoricalPrice> tempHistoricalPrices = coordinateDate(
-				result.getQuoteA(), result.getQuoteB(), dayDif);
-
-		result.setQuoteA(tempHistoricalPrices.get(0));
-		result.setQuoteB(tempHistoricalPrices.get(1));
-
-		return result;
 	}
 
 	public static ArrayList<StockHistoricalPrice> coordinateDate(
@@ -133,6 +199,10 @@ public class StockPairDailyQuoteResultImpl {
 			Integer index) {
 		DateOperation dO = new DateOperation();
 		Collections.sort(quoteA.getQuote(), new DateComparator());
+		/*
+		 * for (StockDailyQuote quote : quoteA.getQuote()) {
+		 * System.out.println(quote.getDate() + "  " + quote.getAdjClose()); }
+		 */
 		Collections.sort(quoteB.getQuote(), new DateComparator());
 		ArrayList<StockHistoricalPrice> result = new ArrayList<>();
 		ArrayList<StockDailyQuote> newQuoteA = new ArrayList<>();
@@ -140,6 +210,8 @@ public class StockPairDailyQuoteResultImpl {
 		Date A = new Date();
 		Date B = new Date();
 
+		System.out.println(quoteA.getQuote().size());
+		System.out.println(quoteB.getQuote().size());
 		for (StockDailyQuote sdqA : quoteA.getQuote()) {
 			for (StockDailyQuote sdqB : quoteB.getQuote()) {
 				SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd");
@@ -149,7 +221,7 @@ public class StockPairDailyQuoteResultImpl {
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
-				
+
 				if (index >= 0) {
 					if (A.equals(dO.changeExchangeDay(B, index))) {
 						newQuoteA.add(sdqA);
@@ -165,7 +237,6 @@ public class StockPairDailyQuoteResultImpl {
 				}
 			}
 		}
-		
 		quoteA.setQuote(newQuoteA);
 		quoteB.setQuote(newQuoteB);
 		result.add(quoteA);
@@ -220,7 +291,8 @@ public class StockPairDailyQuoteResultImpl {
 		return list;
 	}
 
-	public static StockPairDailyQuoteResult copyBasicInfo(StockPairDailyQuote spdq) {
+	public static StockPairDailyQuoteResult copyBasicInfo(
+			StockPairDailyQuote spdq) {
 		StockPairDailyQuoteResult result = new StockPairDailyQuoteResult();
 		result.setCodeA(spdq.getCodeA());
 		result.setCodeB(spdq.getCodeB());
