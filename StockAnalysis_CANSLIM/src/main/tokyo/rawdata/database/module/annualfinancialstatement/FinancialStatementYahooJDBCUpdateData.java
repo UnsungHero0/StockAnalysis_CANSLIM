@@ -1,5 +1,7 @@
 package module.annualfinancialstatement;
 
+import impl.update.FinancialStatementYahooUpdateMultiThreadVersion;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -9,9 +11,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
-import datasource.DataSourceUtil;
-
 
 /**
  * 1.check if there is record in independent , consolidate, interim by the
@@ -27,20 +26,21 @@ public class FinancialStatementYahooJDBCUpdateData {
 		// TODO Auto-generated constructor stub
 	}
 
-	public void FinancialStatemetYahooJDBCUpdateDataImpl(String code)
-			throws IOException, ParseException {
+	public static void FinancialStatemetYahooJDBCUpdateDataImpl(String code, Connection con) {
 		// TODO
 		// check and update
 		String typeIndependent = "independent";
 		String typeConsolidate = "consolidate";
 		String typeInterim = "interim";
-		FinancialStatemetYahooJDBCUpdateDataExistCheck(code, typeIndependent);
-		FinancialStatemetYahooJDBCUpdateDataExistCheck(code, typeConsolidate);
-		FinancialStatemetYahooJDBCUpdateDataExistCheck(code, typeInterim);
+			FinancialStatemetYahooJDBCUpdateDataExistCheck(code,
+					typeIndependent, con);
+			FinancialStatemetYahooJDBCUpdateDataExistCheck(code,
+					typeConsolidate, con);
+			FinancialStatemetYahooJDBCUpdateDataExistCheck(code, typeInterim, con);
 	}
 
-	public void FinancialStatemetYahooJDBCUpdateDataExistCheck(String code,
-			String type) throws IOException, ParseException {
+	public static void FinancialStatemetYahooJDBCUpdateDataExistCheck(String code,
+			String type, Connection con) {
 		ArrayList<String> UrlInput = new FinancialStatementYahooJDBCUrlDao()
 				.getFinancialStatmentPageBufferedReaderYahooToString(code, type);
 		Integer fiscalYearNumber = findFiscalYear(UrlInput);
@@ -57,25 +57,31 @@ public class FinancialStatementYahooJDBCUpdateData {
 						SimpleDateFormat sdf1 = new SimpleDateFormat(
 								"yyyy年MM月期");
 						SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMM");
-						//if input = "---", there is no record in this year
+						// if input = "---", there is no record in this year
 						if (input.equals("---")) {
 							blankYearCount++;
 							j--;
 						} else {
-							Date date = sdf1.parse(input);
+							Date date = null;
+							try {
+								date = sdf1.parse(input);
+							} catch (ParseException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 							input = sdf2.format(date);
-							//check if the result is exist in DB
+							// check if the result is exist in DB
 							Boolean ifHas = checkNetCheckCodeWithDB(code, type,
-									input + "01");
+									input + "01", FinancialStatementYahooUpdateMultiThreadVersion.con);
 							if (ifHas.equals(false)) {
 								FinancialStatementYahooJDBCRecord record = new FinancialStatementYahooJDBCRecord();
 								record = createFinancialStatementYahooJDBCRecord(
-												UrlInput, j + blankYearCount);
+										UrlInput, j + blankYearCount);
 								record.setCountry("Tokyo");
 								record.setLocal_Code(code);
 								record.setForm(type);
-								record.setName_English(getEnglishName(code));
-								insertRecordIntoSqlDB(record);
+								record.setName_English(getEnglishName(code,con));
+								insertRecordIntoSqlDB(record,con);
 							}
 						}
 					}
@@ -84,20 +90,19 @@ public class FinancialStatementYahooJDBCUpdateData {
 		}
 	}
 
-	public Boolean checkNetCheckCodeWithDB(String code, String type, String date) {
+	public static Boolean checkNetCheckCodeWithDB(String code, String type, String date, Connection con) {
 		// Check
 		Boolean ifHas = false;
-		String checkifHasRecord = "SELECT COUNT(Local_Code) count FROM `TokyoStockExchange_test`.`FinancialStatementTokyo_test` WHERE "
-				+ "Local_Code = "
-				+ code
-				+ " AND Form = '"
-				+ type
+		String checkifHasRecord = "SELECT COUNT(Local_Code) count FROM "
+				+ namespace.DBNameSpace.getFinancailstatementDb() + " WHERE "
+				+ "Local_Code = " + code + " AND Form = '" + type
 				+ "' AND Fiscal_year = " + date;
-		Connection con = null;
 		try {
-			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
-			ResultSet rs = con.prepareStatement(checkifHasRecord)
-					.executeQuery();
+			ResultSet rs = null;
+			synchronized (con) {
+				rs = con.prepareStatement(checkifHasRecord)
+						.executeQuery();
+			}
 			rs.next();
 			if (rs.getInt("count") == 1) {
 				ifHas = true;
@@ -108,14 +113,6 @@ public class FinancialStatementYahooJDBCUpdateData {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			if (con != null) {
-				try {
-					con.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 		return ifHas;
 	}
@@ -193,68 +190,52 @@ public class FinancialStatementYahooJDBCUpdateData {
 		return result;
 	}
 
-	public String getEnglishName(String code) {
+	public static String getEnglishName(String code, Connection con) {
 		String name = null;
-		Connection con = null;
 		try {
 			String selectEnglishNameSql = "SELECT Name_English FROM `TokyoStockExchange_test`.`Section_Tokyo` WHERE "
 					+ "Local_code = " + code;
-			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
-			ResultSet rs = con.prepareStatement(selectEnglishNameSql)
-					.executeQuery();
+			ResultSet rs = null;
+			synchronized (con) {
+				rs = con.prepareStatement(selectEnglishNameSql)
+						.executeQuery();
+			}
 			rs.next();
 			name = rs.getString("Name_English");
-			if(name.contains("'")) {
+			if (name.contains("'")) {
 				String nameArray[] = name.split("'");
 				name = "";
-				for (int i = 0; i < nameArray.length; i ++) {
-					if (i!=0) {
-					name = name + "\\'" + nameArray[i];
+				for (int i = 0; i < nameArray.length; i++) {
+					if (i != 0) {
+						name = name + "\\'" + nameArray[i];
 					} else {
-						name =  name + nameArray[i];
+						name = name + nameArray[i];
 					}
 				}
 			}
 			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			if (con != null) {
-				try {
-					con.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 		return name;
 	}
-	
-	public void insertRecordIntoSqlDB(FinancialStatementYahooJDBCRecord record) {
+
+	public static void insertRecordIntoSqlDB(FinancialStatementYahooJDBCRecord record, Connection con) {
 		String insertSql = "INSERT INTO `TokyoStockExchange_test`.`FinancialStatementTokyo_test` "
 				+ record.getFieldsForSqlDB()
 				+ " VALUES "
 				+ record.getValuesForSqlDB();
-		Connection con = null;
 		try {
-			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
-			con.prepareStatement(insertSql).execute();
+			synchronized (con) {
+				con.prepareStatement(insertSql).execute();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			if (con != null) {
-				try {
-					con.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 	}
 
-	public FinancialStatementYahooJDBCRecord createFinancialStatementYahooJDBCRecord(
-			ArrayList<String> UrlInput, Integer fiscalYearNumber)
-			throws IOException, ParseException {
+	public static FinancialStatementYahooJDBCRecord createFinancialStatementYahooJDBCRecord(
+			ArrayList<String> UrlInput, Integer fiscalYearNumber) {
 		FinancialStatementYahooJDBCRecord record = new FinancialStatementYahooJDBCRecord();
 		String input = "";
 		FinancialStatementYahooJDBCJapaneseToEnglish changeEnglishName = new FinancialStatementYahooJDBCJapaneseToEnglish();
@@ -263,15 +244,20 @@ public class FinancialStatementYahooJDBCUpdateData {
 			input = UrlInput.get(i);
 			if (input.equals("<tr bgcolor=\"#ffffff\">")) {
 				input = UrlInput.get(++i);
-				input = input.substring(22, input.length() - 5)
-						.trim();
+				input = input.substring(22, input.length() - 5).trim();
 				String itemName = changeEnglishName
 						.changeIntoEnglishNameFinancialStatement(input);
-				String value = convertNetData
-						.FinancialStatementYahooJDBCConvertNetDataImpl(
-								UrlInput, input, i + fiscalYearNumber);
+				String value = null;
+				try {
+					value = convertNetData
+							.FinancialStatementYahooJDBCConvertNetDataImpl(
+									UrlInput, input, i + fiscalYearNumber);
+				} catch (IOException | ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				if (value != null) {
-				record.setValue(itemName, value);
+					record.setValue(itemName, value);
 				}
 			}
 		}

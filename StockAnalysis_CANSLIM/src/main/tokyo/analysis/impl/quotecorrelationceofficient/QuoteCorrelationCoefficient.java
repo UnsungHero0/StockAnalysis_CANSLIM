@@ -1,4 +1,4 @@
-package quotescorrelationcoefficient;
+package impl.quotecorrelationceofficient;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -7,6 +7,9 @@ import java.util.Comparator;
 
 import jdbcdao.CodeListsDao;
 import mathematics.CorrelationCoefficientCalculator;
+import module.quotecorrelationcoefficient.GetPairHistoricalDataFromCsv;
+import module.quotecorrelationcoefficient.StockHistoricalPrice;
+import module.quotecorrelationcoefficient.StockPairDailyQuoteResultImpl;
 
 
 /**
@@ -62,8 +65,7 @@ public class QuoteCorrelationCoefficient {
 									+ element.get(1) + " " + element.get(2));
 							Integer upperLimit = 10;
 							Integer lowLimit = -10;
-							StockPairDailyQuoteResultImpl spdqr = new StockPairDailyQuoteResultImpl();
-							spdqr = new StockPairDailyQuoteResultImpl(pairDailyQuote.getPairQuote(), lowLimit, upperLimit);
+							new StockPairDailyQuoteResultImpl(pairDailyQuote.getPairQuote(), lowLimit, upperLimit);
 							}
 						} catch (IndexOutOfBoundsException e) {
 						System.out.println("wrong with " + element1 + " and "

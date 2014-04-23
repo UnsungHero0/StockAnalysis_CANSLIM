@@ -1,4 +1,4 @@
-package quotescorrelationcoefficient;
+package impl.quotecorrelationceofficient;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,13 +11,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Stack;
-
-import org.omg.CORBA.PUBLIC_MEMBER;
 
 import datasource.DataSourceUtil;
 import jdbcdao.CodeListsDao;
 import mathematics.CorrelationCoefficientCalculator;
+import module.quotecorrelationcoefficient.GetPairHistoricalDataFromCsv;
+import module.quotecorrelationcoefficient.StockDailyQuote;
+import module.quotecorrelationcoefficient.StockHistoricalPrice;
+import module.quotecorrelationcoefficient.StockPairDailyQuoteResultImpl;
 
 /**
  * close price correlation coefficient
@@ -25,7 +26,7 @@ import mathematics.CorrelationCoefficientCalculator;
  * @author Daytona
  * 
  */
-public class QuoteCorrelationCoefficientJDBC {
+public class QuoteCorrelationCoefficientMultiThread {
 
 	private static Connection con;
 	private static Integer threadNumber;
@@ -194,13 +195,14 @@ public class QuoteCorrelationCoefficientJDBC {
 
 					Integer upperLimit = 10;
 					Integer lowLimit = -10;
-					StockPairDailyQuoteResultImpl spdqr = new StockPairDailyQuoteResultImpl();
-					spdqr = new StockPairDailyQuoteResultImpl(
+					//StockPairDailyQuoteResultImpl spdqr = new StockPairDailyQuoteResultImpl();
+					new StockPairDailyQuoteResultImpl(
 							pairDailyQuote.getPairQuote(), lowLimit, upperLimit);
-					
+					/*
 					synchronized (count) {
 						System.out.println(count-- + " is left");
 					}
+					*/
 					
 
 				}
@@ -304,7 +306,7 @@ class quoteCorrelationCoefficientThread extends Thread {
 	}
 
 	public void run() {
-		QuoteCorrelationCoefficientJDBC
+		QuoteCorrelationCoefficientMultiThread
 				.calculatePairStockCoefficientCorrelation(codeList);
 	}
 }

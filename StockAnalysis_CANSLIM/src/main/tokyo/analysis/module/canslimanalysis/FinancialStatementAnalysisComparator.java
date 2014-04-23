@@ -1,4 +1,4 @@
-package jdbc;
+package module.canslimanalysis;
 
 import java.text.Collator;
 import java.util.Comparator;

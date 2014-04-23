@@ -1,11 +1,9 @@
-package quotescorrelationcoefficient;
+package module.quotecorrelationcoefficient;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
-
-import quotescorrelationcoefficient.StockDailyQuote;
 
 
 public class DateComparator implements Comparator<StockDailyQuote>{

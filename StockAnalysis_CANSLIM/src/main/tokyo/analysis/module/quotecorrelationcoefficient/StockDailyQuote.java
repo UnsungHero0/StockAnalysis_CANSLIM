@@ -1,4 +1,4 @@
-package quotescorrelationcoefficient;
+package module.quotecorrelationcoefficient;
 
 public class StockDailyQuote {
 	

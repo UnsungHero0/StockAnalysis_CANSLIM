@@ -1,4 +1,4 @@
-package jdbc;
+package module.canslimanalysis;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

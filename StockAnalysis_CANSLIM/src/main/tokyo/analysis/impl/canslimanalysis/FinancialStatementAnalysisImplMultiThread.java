@@ -1,4 +1,4 @@
-package jdbc;
+package impl.canslimanalysis;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -10,37 +10,55 @@ import java.util.Map.Entry;
 
 import javax.sql.DataSource;
 
+import module.canslimanalysis.FinancialStatementAnalysisQuarterGrowthRate;
+import module.canslimanalysis.FinancialStatementAnalysisRSI;
+import module.canslimanalysis.FinancialStatementAnalysisRecord;
+import module.canslimanalysis.FinancialStatementAnalysisVolume;
+import module.canslimanalysis.FinancialStatementAnalysisYearlyGrowthRate;
 import datasource.DataSourceUtil;
 import jdbcdao.CodeListsDao;
 import jdbcdao.SectionDao;
 
-public class FinancialStatementAnalysisImpl {
+public class FinancialStatementAnalysisImplMultiThread {
+	
+	//TODO
+	
+	private static Integer flag = 0;
 
-	public FinancialStatementAnalysisImpl() {
+	private static Connection con = null;
+	
+	private static HashMap<String, FinancialStatementAnalysisRecord> resultMap = new HashMap<>();
+
+	public FinancialStatementAnalysisImplMultiThread() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static void main(String args[]) {
-		ThreadEvenNumberOutput threadEven = new ThreadEvenNumberOutput();
-		ThreadOddNumberOutput threadOdd = new ThreadOddNumberOutput();
+	public synchronized static void main(String args[]) {
+		ThreadEvenNumberOutputTest threadEven = new ThreadEvenNumberOutputTest();
+		ThreadOddNumberOutputTest threadOdd = new ThreadOddNumberOutputTest();
 		threadEven.start();
 		threadOdd.start();
+		while(flag < 2 ) {
+		}
+		print(filter(sort(new ArrayList<>(resultMap.entrySet()))));
 	}
 
-	public static ArrayList<Entry<String, FinancialStatementAnalysisRecord>> evenNumberOutput() {
+	public static void evenNumberOutput() {
+		System.out.println("even start");
 		ArrayList<String> codeList = new CodeListsDao()
 				.getCodeListsFromFinancialStatement();
-		HashMap<String, FinancialStatementAnalysisRecord> resultMap = new HashMap<>();
-		Connection con = null;
+		//HashMap<String, FinancialStatementAnalysisRecord> resultMap = new HashMap<>();
 		try {
 			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
 			new SectionDao(con);
 			HashMap<String, String> section = SectionDao.getSectionInfo();
 			for (String code : codeList) {
+				if (codeList.indexOf(code) % 2 == 0) {
 				FinancialStatementAnalysisRecord record = new FinancialStatementAnalysisRecord();
 				record.setLocal_Code(code);
 				record.setSector_Name(section.get(code));
 				resultMap.put(code, record);
+				}
 			}
 			String form = "consolidate";
 			resultMap = new FinancialStatementAnalysisYearlyGrowthRate()
@@ -67,8 +85,53 @@ public class FinancialStatementAnalysisImpl {
 				}
 			}
 		}
-		print(filter(sort(new ArrayList<>(resultMap.entrySet()))));
-		return null;
+		flag += 1;
+	}
+	
+	public static void oddNumberOutput() {
+		System.out.println("odd start");
+		ArrayList<String> codeList = new CodeListsDao()
+				.getCodeListsFromFinancialStatement();
+		//HashMap<String, FinancialStatementAnalysisRecord> resultMap = new HashMap<>();
+		Connection con = null;
+		try {
+			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
+			new SectionDao(con);
+			HashMap<String, String> section = SectionDao.getSectionInfo();
+			for (String code : codeList) {
+				if (codeList.indexOf(code) % 2 != 0) {
+				FinancialStatementAnalysisRecord record = new FinancialStatementAnalysisRecord();
+				record.setLocal_Code(code);
+				record.setSector_Name(section.get(code));
+				resultMap.put(code, record);
+				}
+			}
+			String form = "consolidate";
+			resultMap = new FinancialStatementAnalysisYearlyGrowthRate()
+					.getGrowthRate(resultMap, "eps", form, con);
+			resultMap = new FinancialStatementAnalysisYearlyGrowthRate()
+					.getGrowthRate(resultMap, "bps", form, con);
+			resultMap = new FinancialStatementAnalysisYearlyGrowthRate()
+					.getGrowthRate(resultMap, "sales", form, con);
+			resultMap = new FinancialStatementAnalysisRSI().calculateRSI(
+					resultMap, con);
+			resultMap = new FinancialStatementAnalysisQuarterGrowthRate()
+					.getQuarterGrowthRate(resultMap, "Net_Income", con);
+			resultMap = FinancialStatementAnalysisVolume.getVolumeInfo(
+					resultMap, con);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (con != null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		flag += 1;
 	}
 
 	public static DataSource getDataSource() {
@@ -155,31 +218,24 @@ public class FinancialStatementAnalysisImpl {
 	}
 }
 
-class ThreadEvenNumberOutput extends Thread {
-	public ThreadEvenNumberOutput() {
+class ThreadEvenNumberOutputTest extends Thread {
+	public ThreadEvenNumberOutputTest() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 	public void run() {
-		FinancialStatementAnalysisImpl.evenNumberOutput();
+		FinancialStatementAnalysisImplMultiThread.evenNumberOutput();
 	}
 }
 
-class ThreadOddNumberOutput extends Thread {
-	public ThreadOddNumberOutput() {
+class ThreadOddNumberOutputTest extends Thread {
+	public ThreadOddNumberOutputTest() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 	public void run() {
-		System.out.println("I am odd");
-		try {
-			Thread.sleep(7000);// 主线程挂起7秒
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println("\nI am odd");
-		//FinancialStatementAnalysisImpl.evenNumberOutput();
+		FinancialStatementAnalysisImplMultiThread.oddNumberOutput();
 	}
 }

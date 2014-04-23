@@ -1,6 +1,6 @@
 package module.historicalquotes;
 
-import impl.update.UpdateSectionInfoMultiThreadVersion;
+import impl.update.HistoricalQuoteUpdateMultiThreadVersion;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -61,12 +61,12 @@ public class UpdateHistoricalQuotes {
 		for (String code : codeList) {
 			update(code);
 			ifUpdateOver = false;
-			UpdateSectionInfoMultiThreadVersion.count--;
-			synchronized (UpdateSectionInfoMultiThreadVersion.count) {
+			HistoricalQuoteUpdateMultiThreadVersion.count--;
+			synchronized (HistoricalQuoteUpdateMultiThreadVersion.count) {
 				System.out
 						.println(threadName + ": " + year + "/" + month + "/"
 								+ day + "  :  " + code + " is updated, "
-								+ UpdateSectionInfoMultiThreadVersion.count
+								+ HistoricalQuoteUpdateMultiThreadVersion.count
 								+ " to go!");
 			}
 		}
@@ -99,9 +99,9 @@ public class UpdateHistoricalQuotes {
 					}
 				}
 			} else {
-				synchronized (UpdateSectionInfoMultiThreadVersion.con) {
+				synchronized (HistoricalQuoteUpdateMultiThreadVersion.con) {
 					CreateQuotesTableFromUrl.createNewQuotesTable(code,
-							UpdateSectionInfoMultiThreadVersion.con);
+							HistoricalQuoteUpdateMultiThreadVersion.con);
 				}
 			}
 		} catch (StockSplitException e) {
@@ -116,8 +116,8 @@ public class UpdateHistoricalQuotes {
 			String findTableSql = "SHOW TABLES LIKE '" + code
 					+ "_HistoricalQuotes_Tokyo'";
 			ResultSet rs = null;
-			synchronized (UpdateSectionInfoMultiThreadVersion.con) {
-				rs = UpdateSectionInfoMultiThreadVersion.con.prepareStatement(
+			synchronized (HistoricalQuoteUpdateMultiThreadVersion.con) {
+				rs = HistoricalQuoteUpdateMultiThreadVersion.con.prepareStatement(
 						findTableSql).executeQuery();
 			}
 			if (rs.next()) {
@@ -136,8 +136,8 @@ public class UpdateHistoricalQuotes {
 					+ "?_HistoricalQuotes_Tokyo";
 			PreparedStatement stmt = null;
 			ResultSet rs = null;
-			synchronized (UpdateSectionInfoMultiThreadVersion.con) {
-				stmt = UpdateSectionInfoMultiThreadVersion.con
+			synchronized (HistoricalQuoteUpdateMultiThreadVersion.con) {
+				stmt = HistoricalQuoteUpdateMultiThreadVersion.con
 						.prepareStatement(selectLatestDaySql);
 				stmt.setInt(1, Integer.parseInt(code));
 				rs = stmt.executeQuery();
@@ -288,8 +288,8 @@ public class UpdateHistoricalQuotes {
 				+ "(?,?,?,?,?,?,?)";
 		try {
 			PreparedStatement stmt = null;
-			synchronized (UpdateSectionInfoMultiThreadVersion.con) {
-				stmt = UpdateSectionInfoMultiThreadVersion.con
+			synchronized (HistoricalQuoteUpdateMultiThreadVersion.con) {
+				stmt = HistoricalQuoteUpdateMultiThreadVersion.con
 						.prepareStatement(insertOneDayQuoteSql);
 				stmt.setInt(1, Integer.parseInt(code));
 				stmt.setString(2, date);

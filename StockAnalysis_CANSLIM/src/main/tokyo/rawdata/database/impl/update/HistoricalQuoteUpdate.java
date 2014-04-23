@@ -16,7 +16,7 @@ import dao.UrlDao;
 import datasource.DataSourceUtil;
 import jdbcdao.CodeListsDao;
 
-public class updateSectionInfo {
+public class HistoricalQuoteUpdate {
 
 	private final static String year = String.valueOf(Calendar.getInstance()
 			.get(Calendar.YEAR));
@@ -32,7 +32,7 @@ public class updateSectionInfo {
 	private static Date latestDate = new Date();
 	private static Boolean ifUpdateOver = false;
 
-	public updateSectionInfo() {
+	public HistoricalQuoteUpdate() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -69,7 +69,7 @@ public class updateSectionInfo {
 	}
 
 	public static void setCode(String code) {
-		updateSectionInfo.code = code;
+		HistoricalQuoteUpdate.code = code;
 	}
 
 	public static Integer getPage() {
@@ -77,7 +77,7 @@ public class updateSectionInfo {
 	}
 
 	public static void setPage(Integer page) {
-		updateSectionInfo.page = page;
+		HistoricalQuoteUpdate.page = page;
 	}
 
 	public static Date getLatestDate() {
@@ -85,7 +85,7 @@ public class updateSectionInfo {
 	}
 
 	public static void setLatestDate(Date latestDate) {
-		updateSectionInfo.latestDate = latestDate;
+		HistoricalQuoteUpdate.latestDate = latestDate;
 	}
 
 	public static Boolean getIfUpdateOver() {
@@ -93,7 +93,7 @@ public class updateSectionInfo {
 	}
 
 	public static void setIfUpdateOver(Boolean ifUpdateOver) {
-		updateSectionInfo.ifUpdateOver = ifUpdateOver;
+		HistoricalQuoteUpdate.ifUpdateOver = ifUpdateOver;
 	}
 
 	private static String getQuotesUrl = "http://info.finance.yahoo.co.jp/history/?code="
@@ -117,7 +117,7 @@ public class updateSectionInfo {
 	}
 
 	public static void setGetQuotesUrl(String getQuotesUrl) {
-		updateSectionInfo.getQuotesUrl = getQuotesUrl;
+		HistoricalQuoteUpdate.getQuotesUrl = getQuotesUrl;
 	}
 	
 	public static void main(String args[]) {

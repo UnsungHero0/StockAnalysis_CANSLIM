@@ -1,4 +1,4 @@
-package jdbc;
+package module.canslimanalysis;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,68 +13,72 @@ import javax.sql.DataSource;
 
 import datasource.DataSourceUtil;
 
-public class FinancialStatementAnalysisQuarterGrowthRate {
+public class FinancialStatementAnalysisYearlyGrowthRate {
 
-	public FinancialStatementAnalysisQuarterGrowthRate() {
+	public FinancialStatementAnalysisYearlyGrowthRate() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public HashMap<String, FinancialStatementAnalysisRecord> getQuarterGrowthRate(
+	public HashMap<String, FinancialStatementAnalysisRecord> getGrowthRate(
 			HashMap<String, FinancialStatementAnalysisRecord> record,
-			String item, Connection con) {
+			String item, String form, Connection con) {
 		// getcodelist from financialstatement
+		// eps into arraylist
 		// calculate the growthrate
-		System.out.println(item + " Quarter start : ");
+		System.out.println(item + " start : ");
 		Set<String> keySet = record.keySet();
 		Integer allRecordNumber = keySet.size();
 		Integer count = 0;
-		Float percente = 0f;
+		Float percente = (float) 0;
 		Integer i = 1;
 		for (String code : keySet) {
+			record.get(code).setForm(form);
 			ArrayList<Float> rawArray = new ArrayList<>();
-			rawArray = getRawArray(Integer.valueOf(code), item, con);
-			try {
-				String setArrayMethodName = ("set" + item + "QuarterArray")
-						.toUpperCase();
-				Method m = null;
-				for (Method method : record.get(code).getClass()
-						.getDeclaredMethods()) {
-					if (method.toString().toUpperCase()
-							.contains(setArrayMethodName)) {
-						m = method;
+			rawArray = getRawArray(Integer.valueOf(code), form, item, con);
+			if (rawArray.size() >= 2) {
+				try {
+					String setArrayMethodName = ("set"
+							+ item + "Array")
+							.toUpperCase();
+					Method m = null;
+					for (Method method : record.get(code).getClass().getDeclaredMethods()) {
+						if (method.toString().toUpperCase()
+								.contains(setArrayMethodName)) {
+							m = method;
+						}
 					}
-				}
-				m.invoke(record.get(code), rawArray);
-
-				Float averageRate = getAverageGrowthRate(rawArray);
-				String setAverageGrowthRateName = ("set" + item + "QuarterAverageGrowthRate")
-						.toUpperCase();
-				for (Method method : record.get(code).getClass()
-						.getDeclaredMethods()) {
-					if (method.toString().toUpperCase()
-							.contains(setAverageGrowthRateName)) {
-						m = method;
+					m.invoke(record.get(code), rawArray);
+					
+					Float averageRate = getAverageGrowthRate(rawArray);
+					String setAverageGrowthRateName = ("set"
+							+ item + "AverageGrowthRate")
+							.toUpperCase();
+					for (Method method : record.get(code).getClass().getDeclaredMethods()) {
+						if (method.toString().toUpperCase()
+								.contains(setAverageGrowthRateName)) {
+							m = method;
+						}
 					}
-				}
-				m.invoke(record.get(code), averageRate);
-
-				String setGrowthRateArrayName = ("set" + item + "QuarterGrowthRateArray")
-						.toUpperCase();
-				for (Method method : record.get(code).getClass()
-						.getDeclaredMethods()) {
-					if (method.toString().toUpperCase()
-							.contains(setGrowthRateArrayName)) {
-						m = method;
+					m.invoke(record.get(code), averageRate);
+					
+					String setGrowthRateArrayName = ("set"
+							+ item + "GrowthRateArray")
+							.toUpperCase();
+					for (Method method : record.get(code).getClass().getDeclaredMethods()) {
+						if (method.toString().toUpperCase()
+								.contains(setGrowthRateArrayName)) {
+							m = method;
+						}
 					}
+					m.invoke(record.get(code), getGrowthRateArray(rawArray));
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException | IllegalArgumentException
+						| InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				m.invoke(record.get(code), getGrowthRateArray(rawArray));
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 
 			percente = ((float) count++ / (float) allRecordNumber);
@@ -88,14 +92,14 @@ public class FinancialStatementAnalysisQuarterGrowthRate {
 		return record;
 	}
 
-	public static ArrayList<Float> getRawArray(Integer code, String item,
-			Connection con) {
+	public static ArrayList<Float> getRawArray(Integer code, String form,
+			String item, Connection con) {
 		ArrayList<Float> result = new ArrayList<>();
 		try {
-			String selectRecord = "SELECT " + item
-					+ " FROM QuarterFinancialStatementTokyo_test WHERE "
-					+ " Local_Code = " + code
-					+ " ORDER BY Fiscal_Year ASC, Period ASC";
+			String selectRecord = "SELECT Fiscal_Year, " + item
+					+ " FROM FinancialStatementTokyo_test WHERE "
+					+ "Local_Code = " + code + " AND Form = " + "'" + form
+					+ "' ORDER BY Fiscal_Year ASC";
 			ResultSet rs = con.prepareStatement(selectRecord).executeQuery();
 			while (rs.next()) {
 				result.add(rs.getFloat(item));
@@ -147,5 +151,4 @@ public class FinancialStatementAnalysisQuarterGrowthRate {
 	public static DataSource getDataSource() {
 		return DataSourceUtil.getTokyoDataSourceRoot();
 	}
-
 }

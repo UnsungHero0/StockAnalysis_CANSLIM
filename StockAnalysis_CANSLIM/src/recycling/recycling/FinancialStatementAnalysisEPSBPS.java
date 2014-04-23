@@ -9,8 +9,8 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import module.canslimanalysis.FinancialStatementAnalysisRecord;
 import datasource.DataSourceUtil;
-import jdbc.FinancialStatementAnalysisRecord;
 
 public class FinancialStatementAnalysisEPSBPS {
 

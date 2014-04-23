@@ -14,33 +14,34 @@ public class FinancialStatementYahooJDBCUrlDao {
 	}
 
 	public BufferedReader getFinancialStatmentPageBufferedReaderYahoo(
-			String code, String type) throws IOException {
+			String code, String type) {
 
 		String urlString = "http://profile.yahoo.co.jp/" + type + "/" + code;
-		URL url = new URL(urlString);
-		HttpURLConnection set = (HttpURLConnection) url.openConnection();
 		BufferedReader fi = null;
-		Boolean ifHasInfo = true;
 		try {
+			URL url = new URL(urlString);
+			HttpURLConnection set = (HttpURLConnection) url.openConnection();
+			Boolean ifHasInfo = true;
 			fi = new BufferedReader(new InputStreamReader(set.getInputStream()));
+			if (ifHasInfo == true) {
+				System.out.println("code : " + code + "  " + ifHasInfo);
+				String input = "";
+				String charset = "";
+				while ((input = fi.readLine()) != null) {
+					if (input.contains("charset=")) {
+						charset = input.substring(
+								input.indexOf("charset=") + 8,
+								input.length() - 2);
+						break;
+					}
+				}
+				fi = new BufferedReader(new InputStreamReader(
+						set.getInputStream(), charset));
+			}
 		} catch (IOException e) {
 			return null;
 		}
-		if (ifHasInfo == true) {
-			System.out.println("code : " + code + "  " + ifHasInfo);
-			String input = "";
-			String charset = "";
-			while ((input = fi.readLine()) != null) {
-				if (input.contains("charset=")) {
-					charset = input.substring(input.indexOf("charset=") + 8,
-							input.length() - 2);
-					break;
-				}
-			}
-			fi = new BufferedReader(new InputStreamReader(set.getInputStream(),
-					charset));
 
-		}
 		return fi;
 	}
 

@@ -1,4 +1,4 @@
-package quotescorrelationcoefficient;
+package module.quotecorrelationcoefficient;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -122,8 +122,6 @@ public class StockPairDailyQuoteResultImpl {
 	public static StockPairDailyQuote dayDifPairQuote(StockPairDailyQuote spdq,
 			Integer dayDif) {
 
-		DateOperation dO = new DateOperation();
-		SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd");
 		ArrayList<StockDailyQuote> newQuoteA;
 		ArrayList<StockDailyQuote> newQuoteB;
 		//System.out.println(spdq.getQuoteA().getQuote().size());

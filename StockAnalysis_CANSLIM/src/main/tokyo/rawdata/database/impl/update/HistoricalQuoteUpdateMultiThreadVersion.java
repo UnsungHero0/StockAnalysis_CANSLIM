@@ -8,7 +8,7 @@ import module.historicalquotes.UpdateHistoricalQuotes;
 import datasource.DataSourceUtil;
 import jdbcdao.CodeListsDao;
 
-public class UpdateSectionInfoMultiThreadVersion {
+public class HistoricalQuoteUpdateMultiThreadVersion {
 
 	private final static String year = String.valueOf(Calendar.getInstance()
 			.get(Calendar.YEAR));
@@ -22,7 +22,7 @@ public class UpdateSectionInfoMultiThreadVersion {
 	public static Connection con = null;
 	public static Integer count = 0;
 
-	public UpdateSectionInfoMultiThreadVersion() {
+	public HistoricalQuoteUpdateMultiThreadVersion() {
 		// TODO Auto-generated constructor stub
 	}
 

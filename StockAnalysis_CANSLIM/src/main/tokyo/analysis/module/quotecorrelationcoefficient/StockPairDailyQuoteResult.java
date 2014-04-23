@@ -1,4 +1,4 @@
-package quotescorrelationcoefficient;
+package module.quotecorrelationcoefficient;
 
 import java.util.HashMap;
 
