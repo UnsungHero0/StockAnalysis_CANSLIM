@@ -1,4 +1,4 @@
-package impl.download;
+package impl.update;
 
 /**
  * the volume is not adjusted after the stock split
@@ -22,9 +22,9 @@ import module.shareholdingsplitinfo.HistoricalDataDownloadVolumeSplitCreateTable
 import module.shareholdingsplitinfo.HistoricalDataDownloadVolumeSplitRecord;
 import jdbcdao.CodeListsDao;
 
-public class HistoricalDataDownloadVolumeSplitImpl {
+public class ShareHoldingSplitUpdateMultiThreadVersion {
 
-	public HistoricalDataDownloadVolumeSplitImpl() {
+	public ShareHoldingSplitUpdateMultiThreadVersion() {
 
 	}
 
@@ -40,19 +40,21 @@ public class HistoricalDataDownloadVolumeSplitImpl {
 			record.setSplitHistory(splitInfo);
 			result.add(record);
 			Set<String> keySet = record.getSplitHistory().keySet();
-			
+
 			for (String key : keySet) {
 				System.out.println(record.getLocal_Code() + "  " + key + "  "
 						+ record.getSplitHistory().get(key));
 			}
-			
-			System.out.println("---  " + code + " is ok, " + (codeList.size() - codeList.indexOf(code)) + " to go ");
+
+			System.out.println("---  " + code + " is ok, "
+					+ (codeList.size() - codeList.indexOf(code)) + " to go ");
 		}
 		try {
 			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
 			String tableName = DBNameSpace.getHistoricalstocksplitDb();
 			JDBCUtil.dropTable(tableName, con);
-			HistoricalDataDownloadVolumeSplitCreateTableAndInsertData.createTableAndInsertData(result, con);
+			HistoricalDataDownloadVolumeSplitCreateTableAndInsertData
+					.createTableAndInsertData(result, con);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -79,16 +81,13 @@ public class HistoricalDataDownloadVolumeSplitImpl {
 				for (String subString : stringList) {
 					if (subString.contains("greyFin")) {
 						/*
-						System.out.print(code + " :   ");
-						System.out.print(subString.substring(
-								subString.indexOf(":") + 1,
-								subString.indexOf("]"))
-								+ "  |  ");
-						System.out.print(subString.substring(
-								subString.indexOf("（") + 1,
-								(subString.indexOf("）")))
-								+ "  ||||  ");
-								*/
+						 * System.out.print(code + " :   ");
+						 * System.out.print(subString.substring(
+						 * subString.indexOf(":") + 1, subString.indexOf("]")) +
+						 * "  |  "); System.out.print(subString.substring(
+						 * subString.indexOf("（") + 1, (subString.indexOf("）")))
+						 * + "  ||||  ");
+						 */
 						try {
 							String inputDate = subString.substring(
 									subString.indexOf("（") + 1,
@@ -114,4 +113,17 @@ public class HistoricalDataDownloadVolumeSplitImpl {
 		return resultMap;
 	}
 
+	class shareHoldingSplitUpdateThread extends Thread {
+		public shareHoldingSplitUpdateThread() {
+			super();
+		}
+
+		public shareHoldingSplitUpdateThread(String str) {
+			super(str);
+		}
+
+		public void run() {
+			//TODO
+		}
+	}
 }

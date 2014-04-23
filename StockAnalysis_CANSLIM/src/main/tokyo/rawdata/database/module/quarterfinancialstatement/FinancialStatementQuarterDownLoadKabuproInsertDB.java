@@ -62,7 +62,7 @@ public class FinancialStatementQuarterDownLoadKabuproInsertDB {
 			ArrayList<FinancialStatementQuarterDownLoadKabuproRecord> result,
 			Connection con) {
 		for (FinancialStatementQuarterDownLoadKabuproRecord record : result) {
-			String insertSql = "INSERT INTO `TokyoStockExchange_test`.`QuarterFinancialStatementTokyo_test` "
+			String insertSql = "INSERT INTO " + namespace.DBNameSpace.getQuarterfinancialstatementDb() + " "
 					+ record.getFieldsForSqlDB()
 					+ " VALUES "
 					+ record.getValuesForSqlDB();

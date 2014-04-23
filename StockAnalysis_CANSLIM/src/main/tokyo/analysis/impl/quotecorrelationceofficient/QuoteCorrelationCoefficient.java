@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import jdbcdao.CodeListsDao;
 import mathematics.CorrelationCoefficientCalculator;
 import module.quotecorrelationcoefficient.GetPairHistoricalDataFromCsv;
 import module.quotecorrelationcoefficient.StockHistoricalPrice;
@@ -21,7 +20,6 @@ import module.quotecorrelationcoefficient.StockPairDailyQuoteResultImpl;
 public class QuoteCorrelationCoefficient {
 
 	public static void main(String args[]) {
-		// TODO
 
 		// get all the combination
 
@@ -34,8 +32,6 @@ public class QuoteCorrelationCoefficient {
 				addressList.add(file.getAbsolutePath());
 		}
 		
-		ArrayList<String> codelList = new CodeListsDao().getCodeLists();
-
 		ArrayList<ArrayList<String>> finalResult = new ArrayList<>();
 		for (int i = 0; i < addressList.size() - 2; i++) {
 			String element1 = addressList.get(i);
@@ -65,7 +61,7 @@ public class QuoteCorrelationCoefficient {
 									+ element.get(1) + " " + element.get(2));
 							Integer upperLimit = 10;
 							Integer lowLimit = -10;
-							new StockPairDailyQuoteResultImpl(pairDailyQuote.getPairQuote(), lowLimit, upperLimit);
+							new StockPairDailyQuoteResultImpl(pairDailyQuote.getPairQuote(), lowLimit, upperLimit, result);
 							}
 						} catch (IndexOutOfBoundsException e) {
 						System.out.println("wrong with " + element1 + " and "

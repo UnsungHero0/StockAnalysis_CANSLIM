@@ -74,6 +74,7 @@ public class FinancialStatementYahooJDBCUpdateData {
 							Boolean ifHas = checkNetCheckCodeWithDB(code, type,
 									input + "01", FinancialStatementYahooUpdateMultiThreadVersion.con);
 							if (ifHas.equals(false)) {
+								System.out.println("new " + code + " " + input + "01" + " " +type);
 								FinancialStatementYahooJDBCRecord record = new FinancialStatementYahooJDBCRecord();
 								record = createFinancialStatementYahooJDBCRecord(
 										UrlInput, j + blankYearCount);

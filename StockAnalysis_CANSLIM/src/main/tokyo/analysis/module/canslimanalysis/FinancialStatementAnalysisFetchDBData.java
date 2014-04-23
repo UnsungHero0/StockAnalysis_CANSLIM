@@ -17,7 +17,7 @@ public class FinancialStatementAnalysisFetchDBData {
 	public HashMap<String, FinancialStatementAnalysisRecord> fetchDataFromDB(HashMap<String, FinancialStatementAnalysisRecord> inputrecord, String item, Connection con) {
 		HashMap<String, String> fetchResult = null;
 		ArrayList<String> codeList = new ArrayList<>(inputrecord.keySet());
-		fetchResult = SingleItemDaoFromDB.fetchDataFromFinancialStatement(codeList, item, con);
+		SingleItemDaoFromDB.fetchDataFromFinancialStatement(codeList, item, con);
 		String getMethodName = "get" + item;
 		String setMethodName = "set" + item;
 		Class returnType = null;

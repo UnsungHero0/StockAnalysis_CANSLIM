@@ -1,10 +1,15 @@
 package module.quotecorrelationcoefficient;
 
+import impl.quotecorrelationceofficient.QuoteCorrelationCoefficientMultiThread;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+
+import javax.naming.spi.DirStateFactory.Result;
 
 import commontool.DateOperation;
 import mathematics.CorrelationCoefficientCalculator;
@@ -18,11 +23,11 @@ public class StockPairDailyQuoteResultImpl {
 	}
 
 	public StockPairDailyQuoteResultImpl(StockPairDailyQuote originalData,
-			Integer lowLimit, Integer upperLimit) {
+			Integer lowLimit, Integer upperLimit, Double refer) {
 		this.result = new StockPairDailyQuoteResult();
 		this.result = copyBasicInfo(originalData);
 
-		dayDifImpl(originalData, lowLimit, upperLimit);
+		dayDifImpl(originalData, lowLimit, upperLimit, refer);
 		// TODO date 2014.2.22
 		// weekDifImpl(originalData, lowLimit, upperLimit);
 		// monthDifImpl(originalData, lowLimit, upperLimit);
@@ -30,11 +35,12 @@ public class StockPairDailyQuoteResultImpl {
 	}
 
 	public void dayDifImpl(StockPairDailyQuote originalData, Integer lowLimit,
-			Integer upperLimit) {
-
+			Integer upperLimit, Double refer) {
+		Double difWithRefer = 0.0;
+		String difWithReferKey = "None";
 		ArrayList<Integer> keyList = turnToIntegerList(lowLimit, upperLimit);
 		for (Integer key : keyList) {
-			// key = key;
+			key = key * 5;
 			ArrayList<StockDailyQuote> newQuoteA = new ArrayList<>();
 			ArrayList<StockDailyQuote> newQuoteB = new ArrayList<>();
 			if (key < 0
@@ -77,10 +83,14 @@ public class StockPairDailyQuoteResultImpl {
 			}
 			CorrelationCoefficientCalculator ccc = new CorrelationCoefficientCalculator();
 			Double result = ccc.getCorrelationCoefficient(quoteA, quoteB);
-			//System.out.println(key + " " + quoteA.size() + "  " + result);
-			// TODO
+			if (difWithRefer < Math.abs(result - refer)) {
+				difWithRefer = Math.abs(result - refer);
+				difWithReferKey = (originalData.getCodeA()+"_"+ 
+						originalData.getCodeB() +"_" +String.valueOf(key) + "_same day_" + refer +  "_dif day_" + result + "_day Amount_" + quoteA.size());
+			}
+			
 		}
-
+		QuoteCorrelationCoefficientMultiThread.result.put(difWithReferKey, difWithRefer);
 	}
 
 	public void weekDifImpl(StockPairDailyQuote originalData, Integer lowLimit,

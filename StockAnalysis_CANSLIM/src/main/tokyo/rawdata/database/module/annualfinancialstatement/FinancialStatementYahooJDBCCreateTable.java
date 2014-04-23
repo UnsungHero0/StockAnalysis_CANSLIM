@@ -5,10 +5,12 @@ import impl.download.FinancialStatementYahooJDBCImpl;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import namespace.DBNameSpace;
+
 
 public class FinancialStatementYahooJDBCCreateTable {
 
-	private final String createFinancialStatementSql = "CREATE TABLE IF NOT EXISTS `TokyoStockExchange_test`.`FinancialStatementTokyo_test` "
+	private final String createFinancialStatementSql = "CREATE TABLE IF NOT EXISTS " + DBNameSpace.getFinancailstatementDb() + " "
 			+ "(Country VARCHAR(50) NOT NULL Default 'Japan', "
 			+ "Local_Code VARCHAR(20), "
 			+ "Name_English VARCHAR(100), "
@@ -35,7 +37,8 @@ public class FinancialStatementYahooJDBCCreateTable {
 			+ "Net_Unrealized_Gains DOUBLE, "
 			+ "ROA FLOAT, "
 			+ "ROE FLOAT, "
-			+ "Ratio_Of_Ordinary_Income_To_Total_Assets FLOAT)";
+			+ "Ratio_Of_Ordinary_Income_To_Total_Assets FLOAT,"
+			+ "CONSTRAINT ID PRIMARY KEY (Local_Code, Form, Fiscal_Year))";
 
 	private String dropTable = "DROP TABLE `TokyoStockExchange_test`.`FinancialStatementTokyo_test` ";
 

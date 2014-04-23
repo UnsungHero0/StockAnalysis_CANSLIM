@@ -13,8 +13,8 @@ import namespace.DBNameSpace;
 
 public class FinancialStatementAnalysisVolume {
 
-	private static final String getFifityWeeksAverageVolume = "SELECT AVG(Volume) result FROM ?_HistoricalQuotes_Tokyo WHERE "
-			+ "Local_Code = ? AND Date >= date_sub((SELECT MAX(date) FROM ?_HistoricalQuotes_Tokyo),interval 50 week)";
+	//private static final String getFifityWeeksAverageVolume = "SELECT AVG(Volume) result FROM ?_HistoricalQuotes_Tokyo WHERE "
+		//	+ "Local_Code = ? AND Date >= date_sub((SELECT MAX(date) FROM ?_HistoricalQuotes_Tokyo),interval 50 week)";
 	private static final String getTodayVolume = "SELECT Volume result FROM ?_HistoricalQuotes_Tokyo WHERE "
 			+ "Date = (SELECT MAX(date) FROM ?_HistoricalQuotes_Tokyo)";
 	private static final String getFifityWeeksVolumeRecord = "SELECT Date, Volume FROM ?_HistoricalQuotes_Tokyo WHERE "

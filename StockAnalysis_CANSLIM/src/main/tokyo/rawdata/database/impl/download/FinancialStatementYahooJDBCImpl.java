@@ -51,7 +51,7 @@ public class FinancialStatementYahooJDBCImpl {
 				// check and update the data
 				System.out.print(code + " start... ");
 				if (Integer.valueOf(code) >= 0) {
-					new FinancialStatementYahooJDBCUpdateData()
+					FinancialStatementYahooJDBCUpdateData
 							.FinancialStatemetYahooJDBCUpdateDataImpl(code, con);
 				}
 				System.out.println("OK! " + (codeList.size() - (++count))
