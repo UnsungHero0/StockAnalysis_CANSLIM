@@ -7,12 +7,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.Map.Entry;
 
 import datasource.DataSourceUtil;
@@ -36,7 +34,7 @@ public class QuoteCorrelationCoefficientMultiThread {
 	private static HashMap<String, StockHistoricalPrice> stockHistoricalPriceList = new HashMap<>();
 	public static ArrayList<ArrayList<String>> stockPairList = new ArrayList<>();
 	private static Double count;
-	private static ArrayList<ArrayList<String>> finalResult = new ArrayList<>();
+	//private static ArrayList<ArrayList<String>> finalResult = new ArrayList<>();
 	public static HashMap<String, Double> result = new HashMap<>();
 
 	public static void main(String args[]) {
@@ -44,7 +42,9 @@ public class QuoteCorrelationCoefficientMultiThread {
 		Long startTime = calendar.getTimeInMillis();
 		threadNumber = 20;
 		run();
-		System.out.println("10 -> 62s  " + (Calendar.getInstance().getTimeInMillis()-startTime) / (1000));
+		System.out.println("10 -> 62s  "
+				+ (Calendar.getInstance().getTimeInMillis() - startTime)
+				/ (1000));
 	}
 
 	// get all the combination
@@ -57,13 +57,13 @@ public class QuoteCorrelationCoefficientMultiThread {
 			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
 			for (String code : codelList) {
 				if (!code.equals("1661")) {
-				stockHistoricalPriceList.put(code,
-						getStockHistoricalPrice(code, con));
-				System.out.println(code + "  finished, "
-						+ (codelList.size() - codelList.indexOf(code))
-						+ " left!");
-				if (codelList.indexOf(code) > 99999)
-					break;
+					stockHistoricalPriceList.put(code,
+							getStockHistoricalPrice(code, con));
+					System.out.println(code + "  finished, "
+							+ (codelList.size() - codelList.indexOf(code))
+							+ " left!");
+					if (codelList.indexOf(code) > 500)
+						break;
 				}
 			}
 		} catch (SQLException e) {
@@ -79,14 +79,6 @@ public class QuoteCorrelationCoefficientMultiThread {
 		}
 
 		System.out.println("finish fetching data from JDBC");
-		/*
-		 * totalCount =
-		 * factorial(Double.valueOf(stockHistoricalPriceList.size())) /
-		 * (factorial(Double .valueOf(stockHistoricalPriceList.size() - 2)) *
-		 * factorial(2.0));
-		 * 
-		 * System.out.println(totalCount);
-		 */
 
 		for (int i = 0; i < stockHistoricalPriceList.keySet().size() - 1; i++) {
 			for (int j = i + 1; j < stockHistoricalPriceList.keySet().size(); j++) {
@@ -121,13 +113,14 @@ public class QuoteCorrelationCoefficientMultiThread {
 		ArrayList<quoteCorrelationCoefficientThread> threadGroup = new ArrayList<>();
 		for (int i = 0; i < threadNumber; i++) {
 			threadGroup.add(new quoteCorrelationCoefficientThread("Thread"
-					+ (i + 1),codeListGroup.get(i)));
-			
+					+ (i + 1), codeListGroup.get(i)));
+
 		}
 
 		for (int i = 0; i < threadNumber; i++) {
 			threadGroup.get(i).start();
-			System.out.println(threadGroup.get(i).getName() + " is starting with " + codeListGroup.get(i).size());
+			System.out.println(threadGroup.get(i).getName()
+					+ " is starting with " + codeListGroup.get(i).size());
 		}
 
 		for (int i = 0; i < threadNumber; i++) {
@@ -137,32 +130,23 @@ public class QuoteCorrelationCoefficientMultiThread {
 				e.printStackTrace();
 			}
 		}
-		/*
-		Collections.sort(finalResult, new Comparator<ArrayList<String>>() {
-			public int compare(ArrayList<String> o1, ArrayList<String> o2) {
-				return Double.valueOf(o1.get(2)).compareTo(
-						Double.valueOf(o2.get(2)));
-			}
-		});
+		
+		ArrayList<Entry<String, Double>> resultForSort = new ArrayList<>(
+				result.entrySet());
 
-		System.out.println("The final result is: ");
-		for (ArrayList<String> element : finalResult) {
-			System.out.println(element.get(0) + " " + element.get(1) + " "
-					+ element.get(2));
-		}
-		*/
-		ArrayList<Entry<String, Double>> resultForSort = new ArrayList<>(result.entrySet());
-		
-		Collections.sort(resultForSort, new Comparator<Entry<String, Double>>() {
-			public int compare(Entry<String, Double> o1,Entry<String, Double> o2) {
-				return o1.getValue().compareTo(o2.getValue());
-			}
-		});
-		
+		Collections.sort(resultForSort,
+				new Comparator<Entry<String, Double>>() {
+					public int compare(Entry<String, Double> o1,
+							Entry<String, Double> o2) {
+						return o1.getValue().compareTo(o2.getValue());
+					}
+				});
+
 		for (Entry<String, Double> entry : resultForSort) {
 			String key[] = entry.getKey().split("_");
-			if(Double.valueOf(key[8]) > 300 && Math.abs(Double.valueOf(key[6])) > 0.85) {
-			System.out.println(entry.getKey() + " :  " + entry.getValue());
+			if (Double.valueOf(key[8]) > 300
+					&& Math.abs(Double.valueOf(key[6])) > 0.85) {
+				System.out.println(entry.getKey() + " :  " + entry.getValue());
 			}
 		}
 
@@ -171,14 +155,6 @@ public class QuoteCorrelationCoefficientMultiThread {
 
 	public static void calculatePairStockCoefficientCorrelation(
 			ArrayList<ArrayList<String>> codeList) {
-		/*
-		 * Boolean ifHasNext = false; ArrayList<String> stockPairCode = new
-		 * ArrayList<>(); synchronized (stockPairList) { if
-		 * (stockPairList.size() != 0) { ifHasNext = true; stockPairCode =
-		 * stockPairList.get(0); stockPairList.remove(0); } }
-		 * 
-		 * while (ifHasNext == true) {
-		 */
 
 		for (ArrayList<String> stockPairCode : codeList) {
 
@@ -191,37 +167,23 @@ public class QuoteCorrelationCoefficientMultiThread {
 
 			try {
 				pairDailyQuote.fetchPairFromJDBC(quote1, quote2);
-				
+
 				if (pairDailyQuote.getPairQuote().getIfHasSameDuration() == true) {
-					
 
 					ArrayList<Double> valueA = getAdjCloseQuote(pairDailyQuote
 							.getPairQuote().getQuoteA());
 					ArrayList<Double> valueB = getAdjCloseQuote(pairDailyQuote
 							.getPairQuote().getQuoteB());
-							
-					
+
 					CorrelationCoefficientCalculator ccc = new CorrelationCoefficientCalculator();
 					Double result = ccc.getCorrelationCoefficient(valueA,
 							valueB);
-							
-					/*
-					ArrayList<String> element = new ArrayList<>();
-
-					element.add(pairDailyQuote.getPairQuote().getCodeA());
-					element.add(pairDailyQuote.getPairQuote().getCodeB());
-					element.add(String.valueOf(result));
-					
-					synchronized (finalResult) {
-						finalResult.add(element);
-					}
-					*/
 
 					Integer upperLimit = 104;
 					Integer lowLimit = -104;
-					//StockPairDailyQuoteResultImpl spdqr = new StockPairDailyQuoteResultImpl();
 					new StockPairDailyQuoteResultImpl(
-							pairDailyQuote.getPairQuote(), lowLimit, upperLimit, result);
+							pairDailyQuote.getPairQuote(), lowLimit,
+							upperLimit, result);
 					synchronized (count) {
 						System.out.println(--count + " is left");
 					}
@@ -232,40 +194,6 @@ public class QuoteCorrelationCoefficientMultiThread {
 						+ quote2.getCode());
 			}
 		}
-
-		/*
-		 * ArrayList<ArrayList<String>> finalResult = new ArrayList<>(); for
-		 * (int i = 0; i < addressList.size() - 2; i++) { String element1 =
-		 * addressList.get(i); for (int j = i + 1; j < addressList.size() - 1;
-		 * j++) { String element2 = addressList.get(j); if
-		 * (!element1.equals(element2)) { GetPairHistoricalDataFromCsv
-		 * pairDailyQuote = new GetPairHistoricalDataFromCsv();
-		 * 
-		 * try {
-		 * 
-		 * pairDailyQuote.fetchPairFromCsv(element1, element2);
-		 * 
-		 * if (pairDailyQuote.getPairQuote() .getIfHasSameDuration() == true) {
-		 * ArrayList<Double> valueA = getAdjCloseQuote(pairDailyQuote
-		 * .getPairQuote().getQuoteA()); ArrayList<Double> valueB =
-		 * getAdjCloseQuote(pairDailyQuote .getPairQuote().getQuoteB());
-		 * CorrelationCoefficientCalculator ccc = new
-		 * CorrelationCoefficientCalculator(); Double result =
-		 * ccc.getCorrelationCoefficient( valueA, valueB); ArrayList<String>
-		 * element = new ArrayList<>();
-		 * element.add(pairDailyQuote.getPairQuote() .getCodeA());
-		 * element.add(pairDailyQuote.getPairQuote() .getCodeB());
-		 * element.add(String.valueOf(result)); finalResult.add(element);
-		 * System.out.println(element.get(0) + " " + element.get(1) + " " +
-		 * element.get(2)); Integer upperLimit = 10; Integer lowLimit = -10;
-		 * StockPairDailyQuoteResultImpl spdqr = new
-		 * StockPairDailyQuoteResultImpl(); spdqr = new
-		 * StockPairDailyQuoteResultImpl( pairDailyQuote.getPairQuote(),
-		 * lowLimit, upperLimit); } } catch (IndexOutOfBoundsException e) {
-		 * System.out.println("wrong with " + element1 + " and " + element2); }
-		 * 
-		 * } } }
-		 */
 	}
 
 	public static ArrayList<Double> getAdjCloseQuote(StockHistoricalPrice shp) {
@@ -317,11 +245,13 @@ public class QuoteCorrelationCoefficientMultiThread {
 
 class quoteCorrelationCoefficientThread extends Thread {
 	private ArrayList<ArrayList<String>> codeList = new ArrayList<>();
+
 	public quoteCorrelationCoefficientThread() {
 		super();
 	}
 
-	public quoteCorrelationCoefficientThread(String str, ArrayList<ArrayList<String>> codeList) {
+	public quoteCorrelationCoefficientThread(String str,
+			ArrayList<ArrayList<String>> codeList) {
 		super(str);
 		this.codeList = codeList;
 	}

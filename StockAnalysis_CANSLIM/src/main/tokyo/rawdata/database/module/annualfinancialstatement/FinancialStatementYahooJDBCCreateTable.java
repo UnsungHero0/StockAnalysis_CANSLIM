@@ -12,10 +12,10 @@ public class FinancialStatementYahooJDBCCreateTable {
 
 	private final String createFinancialStatementSql = "CREATE TABLE IF NOT EXISTS " + DBNameSpace.getFinancailstatementDb() + " "
 			+ "(Country VARCHAR(50) NOT NULL Default 'Japan', "
-			+ "Local_Code VARCHAR(20), "
+			+ "Local_Code VARCHAR(20) NOT NULL Default NULL, "
 			+ "Name_English VARCHAR(100), "
-			+ "Form VARCHAR(20), "
-			+ "Fiscal_Year Date, "
+			+ "Form VARCHAR(20) NOT NULL Default NULL, "
+			+ "Fiscal_Year Date NOT NULL Default NULL, "
 			+ "Announcement_Date Date, "
 			+ "Closing_Month TINYINT, "
 			+ "Sales BIGINT, "
@@ -37,10 +37,10 @@ public class FinancialStatementYahooJDBCCreateTable {
 			+ "Net_Unrealized_Gains DOUBLE, "
 			+ "ROA FLOAT, "
 			+ "ROE FLOAT, "
-			+ "Ratio_Of_Ordinary_Income_To_Total_Assets FLOAT,"
-			+ "CONSTRAINT ID PRIMARY KEY (Local_Code, Form, Fiscal_Year))";
+			+ "Ratio_Of_Ordinary_Income_To_Total_Assets FLOAT, "
+			+ "PRIMARY KEY (Local_Code, Form, Fiscal_Year))";
 
-	private String dropTable = "DROP TABLE `TokyoStockExchange_test`.`FinancialStatementTokyo_test` ";
+	private String dropTable = "DROP TABLE " + namespace.DBNameSpace.getFinancailstatementDb();
 
 	public FinancialStatementYahooJDBCCreateTable() {
 		// TODO Auto-generated constructor stub
@@ -54,7 +54,6 @@ public class FinancialStatementYahooJDBCCreateTable {
 					.getConnection();
 			con.prepareStatement(this.createFinancialStatementSql).execute();
 			System.out.println("Financial statement table created!");
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

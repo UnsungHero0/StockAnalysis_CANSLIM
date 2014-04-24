@@ -18,7 +18,7 @@ public class FinancialStatementQuarterDownLoadKabuproInsertDB {
 			+ "Sales BIGINT, "
 			+ "Operating_Income BIGINT, "
 			+ "Net_Income BIGINT, "
-			+ "CONSTRAINT ID PRIMARY KEY (Local_Code, Fiscal_Year, Period));";
+			+ "PRIMARY KEY (Local_Code, Fiscal_Year, Period));";
 
 	public FinancialStatementQuarterDownLoadKabuproInsertDB() {
 		// TODO Auto-generated constructor stub
