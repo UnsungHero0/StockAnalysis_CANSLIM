@@ -19,7 +19,7 @@ public class ShareHoldingDownloadMultiThread {
 			+ "Local_Code VARCHAR(20) NOT NULL, " + "Date Date, "
 			+ "ShareHolding Double, " + "PRIMARY KEY (Local_Code));";
 
-	public static Integer threadNumber = 1;
+	public static Integer threadNumber = 8;
 	public static ArrayList<String> codeList = new ArrayList<>();
 	public static Integer totalCount = 0;
 	public static Connection con = null;
@@ -46,6 +46,7 @@ public class ShareHoldingDownloadMultiThread {
 			for (ShareHoldingDownloadThread thread : threadGroup) {
 				try {
 					thread.join();
+					System.out.println(thread.getName() + " is finished!");
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -85,10 +86,9 @@ public class ShareHoldingDownloadMultiThread {
 		while (ifHashNext == true) {
 			if (Integer.valueOf(code) >= 0) {
 				updateShareHoldingWithCode(code, con);
-				;
 			}
 			synchronized (totalCount) {
-				System.out.println(threadName + ": " + code + " is updated, "
+				System.out.println(threadName + ": " + code + " is downloaded, "
 						+ --totalCount + " is left");
 			}
 			synchronized (codeList) {
@@ -104,12 +104,23 @@ public class ShareHoldingDownloadMultiThread {
 
 	public static void updateShareHoldingWithCode(String code, Connection con) {
 		Double shareHolding = getShareHoldingFromUrl(code);
-		String date = Calendar.YEAR + Calendar.MONTH + Calendar.DATE + "";
+		String date = getTodayDate();
 		String value = combineValue(code, date, shareHolding);
 		String field = "(Local_Code, Date, ShareHolding)";
 		insertIntoDB(field, value, con);
-		System.out.println(Thread.currentThread().getName() + " : " + code
-				+ " is donwloaded, " + --totalCount + " to go!");
+	}
+	
+	public static String getTodayDate(){
+		String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
+		String month = String.valueOf(Calendar.getInstance().get(Calendar.MONTH) + 1);
+		if(month.length()==1) {
+			month = "0" + month;
+		}
+		String day = String.valueOf(Calendar.getInstance().get(Calendar.DATE));
+		if(day.length()==1) {
+			day = "0" + day;
+		}
+		return year+month+day;
 	}
 
 	public static Double getShareHoldingFromUrl(String code) {
@@ -157,5 +168,4 @@ class ShareHoldingDownloadThread extends Thread {
 	public void run() {
 		ShareHoldingDownloadMultiThread.download(con, super.getName());
 	}
-
 }
