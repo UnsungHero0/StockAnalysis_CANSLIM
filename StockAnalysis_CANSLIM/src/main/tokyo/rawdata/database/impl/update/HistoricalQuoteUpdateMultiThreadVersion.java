@@ -86,6 +86,7 @@ public class HistoricalQuoteUpdateMultiThreadVersion {
 			}
 			for (updateThread thread : threadGroup) {
 				thread.join();
+				System.out.println(thread.getName() + " is finished!");
 			}
 			System.out.println("finished");
 
