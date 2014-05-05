@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import namespace.DBNameSpace;
+
 public class JDBCUtil {
 
 	public JDBCUtil() {
@@ -26,6 +28,25 @@ public class JDBCUtil {
 		String sql ="DROP TABLE IF EXISTS "+ tableName + "";
 		try {
 			con.prepareStatement(sql).execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void excuteQuery(String query, Connection con) {
+		try {
+			con.prepareStatement(query).execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void insertData(String tableName, String field, String value, Connection con) {
+		String insertSql = "INSERT INTO "
+				+ tableName
+				+ " " + field + " VALUES " + value;
+		try {
+			con.prepareStatement(insertSql).execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

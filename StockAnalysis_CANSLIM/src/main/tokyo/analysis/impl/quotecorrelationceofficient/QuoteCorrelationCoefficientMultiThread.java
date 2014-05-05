@@ -42,9 +42,10 @@ public class QuoteCorrelationCoefficientMultiThread {
 		Long startTime = calendar.getTimeInMillis();
 		threadNumber = 20;
 		run();
-		System.out.println("10 -> 62s  "
-				+ (Calendar.getInstance().getTimeInMillis() - startTime)
-				/ (1000));
+		Long endTime = Calendar.getInstance().getTimeInMillis();
+		Integer minute = (int) ((endTime - startTime) / (long)(1000 * 60));
+		Integer second = (int)((endTime - startTime) / (long)(1000)) % 60;
+		System.out.println("running time : " + minute + " minutes " + second + " seconds");
 	}
 
 	// get all the combination
@@ -62,7 +63,7 @@ public class QuoteCorrelationCoefficientMultiThread {
 					System.out.println(code + "  finished, "
 							+ (codelList.size() - codelList.indexOf(code))
 							+ " left!");
-					if (codelList.indexOf(code) > 500)
+					if (codelList.indexOf(code) > 150)
 						break;
 				}
 			}

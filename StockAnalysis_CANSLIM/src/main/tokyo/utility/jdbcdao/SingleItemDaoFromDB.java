@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.naming.spi.DirStateFactory.Result;
+
 public class SingleItemDaoFromDB {
 
 	public SingleItemDaoFromDB() {
@@ -32,5 +34,27 @@ public class SingleItemDaoFromDB {
 		return result;
 		
 		//TODO
+	}
+	
+	public static ResultSet selectFromDBOrder(String field, String DBName, String orderByField, Connection con) {
+		String sql = "SELECT " + field + " FROM " + DBName + " ORDER BY " + orderByField;
+		ResultSet rs = null;
+		try {
+			rs = con.prepareStatement(sql).executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rs;
+	}
+	
+	public static ResultSet selectFrom(String field, String DBName, Connection con) {
+		String sql = "SELECT " + field + " FROM " + DBName;
+		ResultSet rs = null;
+		try {
+			rs = con.prepareStatement(sql).executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rs;
 	}
 }
