@@ -21,6 +21,7 @@ public class HistoricalQuoteUpdateMultiThreadVersion {
 	private final static String startDay = "1";
 	public static Connection con = null;
 	public static Integer count = 0;
+	public static ArrayList<String> codeLists = new ArrayList<>();
 
 	public HistoricalQuoteUpdateMultiThreadVersion() {
 		// TODO Auto-generated constructor stub
@@ -49,32 +50,25 @@ public class HistoricalQuoteUpdateMultiThreadVersion {
 	public static String getStartday() {
 		return startDay;
 	}
-
+	
 	public static void main(String args[]) {
+		Long startTime = Calendar.getInstance().getTimeInMillis();
+		run();
+		Long endTime = Calendar.getInstance().getTimeInMillis();
+		Integer minute = (int) ((endTime - startTime) / (long)(1000 * 60));
+		Integer second = (int)((endTime - startTime) / (long)(1000)) % 60;
+		System.out.println("running time : " + minute + " minutes " + second + " seconds");
+	}
+
+	public static void run() {
 		Integer splitNumber = 8;
 		System.out.println("start updating quotes...");
 		CodeListsDao clDao = new CodeListsDao();
-		ArrayList<String> codeLists = clDao.getCodeLists();
+		codeLists = clDao.getCodeLists();
 		count = codeLists.size();
-		Integer interval;
-		if (count % splitNumber == 0) {
-			interval = count / splitNumber;
-		} else {
-			interval = count / splitNumber + 1;
-		}
-		ArrayList<ArrayList<String>> codeListGroup = new ArrayList<>();
-		for (int i = 0; i < splitNumber; i++) {
-			ArrayList<String> newList = new ArrayList<>();
-			for (int j = 0; j < interval
-					&& (i * interval + j) < codeLists.size(); j++) {
-				newList.add(codeLists.get(i * interval + j));
-			}
-			codeListGroup.add(newList);
-		}
 		ArrayList<updateThread> threadGroup = new ArrayList<>();
 		for (int i = 1; i <= splitNumber; i++) {
-			updateThread thread = new updateThread("Thread" + i,
-					codeListGroup.get(i - 1));
+			updateThread thread = new updateThread("Thread" + i);
 			System.out.println("Thread" + i + " is created!");
 			threadGroup.add(thread);
 		}
@@ -107,20 +101,17 @@ public class HistoricalQuoteUpdateMultiThreadVersion {
 }
 
 class updateThread extends Thread {
-	private ArrayList<String> codeList = new ArrayList<>();
-
 	public updateThread() {
 		super();
 	}
 
-	public updateThread(String str, ArrayList<String> codeList) {
+	public updateThread(String str) {
 		super(str);
-		this.codeList = codeList;
 	}
 
 	public void run() {
 		UpdateHistoricalQuotes update = new UpdateHistoricalQuotes();
-		update.updateCode(codeList, super.getName());
+		update.updateCode(super.getName());
 	}
 
 }

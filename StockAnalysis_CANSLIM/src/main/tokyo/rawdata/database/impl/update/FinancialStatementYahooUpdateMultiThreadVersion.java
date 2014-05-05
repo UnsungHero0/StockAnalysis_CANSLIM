@@ -87,6 +87,8 @@ public class FinancialStatementYahooUpdateMultiThreadVersion {
 			if (Integer.valueOf(code) >= 0) {
 				FinancialStatementYahooJDBCUpdateData
 						.FinancialStatemetYahooJDBCUpdateDataImpl(code, con);
+			}
+			synchronized (totalCount) {
 				System.out.println(name + ": " + code +  " is updated, " + --totalCount + " is left");
 			}
 			synchronized (codeList) {

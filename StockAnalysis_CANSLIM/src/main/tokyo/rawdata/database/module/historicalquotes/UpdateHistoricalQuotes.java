@@ -57,20 +57,31 @@ public class UpdateHistoricalQuotes {
 		return startDay;
 	}
 
-	public void updateCode(ArrayList<String> codeList, String threadName) {
-		for (String code : codeList) {
+	public void updateCode(String threadName) {
+		String code = "";
+		Boolean ifHasNext = true;
+		synchronized (HistoricalQuoteUpdateMultiThreadVersion.codeLists) {
+			code = HistoricalQuoteUpdateMultiThreadVersion.codeLists.get(0);
+			HistoricalQuoteUpdateMultiThreadVersion.codeLists.remove(0);
+			ifHasNext = true;
+		}
+		while(ifHasNext == true) {
 			update(code);
-			ifUpdateOver = false;
-			HistoricalQuoteUpdateMultiThreadVersion.count--;
 			synchronized (HistoricalQuoteUpdateMultiThreadVersion.count) {
-				System.out
-						.println(threadName + ": " + year + "/" + month + "/"
-								+ day + "  :  " + code + " is updated, "
-								+ HistoricalQuoteUpdateMultiThreadVersion.count
-								+ " to go!");
+				System.out.println(threadName + ": " + year + "/" + month + "/"
+						+ day + "  :  " + code + " is updated, "
+						+ --HistoricalQuoteUpdateMultiThreadVersion.count
+						+ " to go!");
+			}
+			synchronized (HistoricalQuoteUpdateMultiThreadVersion.codeLists) {
+				if (HistoricalQuoteUpdateMultiThreadVersion.codeLists.size() != 0) {
+					code = HistoricalQuoteUpdateMultiThreadVersion.codeLists.get(0);
+					HistoricalQuoteUpdateMultiThreadVersion.codeLists.remove(0);
+				} else {
+					ifHasNext = false;
+				}
 			}
 		}
-
 	}
 
 	public void update(String code) {
@@ -106,7 +117,10 @@ public class UpdateHistoricalQuotes {
 			}
 		} catch (StockSplitException e) {
 			e.printStackTrace();
-			// CreateQuotesTableFromUrl.createNewQuotesTable(code, con);
+			synchronized (HistoricalQuoteUpdateMultiThreadVersion.con) {
+				CreateQuotesTableFromUrl.createNewQuotesTable(code,
+						HistoricalQuoteUpdateMultiThreadVersion.con);
+			}
 		}
 	}
 
@@ -117,8 +131,8 @@ public class UpdateHistoricalQuotes {
 					+ "_HistoricalQuotes_Tokyo'";
 			ResultSet rs = null;
 			synchronized (HistoricalQuoteUpdateMultiThreadVersion.con) {
-				rs = HistoricalQuoteUpdateMultiThreadVersion.con.prepareStatement(
-						findTableSql).executeQuery();
+				rs = HistoricalQuoteUpdateMultiThreadVersion.con
+						.prepareStatement(findTableSql).executeQuery();
 			}
 			if (rs.next()) {
 				result = true;
