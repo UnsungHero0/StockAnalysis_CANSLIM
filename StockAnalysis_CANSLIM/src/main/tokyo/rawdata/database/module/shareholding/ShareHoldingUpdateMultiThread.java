@@ -1,9 +1,16 @@
 package module.shareholding;
 
+/**
+ * update the shareholding DB from http://stocks.finance.yahoo.co.jp/stocks/detail/?code=XXX
+ * @author Daytona
+ */
+
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import namespace.DBNameSpace;
 import commontool.JDBCUtil;
@@ -11,41 +18,33 @@ import dao.UrlDao;
 import datasource.DataSourceUtil;
 import jdbcdao.CodeListsDao;
 
-public class ShareHoldingDownloadMultiThread {
-
-	private static final String createTableSql = "Create Table IF NOT EXISTS "
-			+ DBNameSpace.getShareholdingDb() + " "
-			+ "( Country VARCHAR(50) NOT NULL Default 'Tokyo', "
-			+ "Local_Code VARCHAR(20) NOT NULL, " + "Date Date, "
-			+ "ShareHolding Double, " + "PRIMARY KEY (Local_Code));";
+public class ShareHoldingUpdateMultiThread {
 
 	public static Integer threadNumber = 8;
 	public static ArrayList<String> codeList = new ArrayList<>();
 	public static Integer totalCount = 0;
 	public static Connection con = null;
+	public static HashMap<String, Double> presentResult = new HashMap<>();
 
-	public ShareHoldingDownloadMultiThread() {
-
+	public ShareHoldingUpdateMultiThread() {
 	}
 
 	public static void run(Integer threadNumber) {
-		
-		ShareHoldingDownloadMultiThread.threadNumber = threadNumber;
 
+		ShareHoldingUpdateMultiThread.threadNumber = threadNumber;
 		codeList = new CodeListsDao().getCodeListsFromFinancialStatement();
 		totalCount = codeList.size();
-		ArrayList<ShareHoldingDownloadThread> threadGroup = new ArrayList<>();
+		ArrayList<ShareHoldingUpdateThread> threadGroup = new ArrayList<>();
 		try {
 			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
-			dropTable(con);
-			createTable(con);
+			getPresentResult(con);
 			for (int i = 0; i < threadNumber; i++) {
-				threadGroup.add(new ShareHoldingDownloadThread("Thread"
-						+ (i + 1)));
+				threadGroup
+						.add(new ShareHoldingUpdateThread("Thread" + (i + 1)));
 				threadGroup.get(i).start();
 				System.out.println("Thread" + (i + 1) + " is starting");
 			}
-			for (ShareHoldingDownloadThread thread : threadGroup) {
+			for (ShareHoldingUpdateThread thread : threadGroup) {
 				try {
 					thread.join();
 					System.out.println(thread.getName() + " is finished!");
@@ -64,19 +63,25 @@ public class ShareHoldingDownloadMultiThread {
 				}
 			}
 		}
-
 		System.out.println("ShareHolding update is finished!");
 	}
 
-	public static void dropTable(Connection con) {
-		JDBCUtil.dropTable(DBNameSpace.getShareholdingDb(), con);
+	public static void getPresentResult(Connection con) {
+		try {
+			ResultSet rs = con.prepareStatement(
+					"SELECT * FROM " + DBNameSpace.getShareholdingDb())
+					.executeQuery();
+			while (rs.next()) {
+				String code = rs.getString("Local_Code");
+				Double shareHolding = rs.getDouble("ShareHolding");
+				presentResult.put(code, shareHolding);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public static void createTable(Connection con) {
-		JDBCUtil.excuteQuery(createTableSql, con);
-	}
-
-	public static void download(Connection con, String threadName) {
+	public static void update(Connection con, String threadName) {
 
 		String code = null;
 		Boolean ifHashNext = false;
@@ -90,8 +95,8 @@ public class ShareHoldingDownloadMultiThread {
 				updateShareHoldingWithCode(code, con);
 			}
 			synchronized (totalCount) {
-				System.out.println(threadName + ": " + code + " is downloaded, "
-						+ --totalCount + " is left");
+				System.out.println(threadName + ": " + code
+						+ " is updated, " + --totalCount + " is left");
 			}
 			synchronized (codeList) {
 				if (codeList.size() != 0) {
@@ -106,23 +111,43 @@ public class ShareHoldingDownloadMultiThread {
 
 	public static void updateShareHoldingWithCode(String code, Connection con) {
 		Double shareHolding = getShareHoldingFromUrl(code);
-		String date = getTodayDate();
-		String value = combineValue(code, date, shareHolding);
-		String field = "(Local_Code, Date, ShareHolding)";
-		insertIntoDB(field, value, con);
+		Boolean ifNew = null;
+		synchronized (presentResult) {
+			ifNew = presentResult.containsKey(code) ? false : true;
+		}
+		if (ifNew) {
+			String date = getTodayDate();
+			String value = combineValue(code, date, shareHolding);
+			String field = "(Local_Code, Date, ShareHolding)";
+			insertIntoDB(field, value, con);
+		} else {
+			if (ifHasNewValue(code, shareHolding)) {
+				String date = getTodayDate();
+				updateDB(code, shareHolding, date, con);
+				System.out.println(code + " has new value!");
+			}
+		}
 	}
-	
-	public static String getTodayDate(){
+
+	public static Boolean ifHasNewValue(String code, Double shareHolding) {
+		synchronized (presentResult) {
+			return String.valueOf(presentResult.get(code)).equals(
+					String.valueOf(shareHolding)) ? false : true;
+		}
+	}
+
+	public static String getTodayDate() {
 		String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
-		String month = String.valueOf(Calendar.getInstance().get(Calendar.MONTH) + 1);
-		if(month.length()==1) {
+		String month = String.valueOf(Calendar.getInstance()
+				.get(Calendar.MONTH) + 1);
+		if (month.length() == 1) {
 			month = "0" + month;
 		}
 		String day = String.valueOf(Calendar.getInstance().get(Calendar.DATE));
-		if(day.length()==1) {
+		if (day.length() == 1) {
 			day = "0" + day;
 		}
-		return year+month+day;
+		return year + month + day;
 	}
 
 	public static Double getShareHoldingFromUrl(String code) {
@@ -152,24 +177,39 @@ public class ShareHoldingDownloadMultiThread {
 
 	public static void insertIntoDB(String field, String value, Connection con) {
 		synchronized (con) {
-			JDBCUtil.insertData(DBNameSpace.getShareholdingDb(), field, value, con);
+			JDBCUtil.insertData(DBNameSpace.getShareholdingDb(), field, value,
+					con);
+		}
+	}
+
+	public static void updateDB(String code, Double value, String date,
+			Connection con) {
+		String sql = "update " + DBNameSpace.getShareholdingDb() + " SET "
+				+ "ShareHolding = " + value + ", Date = " + date + " "
+				+ "WHERE Local_Code = " + code;
+		try {
+			synchronized (con) {
+				con.prepareStatement(sql).execute();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 }
 
-class ShareHoldingDownloadThread extends Thread {
+class ShareHoldingUpdateThread extends Thread {
 
-	private Connection con = ShareHoldingDownloadMultiThread.con;
+	private Connection con = ShareHoldingUpdateMultiThread.con;
 
-	public ShareHoldingDownloadThread() {
+	public ShareHoldingUpdateThread() {
 		super();
 	}
 
-	public ShareHoldingDownloadThread(String str) {
+	public ShareHoldingUpdateThread(String str) {
 		super(str);
 	}
 
 	public void run() {
-		ShareHoldingDownloadMultiThread.download(con, super.getName());
+		ShareHoldingUpdateMultiThread.update(con, super.getName());
 	}
 }
