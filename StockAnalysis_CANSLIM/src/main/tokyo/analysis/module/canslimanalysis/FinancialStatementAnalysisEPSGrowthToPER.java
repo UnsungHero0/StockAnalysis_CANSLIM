@@ -19,17 +19,61 @@ public class FinancialStatementAnalysisEPSGrowthToPER {
 
 	}
 
-	public static FinancialStatementAnalysisRecord getEPSGrowthToPER(
+	public static HashMap<String, FinancialStatementAnalysisRecord> getEPSGrowthToPER(
 			HashMap<String, FinancialStatementAnalysisRecord> resultMap,
 			Connection con) {
 
-		HashMap<String, Float> price = null;
-		ResultSet rs = SingleItemDaoFromDB.selectFromDBOrder("Adj_Close",
-				DBNameSpace.getFinancailstatementDb(),
-				"Local_Code, Fiscal_Year", con);
+		HashMap<String, Double> price = null;
+		price = getLatestPrice(con);
+		HashMap<String, Double> shareHolding = null;
+		shareHolding = getShareHolding(con);
+		HashMap<String, Double> eps = null;
+		eps = getEPS(con);
+		HashMap<String, Double> epsGrowth = null;
+		epsGrowth = getEPSGrowth(con);
+		HashMap<String, Double> per = null;
+		per = getPER(price, eps);
+		HashMap<String, Double> EPSGrwothToPER = null;
+		EPSGrwothToPER = getEPSGrowthToPERRate(epsGrowth, per);
+		
+		resultMap = insertIntoMap(EPSGrwothToPER);
+		return resultMap;
+	}
 
+	public static HashMap<String, Double> getLatestPrice(Connection con) {
 		// TODO
 		return null;
 	}
 
+	public static HashMap<String, Double> getShareHolding(Connection con) {
+		// TODO
+		return null;
+	}
+
+	public static HashMap<String, Double> getEPS(Connection con) {
+		// TODO
+		return null;
+	}
+
+	public static HashMap<String, Double> getEPSGrowth(Connection con) {
+		// TODO
+		return null;
+	}
+
+	public static HashMap<String, Double> getPER(HashMap<String, Double> price,
+			HashMap<String, Double> EPS) {
+		// TODO
+		return null;
+	}
+
+	public static HashMap<String, Double> getEPSGrowthToPERRate(
+			HashMap<String, Double> epsGrowthMap, HashMap<String, Double> per) {
+		// TODO
+		return null;
+	}
+	
+	public static HashMap<String, FinancialStatementAnalysisRecord> insertIntoMap(HashMap<String, Double> EPSGrwothToPER) {
+		//TODO
+		return null;
+	}
 }

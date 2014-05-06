@@ -9,7 +9,7 @@ public class ShareHoldingUpdateImpl {
 	public static void main(String args[]) {
 		Long startTime = Calendar.getInstance().getTimeInMillis();
 		
-		ShareHoldingUpdateMultiThread.run(8);
+		ShareHoldingUpdateMultiThread.run(10);
 		
 		Long endTime = Calendar.getInstance().getTimeInMillis();
 		Integer minute = (int) ((endTime - startTime) / (long)(1000 * 60));
