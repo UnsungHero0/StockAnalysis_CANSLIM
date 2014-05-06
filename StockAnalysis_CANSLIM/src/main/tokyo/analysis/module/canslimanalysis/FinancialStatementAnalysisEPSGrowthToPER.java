@@ -25,18 +25,27 @@ public class FinancialStatementAnalysisEPSGrowthToPER {
 
 		HashMap<String, Double> price = null;
 		price = getLatestPrice(con);
+		
 		HashMap<String, Double> shareHolding = null;
 		shareHolding = getShareHolding(con);
+		
+		HashMap<String, Double> netIncome = null;
+		netIncome = getNetIncome(con);
+		
 		HashMap<String, Double> eps = null;
-		eps = getEPS(con);
-		HashMap<String, Double> epsGrowth = null;
-		epsGrowth = getEPSGrowth(con);
+		eps = getEPS(netIncome, shareHolding);
+		
 		HashMap<String, Double> per = null;
 		per = getPER(price, eps);
+		
+		HashMap<String, Double> epsGrowth = null;
+		epsGrowth = getEPSGrowth(con);
+		
 		HashMap<String, Double> EPSGrwothToPER = null;
 		EPSGrwothToPER = getEPSGrowthToPERRate(epsGrowth, per);
 		
 		resultMap = insertIntoMap(EPSGrwothToPER);
+		
 		return resultMap;
 	}
 
@@ -50,7 +59,13 @@ public class FinancialStatementAnalysisEPSGrowthToPER {
 		return null;
 	}
 
-	public static HashMap<String, Double> getEPS(Connection con) {
+	public static HashMap<String, Double> getNetIncome(Connection con) {
+		// TODO
+		return null;
+	}
+	
+	public static HashMap<String, Double> getEPS(HashMap<String, Double> netIncome,
+			HashMap<String, Double> shareHolding){
 		// TODO
 		return null;
 	}
@@ -73,7 +88,7 @@ public class FinancialStatementAnalysisEPSGrowthToPER {
 	}
 	
 	public static HashMap<String, FinancialStatementAnalysisRecord> insertIntoMap(HashMap<String, Double> EPSGrwothToPER) {
-		//TODO
+		// TODO
 		return null;
 	}
 }
