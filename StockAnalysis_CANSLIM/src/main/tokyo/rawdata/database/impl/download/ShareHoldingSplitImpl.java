@@ -11,9 +11,11 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
+
 import namespace.DBNameSpace;
 import commontool.JDBCUtil;
 import dao.UrlDao;
@@ -27,8 +29,18 @@ public class ShareHoldingSplitImpl {
 	public ShareHoldingSplitImpl() {
 
 	}
-
+	
 	public static void main(String args[]) {
+		Long startTime = Calendar.getInstance().getTimeInMillis();
+		run();
+		System.out.println("shareHolding split information download is finished!");
+		Long endTime = Calendar.getInstance().getTimeInMillis();
+		Integer minute = (int) ((endTime - startTime) / (long)(1000 * 60));
+		Integer second = (int)((endTime - startTime) / (long)(1000)) % 60;
+		System.out.println("running time : " + minute + " minutes " + second + " seconds");
+	}
+	
+	public static void run() {
 		ArrayList<String> codeList = new ArrayList<>();
 		codeList = new CodeListsDao().getCodeListsFromFinancialStatement();
 		ArrayList<HistoricalDataDownloadVolumeSplitRecord> result = new ArrayList<>();
@@ -64,7 +76,6 @@ public class ShareHoldingSplitImpl {
 				}
 			}
 		}
-		System.out.println("over");
 	}
 
 	public static HashMap<String, Float> fetchInfoFromUrl(String code) {

@@ -28,8 +28,9 @@ public class ShareHoldingDownloadMultiThread {
 
 	}
 
-	public static void main(String args[]) {
-
+	public static void downLoad(Integer threadNumber) {
+		
+		ShareHoldingDownloadMultiThread.threadNumber = threadNumber;
 		codeList = new CodeListsDao().getCodeListsFromFinancialStatement();
 		totalCount = codeList.size();
 		ArrayList<ShareHoldingDownloadThread> threadGroup = new ArrayList<>();
@@ -62,8 +63,6 @@ public class ShareHoldingDownloadMultiThread {
 				}
 			}
 		}
-
-		System.out.println("ShareHolding update is finished!");
 	}
 
 	public static void dropTable(Connection con) {

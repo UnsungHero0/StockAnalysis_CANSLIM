@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import namespace.DBNameSpace;
+import java.sql.PreparedStatement;
 
 public class JDBCUtil {
 
@@ -39,6 +39,26 @@ public class JDBCUtil {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static ResultSet excuteQueryWithResult(String query, Connection con) {
+		ResultSet rs = null;
+		try {
+			rs = con.prepareStatement(query).executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rs;
+	}
+	
+	public static ResultSet excuteQueryWithResult(PreparedStatement stmt) {
+		ResultSet rs = null;
+		try {
+			rs = stmt.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rs;
 	}
 	
 	public static void insertData(String tableName, String field, String value, Connection con) {

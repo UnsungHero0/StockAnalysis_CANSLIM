@@ -26,13 +26,10 @@ public class FinancialStatementAnalysisImpl {
 	}
 
 	public static void main(String args[]) {
-		ThreadEvenNumberOutput threadEven = new ThreadEvenNumberOutput();
-		ThreadOddNumberOutput threadOdd = new ThreadOddNumberOutput();
-		threadEven.start();
-		threadOdd.start();
+		run();
 	}
 
-	public static ArrayList<Entry<String, FinancialStatementAnalysisRecord>> evenNumberOutput() {
+	public static void run() {
 		ArrayList<String> codeList = new CodeListsDao()
 				.getCodeListsFromFinancialStatement();
 		HashMap<String, FinancialStatementAnalysisRecord> resultMap = new HashMap<>();
@@ -73,7 +70,6 @@ public class FinancialStatementAnalysisImpl {
 			}
 		}
 		print(filter(sort(new ArrayList<>(resultMap.entrySet()))));
-		return null;
 	}
 
 	public static DataSource getDataSource() {
@@ -157,34 +153,5 @@ public class FinancialStatementAnalysisImpl {
 							+ record.getValue().getFiftyWeekAverageVolume()
 							+ "\n");
 		}
-	}
-}
-
-class ThreadEvenNumberOutput extends Thread {
-	public ThreadEvenNumberOutput() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	public void run() {
-		FinancialStatementAnalysisImpl.evenNumberOutput();
-	}
-}
-
-class ThreadOddNumberOutput extends Thread {
-	public ThreadOddNumberOutput() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	public void run() {
-		System.out.println("I am odd");
-		try {
-			Thread.sleep(7000);// 主线程挂起7秒
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println("\nI am odd");
-		//FinancialStatementAnalysisImpl.evenNumberOutput();
 	}
 }
