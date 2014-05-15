@@ -19,7 +19,7 @@ import datasource.DataSourceUtil;
 import jdbcdao.CodeListsDao;
 
 public class ShareHoldingUpdateMultiThread {
-
+	
 	public static Integer threadNumber = 8;
 	public static ArrayList<String> codeList = new ArrayList<>();
 	public static Integer totalCount = 0;

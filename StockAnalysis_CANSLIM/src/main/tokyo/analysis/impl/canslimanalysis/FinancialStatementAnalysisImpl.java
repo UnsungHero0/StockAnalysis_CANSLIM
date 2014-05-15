@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 import javax.sql.DataSource;
 
+import module.canslimanalysis.FinancialStatementAnalysisEPSGrowthToPER;
 import module.canslimanalysis.FinancialStatementAnalysisQuarterGrowthRate;
 import module.canslimanalysis.FinancialStatementAnalysisRSI;
 import module.canslimanalysis.FinancialStatementAnalysisRecord;
@@ -57,6 +58,8 @@ public class FinancialStatementAnalysisImpl {
 					.getQuarterGrowthRate(resultMap, "Net_Income", con);
 			resultMap = FinancialStatementAnalysisVolume.getVolumeInfo(
 					resultMap, con);
+					
+			resultMap = FinancialStatementAnalysisEPSGrowthToPER.getEPSGrowthToPER(resultMap, con);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -70,6 +73,7 @@ public class FinancialStatementAnalysisImpl {
 			}
 		}
 		print(filter(sort(new ArrayList<>(resultMap.entrySet()))));
+		//print(sort(new ArrayList<>(resultMap.entrySet())));
 	}
 
 	public static DataSource getDataSource() {
@@ -86,10 +90,10 @@ public class FinancialStatementAnalysisImpl {
 									Entry<String, FinancialStatementAnalysisRecord> o2) {
 								return o2
 										.getValue()
-										.getTodayToFiftyWeeksAverage()
+										.getePSAveGrowthRateToPER()
 										.compareTo(
 												o1.getValue()
-														.getTodayToFiftyWeeksAverage());
+														.getePSAveGrowthRateToPER());
 							}
 						});
 		return resultEntrySet;
@@ -99,12 +103,12 @@ public class FinancialStatementAnalysisImpl {
 			ArrayList<Entry<String, FinancialStatementAnalysisRecord>> resultEntrySet) {
 		ArrayList<Entry<String, FinancialStatementAnalysisRecord>> result = new ArrayList<>();
 		for (Entry<String, FinancialStatementAnalysisRecord> record : resultEntrySet) {
-			if (record.getValue().getePSAverageGrowthRate() >= 0.25
-					&& record.getValue().getRSIInAllStock() >= 85
-					&& record.getValue().getTodayToFiftyWeeksAverage() >= 0.7) {
+			if (record.getValue().getePSAverageGrowthRate() >= 0.10
+					&& record.getValue().getRSIInAllStock() >= 50
+					&& record.getValue().getTodayToFiftyWeeksAverage() >= 0) {
 				boolean ifqualified = true;
 				for (Float value : record.getValue().getePSGrowthRateArray()) {
-					if (value < 0.20f) {
+					if (value < 0.0f) {
 						ifqualified = false;
 						break;
 					}
@@ -116,6 +120,7 @@ public class FinancialStatementAnalysisImpl {
 
 			}
 		}
+		System.out.println("result is : " );
 		return result;
 	}
 
@@ -151,6 +156,8 @@ public class FinancialStatementAnalysisImpl {
 									.getTodayToFiftyWeeksAverage() * 100) + "%"
 							+ "  "
 							+ record.getValue().getFiftyWeekAverageVolume()
+							+ " EPSToPER "
+							+ record.getValue().getePSAveGrowthRateToPER()
 							+ "\n");
 		}
 	}

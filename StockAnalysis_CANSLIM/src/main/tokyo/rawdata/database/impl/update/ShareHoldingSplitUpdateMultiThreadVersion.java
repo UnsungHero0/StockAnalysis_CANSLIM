@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Set;
 import namespace.DBNameSpace;
 import commontool.JDBCUtil;
 import dao.UrlDao;
@@ -25,10 +24,12 @@ import jdbcdao.CodeListsDao;
 public class ShareHoldingSplitUpdateMultiThreadVersion {
 
 	public ShareHoldingSplitUpdateMultiThreadVersion() {
+		
+		run();
 
 	}
 
-	public static void main(String args[]) {
+	public static void run() {
 		ArrayList<String> codeList = new ArrayList<>();
 		codeList = new CodeListsDao().getCodeListsFromFinancialStatement();
 		ArrayList<HistoricalDataDownloadVolumeSplitRecord> result = new ArrayList<>();
@@ -39,6 +40,7 @@ public class ShareHoldingSplitUpdateMultiThreadVersion {
 			HashMap<String, Float> splitInfo = fetchInfoFromUrl(code);
 			record.setSplitHistory(splitInfo);
 			result.add(record);
+			/*
 			Set<String> keySet = record.getSplitHistory().keySet();
 
 			for (String key : keySet) {
@@ -48,6 +50,7 @@ public class ShareHoldingSplitUpdateMultiThreadVersion {
 
 			System.out.println("---  " + code + " is ok, "
 					+ (codeList.size() - codeList.indexOf(code)) + " to go ");
+					*/
 		}
 		try {
 			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
@@ -66,7 +69,7 @@ public class ShareHoldingSplitUpdateMultiThreadVersion {
 				}
 			}
 		}
-		System.out.println("over");
+		System.out.println("ShareHolding Split Update over");
 	}
 
 	public static HashMap<String, Float> fetchInfoFromUrl(String code) {

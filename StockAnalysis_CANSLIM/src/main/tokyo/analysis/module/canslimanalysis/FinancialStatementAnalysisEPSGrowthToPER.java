@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import commontool.JDBCUtil;
 import namespace.DBNameSpace;
 
@@ -49,6 +50,9 @@ public class FinancialStatementAnalysisEPSGrowthToPER {
 		HashMap<String, Double> realTimePER = getRealTimePER(con);
 		HashMap<String, Double> EPSGrowthToPER = getEPSGrowthToPER(
 				netIncomeGrowthRate, realTimePER);
+		
+		System.out.println("netIncomegrowthRate" + netIncomeGrowthRate.get("7760") + "  " 
+		+ " PER " + realTimePER.get("7760") + " EPS TO PER " + EPSGrowthToPER.get("7760"));
 
 		System.out.println("finish EPSGrowthToPER");
 
@@ -152,7 +156,7 @@ public class FinancialStatementAnalysisEPSGrowthToPER {
 		try {
 			for(String code : codeList) {
 				java.sql.PreparedStatement stmt = con.prepareStatement(GETLATESTPRICE);
-				stmt.setInt(Integer.valueOf(code),1);
+				stmt.setInt(1,Integer.valueOf(code));
 				ResultSet rs = JDBCUtil.excuteQueryWithResult(stmt);
 				if(rs.next()) {
 					price.put(code, rs.getDouble("AdjClose"));
@@ -186,7 +190,11 @@ public class FinancialStatementAnalysisEPSGrowthToPER {
 		HashMap<String, Double> result = new HashMap<>();
 		for(String code : codeList) {
 			if(EPSGrwothRate.containsKey(code) && PER.containsKey(code)) {
+				if(EPSGrwothRate.get(code) > 0 && PER.get(code) > 0) {
 				result.put(code, EPSGrwothRate.get(code) / PER.get(code));
+				} else {
+					result.put(code, -1.0 * Math.abs(EPSGrwothRate.get(code) / PER.get(code)));
+				}
 			}
 		}
 		return result;
@@ -197,7 +205,7 @@ public class FinancialStatementAnalysisEPSGrowthToPER {
 			HashMap<String, Double> EPSGrowthToPER) {
 		for(String code : codeList) {
 			if(resultMap.containsKey(code) && EPSGrowthToPER.containsKey(code)) {
-				resultMap.get(code).setePSAverageGrowthRateToPER(EPSGrowthToPER.get(code).floatValue());
+				resultMap.get(code).setePSAveGrowthRateToPER(EPSGrowthToPER.get(code).floatValue());
 			}
 		}
 		return resultMap;

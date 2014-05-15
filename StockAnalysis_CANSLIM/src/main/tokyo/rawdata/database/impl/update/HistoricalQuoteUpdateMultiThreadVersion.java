@@ -53,15 +53,14 @@ public class HistoricalQuoteUpdateMultiThreadVersion {
 	
 	public static void main(String args[]) {
 		Long startTime = Calendar.getInstance().getTimeInMillis();
-		run();
+		run(8);
 		Long endTime = Calendar.getInstance().getTimeInMillis();
 		Integer minute = (int) ((endTime - startTime) / (long)(1000 * 60));
 		Integer second = (int)((endTime - startTime) / (long)(1000)) % 60;
 		System.out.println("running time : " + minute + " minutes " + second + " seconds");
 	}
 
-	public static void run() {
-		Integer splitNumber = 8;
+	public static void run(Integer splitNumber) {
 		System.out.println("start updating quotes...");
 		CodeListsDao clDao = new CodeListsDao();
 		codeLists = clDao.getCodeLists();

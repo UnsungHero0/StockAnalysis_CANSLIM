@@ -26,7 +26,7 @@ public class FinancialStatementAnalysisRecord {
 	private Float net_IncomeQuarterAverageGrowthRate = 0f;
 	private Double FiftyWeekAverageVolume = 0.0;
 	private Float todayToFiftyWeeksAverage = 0f;
-	private Float ePSAverageGrowthRateToPER = 0f;
+	private Float ePSAveGrowthRateToPER = 0f;
 	
 	public ArrayList<Float> getSalesQuarterArray() {
 		return salesQuarterArray;
@@ -253,12 +253,12 @@ public class FinancialStatementAnalysisRecord {
 		this.todayToFiftyWeeksAverage = todayToFiftyWeeksAverage;
 	}
 
-	public Float getePSAverageGrowthRateToPER() {
-		return ePSAverageGrowthRateToPER;
+	public Float getePSAveGrowthRateToPER() {
+		return ePSAveGrowthRateToPER;
 	}
 
-	public void setePSAverageGrowthRateToPER(Float ePSAverageGrowthRateToPER) {
-		this.ePSAverageGrowthRateToPER = ePSAverageGrowthRateToPER;
+	public void setePSAveGrowthRateToPER(Float ePSAveGrowthRateToPER) {
+		this.ePSAveGrowthRateToPER = ePSAveGrowthRateToPER;
 	}
 
 	public FinancialStatementAnalysisRecord() {
