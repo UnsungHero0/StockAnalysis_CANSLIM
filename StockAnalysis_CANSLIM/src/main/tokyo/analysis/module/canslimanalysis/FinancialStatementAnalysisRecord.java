@@ -105,17 +105,6 @@ public class FinancialStatementAnalysisRecord {
 		this.salesAverageGrowthRate = salesAverageGrowthRate;
 	}
 
-
-	public Float getrSIInAllStock() {
-		return rSIInAllStock;
-	}
-
-
-	public void setrSIInAllStock(Float rSIInAllStock) {
-		this.rSIInAllStock = rSIInAllStock;
-	}
-
-
 	public Float getrSIInDepartment() {
 		return rSIInDepartment;
 	}

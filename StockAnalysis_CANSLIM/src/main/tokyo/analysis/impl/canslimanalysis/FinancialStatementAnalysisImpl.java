@@ -90,10 +90,10 @@ public class FinancialStatementAnalysisImpl {
 									Entry<String, FinancialStatementAnalysisRecord> o2) {
 								return o2
 										.getValue()
-										.getePSAveGrowthRateToPER()
+										.getRSIInAllStock()
 										.compareTo(
 												o1.getValue()
-														.getePSAveGrowthRateToPER());
+														.getRSIInAllStock());
 							}
 						});
 		return resultEntrySet;
@@ -103,12 +103,12 @@ public class FinancialStatementAnalysisImpl {
 			ArrayList<Entry<String, FinancialStatementAnalysisRecord>> resultEntrySet) {
 		ArrayList<Entry<String, FinancialStatementAnalysisRecord>> result = new ArrayList<>();
 		for (Entry<String, FinancialStatementAnalysisRecord> record : resultEntrySet) {
-			if (record.getValue().getePSAverageGrowthRate() >= 0.10
-					&& record.getValue().getRSIInAllStock() >= 50
-					&& record.getValue().getTodayToFiftyWeeksAverage() >= 0) {
+			if (record.getValue().getePSAverageGrowthRate() >= 0.25
+					&& record.getValue().getRSIInAllStock() >= 80
+					&& record.getValue().getTodayToFiftyWeeksAverage() >= 0.7) {
 				boolean ifqualified = true;
 				for (Float value : record.getValue().getePSGrowthRateArray()) {
-					if (value < 0.0f) {
+					if (value < 0.2f) {
 						ifqualified = false;
 						break;
 					}

@@ -10,6 +10,7 @@ public class DBNameSpace {
 	private static final String QuarterFinancialStatementAnalysis_DB = "QuarterFinancialStatementAnalysisTokyo_test";
 	private static final String HistoricalstocksplitDb = "HistoricalStockSplit_test";
 	private static final String ShareHolding_DB = "ShareHolding_test";
+	private static final String ListedCompanies_Tokyo_DB = "ListedCompaniesTokyo";
 
 	public DBNameSpace() {
 		// TODO Auto-generated constructor stub
@@ -49,6 +50,10 @@ public class DBNameSpace {
 
 	public static String getShareholdingDb() {
 		return ShareHolding_DB;
+	}
+
+	public static String getListedcompaniesTokyoDb() {
+		return ListedCompanies_Tokyo_DB;
 	}
 	
 
