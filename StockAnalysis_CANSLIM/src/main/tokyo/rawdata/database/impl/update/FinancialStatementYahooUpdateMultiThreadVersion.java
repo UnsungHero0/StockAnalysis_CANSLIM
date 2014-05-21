@@ -59,8 +59,8 @@ public class FinancialStatementYahooUpdateMultiThreadVersion {
 			for (financialStatementUpdateThread thread : threadGroup) {
 				try {
 					thread.join();
+					System.out.println(thread.getName() + " has finished!");
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -71,7 +71,6 @@ public class FinancialStatementYahooUpdateMultiThreadVersion {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

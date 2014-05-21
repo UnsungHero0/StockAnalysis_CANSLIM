@@ -229,8 +229,6 @@ public class updateSectionInfo {
 		if (input.startsWith("</tr>") && ifUpdateOver == false) {
 			String inputRow[] = input.split("</tr><tr><td>");
 			for (String string : inputRow) {
-				// System.out.println(string);
-				// System.out.println(string.charAt(0));
 				try {
 					if (Character.isDigit(string.charAt(0))) {
 						if (string.contains("</table>")) {

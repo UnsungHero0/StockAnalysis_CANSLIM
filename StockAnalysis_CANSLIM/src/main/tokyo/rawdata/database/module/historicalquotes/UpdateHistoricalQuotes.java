@@ -59,13 +59,15 @@ public class UpdateHistoricalQuotes {
 
 	public void updateCode(String threadName) {
 		String code = "";
-		Boolean ifHasNext = true;
+		Boolean ifHasNext = false;
 		synchronized (HistoricalQuoteUpdateMultiThreadVersion.codeLists) {
-			code = HistoricalQuoteUpdateMultiThreadVersion.codeLists.get(0);
-			HistoricalQuoteUpdateMultiThreadVersion.codeLists.remove(0);
-			ifHasNext = true;
+			if (HistoricalQuoteUpdateMultiThreadVersion.codeLists.size() > 0) {
+				code = HistoricalQuoteUpdateMultiThreadVersion.codeLists.get(0);
+				HistoricalQuoteUpdateMultiThreadVersion.codeLists.remove(0);
+				ifHasNext = true;
+			}
 		}
-		while(ifHasNext == true) {
+		while (ifHasNext == true) {
 			update(code);
 			synchronized (HistoricalQuoteUpdateMultiThreadVersion.count) {
 				System.out.println(threadName + ": " + year + "/" + month + "/"
@@ -74,8 +76,9 @@ public class UpdateHistoricalQuotes {
 						+ " to go!");
 			}
 			synchronized (HistoricalQuoteUpdateMultiThreadVersion.codeLists) {
-				if (HistoricalQuoteUpdateMultiThreadVersion.codeLists.size() != 0) {
-					code = HistoricalQuoteUpdateMultiThreadVersion.codeLists.get(0);
+				if (HistoricalQuoteUpdateMultiThreadVersion.codeLists.size() > 0) {
+					code = HistoricalQuoteUpdateMultiThreadVersion.codeLists
+							.get(0);
 					HistoricalQuoteUpdateMultiThreadVersion.codeLists.remove(0);
 				} else {
 					ifHasNext = false;
@@ -171,21 +174,16 @@ public class UpdateHistoricalQuotes {
 		if (input.startsWith("</tr>") && ifUpdateOver == false) {
 			String inputRow[] = input.split("</tr><tr><td>");
 			for (String string : inputRow) {
-				// System.out.println(string);
-				// System.out.println(string.charAt(0));
 				try {
 					if (Character.isDigit(string.charAt(0))) {
 						if (string.contains("</table>")) {
 							string = string.substring(0, string.length() - 13);
 						}
 						if (string.contains("class") && !string.contains("分割")) {
-							// System.out.println(string);
 							string1 = string.substring(0,
 									string.indexOf("class") - 14);
-							// System.out.println(string1);
 							string = string.substring(
 									string.indexOf("\">") + 6, string.length());
-							// System.out.println(string);
 							string1 += "</td><td>";
 							String inputArray[] = string1.split("</td><td>");
 							ArrayList<Integer> result = new ArrayList<>();

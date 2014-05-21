@@ -2,6 +2,7 @@ package impl.update;
 
 import java.util.Calendar;
 
+import module.ListOfTSEListed.ListOfTSEListedUpdate;
 import module.shareholding.ShareHoldingUpdateMultiThread;
 
 public class TotalUpdate {
@@ -19,8 +20,9 @@ public class TotalUpdate {
 	public static void run(){
 		Long startTime = Calendar.getInstance().getTimeInMillis();
 		
-		HistoricalQuoteUpdateMultiThreadVersion.run(8);
-		FinancialStatementYahooUpdateMultiThreadVersion.run(8);
+		//ListOfTSEListedUpdateImpl.run();
+		//HistoricalQuoteUpdateMultiThreadVersion.run(8);
+		//FinancialStatementYahooUpdateMultiThreadVersion.run(8);
 		ShareHoldingSplitUpdateMultiThreadVersion.run();
 		ShareHoldingUpdateMultiThread.run(8);
 		

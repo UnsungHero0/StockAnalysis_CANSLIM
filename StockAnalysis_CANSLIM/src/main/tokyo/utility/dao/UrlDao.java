@@ -15,21 +15,26 @@ import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-import module.ListOfTSEListed.ListOfTSEListedFileURL;
 
 public class UrlDao {
+
+	private static Integer maxTry = 10;
 
 	public UrlDao() {
 		// TODO Auto-generated constructor stub
 	}
 
 	public static ArrayList<String> getUrlBuffer(String urlString) {
+		Integer tryTimes = 0;
 		ArrayList<String> result = new ArrayList<>();
 		BufferedReader fi = null;
 		Boolean ifReaded = false;
 		HttpURLConnection set = null;
 		while (ifReaded == false) {
 			try {
+				if (tryTimes > maxTry) {
+					throw new TooManyTryTimesException();
+				}
 				result = new ArrayList<>();
 				URL url = new URL(urlString);
 				set = (HttpURLConnection) url.openConnection();
@@ -49,8 +54,15 @@ public class UrlDao {
 					}
 				}
 				set = (HttpURLConnection) url.openConnection();
-				fi = new BufferedReader(new InputStreamReader(
-						set.getInputStream(), charset));
+
+				if (charset != null) {
+					fi = new BufferedReader(new InputStreamReader(
+							set.getInputStream(), charset));
+				} else {
+					fi = new BufferedReader(new InputStreamReader(
+							set.getInputStream()));
+				}
+
 				while ((input = fi.readLine()) != null) {
 					result.add(input);
 				}
@@ -58,56 +70,91 @@ public class UrlDao {
 			} catch (SocketTimeoutException e) {
 				set.disconnect();
 				System.out.println("time out");
+				tryTimes++;
 			} catch (ConnectException e) {
 				set.disconnect();
 				System.out.println("connection timeout");
+				tryTimes++;
 			} catch (IOException e) {
 				set.disconnect();
 				e.printStackTrace();
+				tryTimes++;
+			} catch (TooManyTryTimesException e) {
+				e.printStackTrace();
+				ifReaded = true;
 			}
 		}
 		return result;
 	}
-	
+
 	public static ArrayList<ArrayList<String>> getExcelFromUrl(String urlString) {
+		Integer tryTimes = 0;
 		String fileURL = urlString;
 		ArrayList<ArrayList<String>> result = new ArrayList<>();
 		URLConnection conn = null;
-		try {
-			URL url = new URL(fileURL);
-			conn = url.openConnection();
-			conn.setReadTimeout(1000 * 30);
-			InputStream is = conn.getInputStream();
+		Boolean ifReaded = false;
+		while (ifReaded == false) {
+			try {
+				if (tryTimes > maxTry) {
+					throw new TooManyTryTimesException();
+				}
+				URL url = new URL(fileURL);
+				conn = url.openConnection();
+				conn.setReadTimeout(1000 * 30);
+				InputStream is = conn.getInputStream();
 
-			int irows = 0, icols = 0;
-			Workbook rwb = Workbook.getWorkbook(is);
+				int irows = 0, icols = 0;
+				Workbook rwb = Workbook.getWorkbook(is);
 
-			Sheet rs = rwb.getSheet(0);
-			irows = rs.getRows();
-			icols = rs.getColumns();
-			for (int i = 0; i < irows; i++) {
-				ArrayList<String> oneline = new ArrayList<>();
-				Boolean ifHasNext = false;
-				for (int j = 0; j < icols; j++) {
-					Cell cell = rs.getCell(j, i);
-					String strc11 = cell.getContents();
-					if (!strc11.trim().equals("")) {
-						oneline.add(strc11);
-						ifHasNext = true;
+				Sheet rs = rwb.getSheet(0);
+				irows = rs.getRows();
+				icols = rs.getColumns();
+				for (int i = 0; i < irows; i++) {
+					ArrayList<String> oneline = new ArrayList<>();
+					Boolean ifHasNext = false;
+					for (int j = 0; j < icols; j++) {
+						Cell cell = rs.getCell(j, i);
+						String strc11 = cell.getContents();
+						if (!strc11.trim().equals("")) {
+							oneline.add(strc11);
+							ifHasNext = true;
+						}
+					}
+					if (ifHasNext == true) {
+						result.add(oneline);
+					} else {
+						break;
 					}
 				}
-				if (ifHasNext == true) {
-					result.add(oneline);
-				} else {
-					break;
-				}
+				rwb.close();
+				ifReaded = true;
+			} catch (SocketTimeoutException e) {
+				System.out.println("time out");
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (BiffException e) {
+				e.printStackTrace();
+			} catch (TooManyTryTimesException e) {
+				e.printStackTrace();
+				ifReaded = true;
 			}
-			rwb.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (BiffException e) {
-			e.printStackTrace();
 		}
 		return result;
+	}
+}
+
+class TooManyTryTimesException extends Exception {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public TooManyTryTimesException() {
+		super();
+	}
+
+	public TooManyTryTimesException(String msg) {
+		super(msg);
 	}
 }

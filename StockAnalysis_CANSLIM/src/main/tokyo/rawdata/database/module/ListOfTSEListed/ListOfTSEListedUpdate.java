@@ -1,6 +1,8 @@
 package module.ListOfTSEListed;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -8,46 +10,28 @@ import commontool.JDBCUtil;
 import dao.UrlDao;
 import namespace.DBNameSpace;
 
-public class ListOfTSEListedDownload {
-	private final static String DROPTABLESQL = "DROP TABLE IF EXISTS "
+public class ListOfTSEListedUpdate {
+
+	private static final String GETDBCODESQL = "SELECT DISTINCT(Local_Code) code FROM "
 			+ DBNameSpace.getListedcompaniesTokyoDb();
 
-	private final static String CREATETABLESQL = "CREATE TABLE IF NOT EXISTS "
-			+ DBNameSpace.getListedcompaniesTokyoDb() + " ("
-			+ "`Effective_Date` DATE NOT NULL,"
-			+ "`Country` VARCHAR(50) NOT NULL,"
-			+ "`Department` VARCHAR(100) NOT NULL,"
-			+ "`Local_Code` INT NOT NULL,"
-			+ "`Name_English` VARCHAR(100) NOT NULL," + "`33_Sector_code` INT,"
-			+ "`33_Sector_name` VARCHAR(100)," + "`17_Sector_code` INT,"
-			+ "`17_Sector_name` VARCHAR(100),"
-			+ "`Size_Code_New_Index_Series` INT,"
-			+ "`Size_New_Index_Series` VARCHAR(100),"
-			+ "PRIMARY KEY (`Local_Code`, `Name_English`))";
+	public static void updataListedCompanyList(Connection con) {
 
-	public static void downloadListedCompanyList(Connection con) {
+		// gather latestInfo
+		HashMap<String, ArrayList<ArrayList<String>>> listedInfo = getListedInfo();
+
+		// gather all latest local code
+		ArrayList<String> latestCodeList = getLatestCode(listedInfo);
+
+		// gather all local code in DB
+		ArrayList<String> dbCodeList = getDBCode(con);
+
+		// find the new code
+		ArrayList<String> newCodeList = findNewCode(latestCodeList, dbCodeList);
 		
-		
-			// drop table
-			//dropTable(con);
+		// Insert into Table
+		insertIntoDB(listedInfo, newCodeList, con);
 
-			// create table
-			//createTable(con);
-
-			// gather latestInfo
-			HashMap<String, ArrayList<ArrayList<String>>> listedInfo = getListedInfo();
-
-			// Insert into Table
-			insertIntoDB(listedInfo, con);
-
-	}
-
-	public static void dropTable(Connection con) {
-		JDBCUtil.excuteQuery(DROPTABLESQL, con);
-	}
-
-	public static void createTable(Connection con) {
-		JDBCUtil.excuteQuery(CREATETABLESQL, con);
 	}
 
 	public static HashMap<String, ArrayList<ArrayList<String>>> getListedInfo() {
@@ -61,25 +45,66 @@ public class ListOfTSEListedDownload {
 		return result;
 	}
 
+	public static ArrayList<String> getLatestCode(
+			HashMap<String, ArrayList<ArrayList<String>>> input) {
+		ArrayList<String> result = new ArrayList<>();
+		for (ArrayList<ArrayList<String>> element : input.values()) {
+			for (ArrayList<String> oneRecord : element) {
+				result.add(oneRecord.get(1));
+			}
+		}
+		return result;
+	}
+
+	public static ArrayList<String> getDBCode(Connection con) {
+		ArrayList<String> result = new ArrayList<>();
+		ResultSet rs = JDBCUtil.excuteQueryWithResult(GETDBCODESQL, con);
+		try {
+			while (rs.next()) {
+				result.add(rs.getString("code"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public static ArrayList<String> findNewCode(
+			ArrayList<String> latestCodeList, ArrayList<String> dbCodeList) {
+		ArrayList<String> result = new ArrayList<>();
+		for (String code : latestCodeList) {
+			if (!dbCodeList.contains(code)) {
+				result.add(code);
+			}
+		}
+		return result;
+	}
+
 	public static void insertIntoDB(
-			HashMap<String, ArrayList<ArrayList<String>>> input, Connection con) {
+			HashMap<String, ArrayList<ArrayList<String>>> input,
+			ArrayList<String> newCode, Connection con) {
+
 		for (String sectionName : input.keySet()) {
 			String field = "";
 			String value = "";
 			for (int i = 0; i < input.get(sectionName).size(); i++) {
-				if (i == 0) {
-					field = getField(input.get(sectionName).get(i));
-				} else {
-					value += getValue(input.get(sectionName).get(i),sectionName) + ",";
-					
+				if (newCode.contains(input.get(sectionName).get(i).get(1))) {
+					if (i == 0) {
+						field = getField(input.get(sectionName).get(i));
+					} else {
+						value += getValue(input.get(sectionName).get(i),
+								sectionName) + ",";
+
+					}
 				}
 			}
-			value = value.substring(0,value.length()-1);
-			JDBCUtil.insertData(
-					DBNameSpace.getListedcompaniesTokyoDb(), field,
-					value, con);
+			if (value.contains(",")) {
+				value = value.substring(0, value.length() - 1);
+				JDBCUtil.insertData(DBNameSpace.getListedcompaniesTokyoDb(),
+						field, value, con);
+			}
 		}
-		// TODO
+
 	}
 
 	public static String getField(ArrayList<String> input) {
@@ -96,7 +121,7 @@ public class ListOfTSEListedDownload {
 		for (String oneValue : input) {
 			if (oneValue.equals("-") && oneValue.length() == 1) {
 				value += "null,";
-			} else if (!ifAllnumber(oneValue) ) {
+			} else if (!ifAllnumber(oneValue)) {
 				value += "'" + modifyName(oneValue) + "',";
 			} else {
 				value += oneValue + ",";
@@ -105,11 +130,11 @@ public class ListOfTSEListedDownload {
 		value = value + "'" + sectionName + "','Tokyo')";
 		return value;
 	}
-	
+
 	public static Boolean ifAllnumber(String input) {
 		Boolean result = true;
-		for(char element : input.toCharArray()) {
-			if(!Character.isDigit(element)) {
+		for (char element : input.toCharArray()) {
+			if (!Character.isDigit(element)) {
 				result = false;
 				break;
 			}

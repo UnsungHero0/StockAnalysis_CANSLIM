@@ -24,7 +24,7 @@ import jdbcdao.CodeListsDao;
 public class ShareHoldingSplitUpdateMultiThreadVersion {
 
 	public ShareHoldingSplitUpdateMultiThreadVersion() {
-		
+
 		run();
 
 	}
@@ -32,32 +32,20 @@ public class ShareHoldingSplitUpdateMultiThreadVersion {
 	public static void run() {
 		ArrayList<String> codeList = new ArrayList<>();
 		codeList = new CodeListsDao().getCodeListsFromFinancialStatement();
-		ArrayList<HistoricalDataDownloadVolumeSplitRecord> result = new ArrayList<>();
 		Connection con = null;
-		for (String code : codeList) {
-			HistoricalDataDownloadVolumeSplitRecord record = new HistoricalDataDownloadVolumeSplitRecord();
-			record.setLocal_Code(code);
-			HashMap<String, Float> splitInfo = fetchInfoFromUrl(code);
-			record.setSplitHistory(splitInfo);
-			result.add(record);
-			/*
-			Set<String> keySet = record.getSplitHistory().keySet();
-
-			for (String key : keySet) {
-				System.out.println(record.getLocal_Code() + "  " + key + "  "
-						+ record.getSplitHistory().get(key));
-			}
-
-			System.out.println("---  " + code + " is ok, "
-					+ (codeList.size() - codeList.indexOf(code)) + " to go ");
-					*/
-		}
 		try {
 			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
-			String tableName = DBNameSpace.getHistoricalstocksplitDb();
-			JDBCUtil.dropTable(tableName, con);
-			HistoricalDataDownloadVolumeSplitCreateTableAndInsertData
-					.createTableAndInsertData(result, con);
+			for (String code : codeList) {
+				HistoricalDataDownloadVolumeSplitRecord record = new HistoricalDataDownloadVolumeSplitRecord();
+				record.setLocal_Code(code);
+				HashMap<String, Float> splitInfo = fetchInfoFromUrl(code);
+				record.setSplitHistory(splitInfo);
+				HistoricalDataDownloadVolumeSplitCreateTableAndInsertData
+						.insertDataIntoDb(record, con);
+				System.out.println(code + " is ok, "
+						+ (codeList.size() - codeList.indexOf(code))
+						+ " to go ");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -126,7 +114,7 @@ public class ShareHoldingSplitUpdateMultiThreadVersion {
 		}
 
 		public void run() {
-			//TODO
+			// TODO
 		}
 	}
 }
