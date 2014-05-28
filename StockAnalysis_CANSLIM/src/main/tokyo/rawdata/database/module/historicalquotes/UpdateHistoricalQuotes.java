@@ -70,7 +70,7 @@ public class UpdateHistoricalQuotes {
 		while (ifHasNext == true) {
 			update(code);
 			synchronized (HistoricalQuoteUpdateMultiThreadVersion.count) {
-				System.out.println(threadName + ": " + year + "/" + month + "/"
+				System.out.println("HistoricalQuotes : " + threadName + ": " + year + "/" + month + "/"
 						+ day + "  :  " + code + " is updated, "
 						+ --HistoricalQuoteUpdateMultiThreadVersion.count
 						+ " to go!");

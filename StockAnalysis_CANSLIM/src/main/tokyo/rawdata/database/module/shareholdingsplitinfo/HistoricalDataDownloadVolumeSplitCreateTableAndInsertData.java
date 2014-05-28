@@ -64,8 +64,34 @@ public class HistoricalDataDownloadVolumeSplitCreateTableAndInsertData {
 		}
 
 	}
-	
-	public static Boolean checkIfHasRecord(String code, String date, Connection con) {
+
+	public static void updateData(
+			HistoricalDataDownloadVolumeSplitRecord input, Connection con) {
+		Set<String> keySet = input.getSplitHistory().keySet();
+		String field = "(Local_Code, Split_Date, Rate)";
+		try {
+			for (String key : keySet) {
+
+				if (!checkIfHasRecord(input.getLocal_Code(), key, con)) {
+
+					String value = "('" + input.getLocal_Code() + "', '" + key
+							+ "', " + input.getSplitHistory().get(key) + ")";
+					String insertSql = "INSERT INTO "
+							+ DBNameSpace.getHistoricalstocksplitDb() + " "
+							+ field + " VALUES " + value;
+
+					con.prepareStatement(insertSql).execute();
+				}
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public static Boolean checkIfHasRecord(String code, String date,
+			Connection con) {
 		Boolean result = null;
 		try {
 			PreparedStatement stmt = con.prepareStatement(CHECKIFHAS);
@@ -73,10 +99,15 @@ public class HistoricalDataDownloadVolumeSplitCreateTableAndInsertData {
 			stmt.setString(2, date);
 			ResultSet rs = stmt.executeQuery();
 			rs.next();
-			if(rs.getInt("result"))
+			if (rs.getInt("result") > 0) {
+				result = true;
+			} else {
+				result = false;
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return result;
 	}
 
 }

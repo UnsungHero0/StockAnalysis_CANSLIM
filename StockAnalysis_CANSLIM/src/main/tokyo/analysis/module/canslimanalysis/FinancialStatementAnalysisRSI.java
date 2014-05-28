@@ -78,9 +78,7 @@ public class FinancialStatementAnalysisRSI {
 			 * System.out.println(code + " " + RSI.get(code));
 			 */
 		}
-
 		return resultMap;
-
 	}
 	
 	public HashMap<String, FinancialStatementAnalysisSectionRecord> calculateSectionRSI(

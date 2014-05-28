@@ -1,9 +1,10 @@
 package impl.update;
 
-/**
+/**update the data in DB
  * the volume is not adjusted after the stock split
  * this program is used for adjust the volume , so that we evaluate the true volume
- *
+ * 
+ *MultiThread has not been done yet
  */
 
 import java.sql.Connection;
@@ -41,8 +42,8 @@ public class ShareHoldingSplitUpdateMultiThreadVersion {
 				HashMap<String, Float> splitInfo = fetchInfoFromUrl(code);
 				record.setSplitHistory(splitInfo);
 				HistoricalDataDownloadVolumeSplitCreateTableAndInsertData
-						.insertDataIntoDb(record, con);
-				System.out.println(code + " is ok, "
+						.updateData(record, con);
+				System.out.println("ShareHoldingSplit : " + code + " is ok, "
 						+ (codeList.size() - codeList.indexOf(code))
 						+ " to go ");
 			}
@@ -94,7 +95,6 @@ public class ShareHoldingSplitUpdateMultiThreadVersion {
 							String outputDate = sdfOutput.format(date);
 							resultMap.put(outputDate, rate);
 						} catch (ParseException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 					}

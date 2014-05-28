@@ -93,7 +93,7 @@ public class FinancialStatementYahooUpdateMultiThreadVersion {
 						.FinancialStatemetYahooJDBCUpdateDataImpl(code, con);
 			}
 			synchronized (totalCount) {
-				System.out.println(name + ": " + code +  " is updated, " + --totalCount + " is left");
+				System.out.println("FinancialStatement : " + name + ": " + code +  " is updated, " + --totalCount + " is left");
 			}
 			synchronized (codeList) {
 				if (codeList.size() != 0) {

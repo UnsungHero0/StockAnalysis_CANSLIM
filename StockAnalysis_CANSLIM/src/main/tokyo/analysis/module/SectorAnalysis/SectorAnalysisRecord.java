@@ -8,9 +8,12 @@ public class SectorAnalysisRecord {
 	private Integer sectorCode = 0;
 	private String sectorName = "";
 	private Integer sectorRSI = 0;
+	private Integer sectorWeightRSI = 0;
 	private Double sectorValue = 0.0;
 	private Float sectorEPS = 0f;
+	private Float sectorWeightEPS = 0f;
 	private Float sectorPER = 0f;
+	private Float sectorWeightPER = 0f;
 	private ArrayList<String> codeList = new ArrayList<>();
 	
 	public Integer getSectorCode() {
@@ -54,6 +57,24 @@ public class SectorAnalysisRecord {
 	}
 	public void setCodeList(ArrayList<String> codeList) {
 		this.codeList = codeList;
+	}
+	public Float getSectorWeightEPS() {
+		return sectorWeightEPS;
+	}
+	public void setSectorWeightEPS(Float sectorWeightEPS) {
+		this.sectorWeightEPS = sectorWeightEPS;
+	}
+	public Float getSectorWeightPER() {
+		return sectorWeightPER;
+	}
+	public void setSectorWeightPER(Float sectorWeightPER) {
+		this.sectorWeightPER = sectorWeightPER;
+	}
+	public Integer getSectorWeightRSI() {
+		return sectorWeightRSI;
+	}
+	public void setSectorWeightRSI(Integer sectorWeightRSI) {
+		this.sectorWeightRSI = sectorWeightRSI;
 	}
 	
 	
