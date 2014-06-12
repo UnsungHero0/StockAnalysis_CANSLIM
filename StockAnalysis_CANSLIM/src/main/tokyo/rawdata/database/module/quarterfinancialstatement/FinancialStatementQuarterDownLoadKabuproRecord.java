@@ -2,11 +2,12 @@ package module.quarterfinancialstatement;
 
 public class FinancialStatementQuarterDownLoadKabuproRecord {
 
-	private String Country = "Japan";
+	private String Country = "Tokyo";
 	private String Local_Code = null;
 	private String Name_English = null;
 	private String Fiscal_Year = null;
 	private String Period = null;
+	private String Type = null;
 	private String Announcement_Date = null;
 	private Long Sales = null;
 	private Long Operating_Income = null;
@@ -83,7 +84,15 @@ public class FinancialStatementQuarterDownLoadKabuproRecord {
 	public void setNet_Income(Long net_Income) {
 		Net_Income = net_Income;
 	}
+	
+	public String getType() {
+		return Type;
+	}
 
+	public void setType(String Type) {
+		this.Type = Type;
+	}
+	
 	public FinancialStatementQuarterDownLoadKabuproRecord() {
 		// TODO Auto-generated constructor stub
 	}
@@ -92,7 +101,7 @@ public class FinancialStatementQuarterDownLoadKabuproRecord {
 		String string = null;
 		string = "('" + getCountry() + "', " + getLocal_Code() + ", '"
 				+ getName_English() + "', " + getFiscal_Year() + ", '"
-				+ getPeriod() + "', " + getAnnouncement_Date() + ", "
+				+ getPeriod() + "', '" + getType() + "', " + getAnnouncement_Date() + ", "
 				+ getSales() + ", " + getOperating_Income() + ", "
 				+ getNet_Income() + ")";
 		return string;
@@ -100,7 +109,7 @@ public class FinancialStatementQuarterDownLoadKabuproRecord {
 
 	public String getFieldsForSqlDB() {
 		String string = null;
-		string = "(Country, Local_Code, Name_English, Fiscal_Year, Period, "
+		string = "(Country, Local_Code, Name_English, Fiscal_Year, Period, Type, "
 				+ "Announcement_Date, Sales, Operating_Income, Net_Income)";
 		return string;
 	}

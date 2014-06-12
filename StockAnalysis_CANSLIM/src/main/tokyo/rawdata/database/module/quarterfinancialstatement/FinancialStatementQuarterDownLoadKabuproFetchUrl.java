@@ -12,7 +12,6 @@ import java.util.Set;
 
 import dao.UrlDao;
 
-
 public class FinancialStatementQuarterDownLoadKabuproFetchUrl {
 
 	public FinancialStatementQuarterDownLoadKabuproFetchUrl() {
@@ -41,8 +40,8 @@ public class FinancialStatementQuarterDownLoadKabuproFetchUrl {
 					for (String element : inputList) {
 						if (element.contains("htm")) {
 							i = 0;
-							element = element.substring(element
-									.indexOf("htm") + 4);
+							element = element
+									.substring(element.indexOf("htm") + 4);
 							setValueIndex4(element, newRecord);
 							if (!(newRecord.getFiscal_Year().contains("修") || newRecord
 									.getFiscal_Year().contains("予"))) {
@@ -119,34 +118,37 @@ public class FinancialStatementQuarterDownLoadKabuproFetchUrl {
 			}
 		}
 		/*
-		for (FinancialStatementQuarterDownLoadKabuproRecord record : result) {
-			System.out.println(record.getValuesForSqlDB());
-		}
-		*/
+		 * for (FinancialStatementQuarterDownLoadKabuproRecord record : result)
+		 * { System.out.println(record.getValuesForSqlDB()); }
+		 */
 		return result;
 	}
 
+	// TODO
 	public static FinancialStatementQuarterDownLoadKabuproRecord setValueIndex0(
 			String input, FinancialStatementQuarterDownLoadKabuproRecord record) {
-		if (!(input.contains("修") || input.contains("予"))) {
-			record.setFiscal_Year(input.substring(0, 4));
-			if (input.contains("通期")) {
-				record.setPeriod("Quarter4");
-				record.setFiscal_Year(input.substring(0, 4) + "0101");
-			} else if (input.contains("第3")) {
-				record.setPeriod("Quarter3");
-				record.setFiscal_Year(input.substring(0, 4) + "0101");
-			} else if (input.contains("第2")) {
-				record.setPeriod("Quarter2");
-				record.setFiscal_Year(input.substring(0, 4) + "0101");
-			} else if (input.contains("第1")) {
-				record.setPeriod("Quarter1");
-				record.setFiscal_Year(input.substring(0, 4) + "0101");
-			}
-		} else {
-			record.setFiscal_Year(input);
-			record.setPeriod("Quarter4_Prediction");
+		record.setFiscal_Year(input.substring(0, 4));
+		if (input.contains("通期")) {
+			record.setPeriod("Quarter4");
+			record.setFiscal_Year(input.substring(0, 4) + "0101");
+		} else if (input.contains("第3")) {
+			record.setPeriod("Quarter3");
+			record.setFiscal_Year(input.substring(0, 4) + "0101");
+		} else if (input.contains("第2")) {
+			record.setPeriod("Quarter2");
+			record.setFiscal_Year(input.substring(0, 4) + "0101");
+		} else if (input.contains("第1")) {
+			record.setPeriod("Quarter1");
+			record.setFiscal_Year(input.substring(0, 4) + "0101");
 		}
+		if (!(input.contains("修") || input.contains("予"))) {
+			record.setType("Declared");
+		} else if (input.contains("予")) {
+			record.setType("Prediction");
+		} else if (input.contains("修")) {
+			record.setType("Fixed");
+		}
+		record.setFiscal_Year(input);
 		return record;
 	}
 

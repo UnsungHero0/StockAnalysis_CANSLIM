@@ -6,7 +6,7 @@ public class DBNameSpace {
 	private static final String FinancailStatement_DB = "FinancialStatementTokyo_test";
 	private static final String Section_DB = "Section_Tokyo";
 	private static final String StockTokyo_DB = "Stock_Tokyo";
-	private static final String QuarterFinancialStatement_DB = "QuarterFinancialStatementTokyo_test";
+	private static final String QuarterFinancialStatement_DB = "QuarterFinancialStatementTokyo_test_new";
 	private static final String QuarterFinancialStatementAnalysis_DB = "QuarterFinancialStatementAnalysisTokyo_test";
 	private static final String HistoricalstocksplitDb = "HistoricalStockSplit_test";
 	private static final String ShareHolding_DB = "ShareHolding_test";

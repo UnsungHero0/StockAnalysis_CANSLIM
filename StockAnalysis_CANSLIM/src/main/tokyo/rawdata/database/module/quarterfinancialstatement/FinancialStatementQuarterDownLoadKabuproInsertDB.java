@@ -4,22 +4,26 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import namespace.DBNameSpace;
+
 public class FinancialStatementQuarterDownLoadKabuproInsertDB {
 	
-	private static final String dropTableSql = "DROP TABLE IF EXISTS `TokyoStockExchange_test`.`QuarterFinancialStatementTokyo_test`";
+	private static final String dropTableSql = "DROP TABLE IF EXISTS " + DBNameSpace.getQuarterfinancialstatementDb();
 	
-	private static final String createQuarterFinancialStatementSql = "CREATE TABLE IF NOT EXISTS `TokyoStockExchange_test`.`QuarterFinancialStatementTokyo_test` "
-			+ "(Country VARCHAR(50) NOT NULL Default 'Japan', "
+	private static final String createQuarterFinancialStatementSql = 
+			"CREATE TABLE IF NOT EXISTS " + DBNameSpace.getQuarterfinancialstatementDb() + " "
+			+ "(Country VARCHAR(50) NOT NULL Default 'Tokyo', "
 			+ "Local_Code VARCHAR(20) , "
 			+ "Name_English VARCHAR(100) , "
 			+ "Fiscal_Year Date, "
 			+ "Period VARCHAR(20), "
+			+ "Type VARCHAR(20), "
 			+ "Announcement_Date Date, "
 			+ "Sales BIGINT, "
 			+ "Operating_Income BIGINT, "
 			+ "Net_Income BIGINT, "
 			+ "PRIMARY KEY (Local_Code, Fiscal_Year, Period));";
-
+	
 	public FinancialStatementQuarterDownLoadKabuproInsertDB() {
 		// TODO Auto-generated constructor stub
 	}
@@ -73,5 +77,7 @@ public class FinancialStatementQuarterDownLoadKabuproInsertDB {
 			}
 		}
 	}
+	
+	
 
 }
