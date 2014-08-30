@@ -32,5 +32,27 @@ public class DataSourceUtil {
 		}
 		return dataSource;
 	}
+	
+	public static DataSource DINGUNSW(){
+		String host = "149.171.37.76";
+		Integer port = 3306;
+		String dbname = "test";
+		String username = "root";
+		String password = "4573";
+		MysqlDataSource dataSource = new MysqlDataSource();
+		
+		dataSource.setServerName(host);
+		dataSource.setPort(port);
+		dataSource.setDatabaseName(dbname);
+		dataSource.setUser(username);
+		dataSource.setPassword(password);
+		try {
+			dataSource.setLoginTimeout(600);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return dataSource;
+	}
 
 }

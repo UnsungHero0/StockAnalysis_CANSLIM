@@ -4,11 +4,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
 
+import javax.sql.DataSource;
+
 import datasource.DataSourceUtil;
 import module.ListOfTSEListed.ListOfTSEListedDownload;
 import namespace.DBNameSpace;
 
 public class ListOfTSEListedDownloadImpl {
+	
+	private static final DataSource dataSource = DataSourceUtil.DINGUNSW();
+	
 	public ListOfTSEListedDownloadImpl() {
 		// TODO Auto-generated constructor stub
 	}
@@ -34,7 +39,7 @@ public class ListOfTSEListedDownloadImpl {
 
 		Connection con = null;
 		try {
-			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
+			con = dataSource.getConnection();
 			ListOfTSEListedDownload.downloadListedCompanyList(con);
 		} catch (SQLException e) {
 			e.printStackTrace();

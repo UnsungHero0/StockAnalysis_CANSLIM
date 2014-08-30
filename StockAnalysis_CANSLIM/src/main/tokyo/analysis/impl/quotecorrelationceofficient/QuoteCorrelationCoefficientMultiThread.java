@@ -40,7 +40,7 @@ public class QuoteCorrelationCoefficientMultiThread {
 	public static void main(String args[]) {
 		Calendar calendar = Calendar.getInstance();
 		Long startTime = calendar.getTimeInMillis();
-		threadNumber = 20;
+		threadNumber = 8;
 		run();
 		Long endTime = Calendar.getInstance().getTimeInMillis();
 		Integer minute = (int) ((endTime - startTime) / (long)(1000 * 60));

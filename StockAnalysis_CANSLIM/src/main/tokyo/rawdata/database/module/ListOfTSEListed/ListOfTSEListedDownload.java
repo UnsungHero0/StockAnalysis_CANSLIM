@@ -28,11 +28,11 @@ public class ListOfTSEListedDownload {
 	public static void downloadListedCompanyList(Connection con) {
 		
 		
-			// drop table
-			//dropTable(con);
+			//drop table
+			dropTable(con);
 
 			// create table
-			//createTable(con);
+			createTable(con);
 
 			// gather latestInfo
 			HashMap<String, ArrayList<ArrayList<String>>> listedInfo = getListedInfo();
