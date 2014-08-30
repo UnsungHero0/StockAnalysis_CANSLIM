@@ -23,7 +23,7 @@ public class CreateQuotesTableFromUrl {
 	private static String code = "";
 	private static Integer page = 1;
 	private final static String deleteQutoesTalbeSql = "DROP TABLE IF EXISTS ?_HistoricalQuotes_Tokyo";
-	private final static String initialNewQuotesTableSql = "CREATE TABLE IF NOT EXISTS TokyoStockExchange_test."
+	private final static String initialNewQuotesTableSql = "CREATE TABLE IF NOT EXISTS TokyoExchange."
 			+ "?_HistoricalQuotes_Tokyo"
 			+ " ("
 			+ "`Country` VARCHAR(50) NOT NULL Default ?,"
@@ -134,7 +134,7 @@ public class CreateQuotesTableFromUrl {
 	public static void initialNewQuotesTable(String code, Connection con) {
 
 		try {
-			String sqlFindName = "SELECT Name_English FROM Section_Tokyo WHERE Local_Code = "
+			String sqlFindName = "SELECT Name_English FROM listedcompaniestokyo WHERE Local_Code = "
 					+ code;
 			ResultSet rs = con.prepareStatement(sqlFindName).executeQuery();
 			rs.next();

@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.sql.DataSource;
+
 import datasource.DataSourceUtil;
 
 
@@ -15,13 +17,13 @@ public class CodeListsDao {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ArrayList<String> getCodeLists() {
+	public ArrayList<String> getCodeLists(DataSource dataSource) {
 		//TODO
 		ArrayList<String> codeList = new ArrayList<>();
-		String selectCodeListsSql = "SELECT Local_Code FROM Section_Tokyo";
+		String selectCodeListsSql = "SELECT Local_Code FROM listedcompaniestokyo";
 		Connection con = null;
 		try {
-			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
+			con = dataSource.getConnection();
 			ResultSet rs = con.prepareStatement(selectCodeListsSql).executeQuery();
 			while (rs.next()) {
 				codeList.add(rs.getString("Local_Code"));

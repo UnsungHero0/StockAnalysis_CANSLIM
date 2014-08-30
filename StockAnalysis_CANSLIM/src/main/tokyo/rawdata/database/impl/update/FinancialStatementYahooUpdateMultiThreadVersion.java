@@ -42,7 +42,7 @@ public class FinancialStatementYahooUpdateMultiThreadVersion {
 
 	public static void run(Integer splitNumber) {
 		threadNumber = splitNumber;
-		codeList = new CodeListsDao().getCodeLists();
+		codeList = new CodeListsDao().getCodeLists(DataSourceUtil.DINGUNSW());
 		totalCount = codeList.size();
 
 		System.out.println("all record is : " + totalCount);

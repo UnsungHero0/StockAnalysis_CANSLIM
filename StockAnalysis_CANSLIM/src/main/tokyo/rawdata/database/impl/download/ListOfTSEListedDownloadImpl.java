@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.Calendar;
 
 import javax.sql.DataSource;
-
 import datasource.DataSourceUtil;
 import module.ListOfTSEListed.ListOfTSEListedDownload;
 import namespace.DBNameSpace;
@@ -17,8 +16,12 @@ public class ListOfTSEListedDownloadImpl {
 	public ListOfTSEListedDownloadImpl() {
 		// TODO Auto-generated constructor stub
 	}
+	
+	public static void main(String args) {
+		start();
+	}
 
-	public static void main(String args[]) {
+	public static void start() {
 
 		System.out.println(DBNameSpace.getListedcompaniesTokyoDb()
 				+ " download is started!");

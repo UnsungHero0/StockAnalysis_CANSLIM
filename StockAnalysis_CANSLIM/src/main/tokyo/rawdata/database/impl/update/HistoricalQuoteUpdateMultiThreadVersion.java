@@ -4,11 +4,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import javax.sql.DataSource;
+
 import module.historicalquotes.UpdateHistoricalQuotes;
 import datasource.DataSourceUtil;
 import jdbcdao.CodeListsDao;
 
 public class HistoricalQuoteUpdateMultiThreadVersion {
+	
+	private final static DataSource dataSource = DataSourceUtil.DINGUNSW();
 
 	private final static String year = String.valueOf(Calendar.getInstance()
 			.get(Calendar.YEAR));
@@ -51,7 +56,11 @@ public class HistoricalQuoteUpdateMultiThreadVersion {
 		return startDay;
 	}
 	
-	public static void main(String args[]) {
+	public static void main(String args){
+		start();
+	}
+	
+	public static void start() {
 		Long startTime = Calendar.getInstance().getTimeInMillis();
 		run(8);
 		Long endTime = Calendar.getInstance().getTimeInMillis();
@@ -63,7 +72,7 @@ public class HistoricalQuoteUpdateMultiThreadVersion {
 	public static void run(Integer splitNumber) {
 		System.out.println("start updating quotes...");
 		CodeListsDao clDao = new CodeListsDao();
-		codeLists = clDao.getCodeLists();
+		codeLists = clDao.getCodeLists(dataSource);
 		count = codeLists.size();
 		ArrayList<updateThread> threadGroup = new ArrayList<>();
 		for (int i = 1; i <= splitNumber; i++) {
@@ -72,7 +81,7 @@ public class HistoricalQuoteUpdateMultiThreadVersion {
 			threadGroup.add(thread);
 		}
 		try {
-			con = DataSourceUtil.getTokyoDataSourceRoot().getConnection();
+			con = DataSourceUtil.DINGUNSW().getConnection();
 			for (updateThread thread : threadGroup) {
 				thread.start();
 				System.out.println(thread.getName() + " is starting");

@@ -9,6 +9,7 @@ import dao.UrlDao;
 import namespace.DBNameSpace;
 
 public class ListOfTSEListedDownload {
+	
 	private final static String DROPTABLESQL = "DROP TABLE IF EXISTS "
 			+ DBNameSpace.getListedcompaniesTokyoDb();
 
@@ -26,7 +27,6 @@ public class ListOfTSEListedDownload {
 			+ "PRIMARY KEY (`Local_Code`, `Name_English`))";
 
 	public static void downloadListedCompanyList(Connection con) {
-		
 		
 			//drop table
 			dropTable(con);
@@ -79,7 +79,6 @@ public class ListOfTSEListedDownload {
 					DBNameSpace.getListedcompaniesTokyoDb(), field,
 					value, con);
 		}
-		// TODO
 	}
 
 	public static String getField(ArrayList<String> input) {

@@ -121,7 +121,7 @@ public class updateSectionInfo {
 	public static void main(String args[]) {
 		// TODO
 		CodeListsDao clDao = new CodeListsDao();
-		ArrayList<String> codeLists = clDao.getCodeLists();
+		ArrayList<String> codeLists = clDao.getCodeLists(DataSourceUtil.DINGUNSW());
 		Connection con = null;
 		System.out.println("start updating quotes...");
 		try {

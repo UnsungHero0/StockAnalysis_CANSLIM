@@ -36,7 +36,7 @@ public class DataSourceUtil {
 	public static DataSource DINGUNSW(){
 		String host = "149.171.37.76";
 		Integer port = 3306;
-		String dbname = "test";
+		String dbname = "tokyoexchange";
 		String username = "root";
 		String password = "4573";
 		MysqlDataSource dataSource = new MysqlDataSource();

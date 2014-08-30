@@ -126,7 +126,7 @@ public class HistoricalQuoteUpdate {
 
 	public static void update() {
 		CodeListsDao clDao = new CodeListsDao();
-		ArrayList<String> codeLists = clDao.getCodeLists();
+		ArrayList<String> codeLists = clDao.getCodeLists(DataSourceUtil.DINGUNSW());
 		Connection con = null;
 		System.out.println("start updating quotes...");
 		try {

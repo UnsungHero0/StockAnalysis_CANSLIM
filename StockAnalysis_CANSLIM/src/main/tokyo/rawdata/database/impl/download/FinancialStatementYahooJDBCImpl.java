@@ -41,7 +41,7 @@ public class FinancialStatementYahooJDBCImpl {
 		// .FinancialStatemetYahooJDBCUpdateDataImpl("1853");
 		// get code list from table section_tokyo
 		ArrayList<String> codeList = new ArrayList<>();
-		codeList = new CodeListsDao().getCodeLists();
+		codeList = new CodeListsDao().getCodeLists(DataSourceUtil.DINGUNSW());
 		System.out.println("all record is : " + codeList.size());
 		Integer count = 0;
 		Connection con;
