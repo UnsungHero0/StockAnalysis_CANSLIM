@@ -1,6 +1,5 @@
 package impl.download;
 
-import impl.update.HistoricalQuoteUpdateMultiThreadVersion;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -9,8 +8,8 @@ import java.util.Calendar;
 
 import javax.sql.DataSource;
 
-import module.historicalquotes.CreateQuotesTableFromUrl;
 import jdbcdao.CodeListsDao;
+import module.historicalquotes.CreateQuotesTableFromUrl;
 import datasource.DataSourceUtil;
 
 public class HistoricalQuoteDownload {
@@ -19,6 +18,7 @@ public class HistoricalQuoteDownload {
 	public static ArrayList<String> codeLists = new ArrayList<>();
 	public static Connection con = null;
 	public static Integer count = 0;
+	public static Integer threadNumber = 1;
 
 	public static void main(String args[]) {
 		start();
@@ -27,7 +27,7 @@ public class HistoricalQuoteDownload {
 	public static void start() {
 
 		Long startTime = Calendar.getInstance().getTimeInMillis();
-		run(8);
+		run(HistoricalQuoteDownload.threadNumber);
 		Long endTime = Calendar.getInstance().getTimeInMillis();
 		Integer minute = (int) ((endTime - startTime) / (long) (1000 * 60));
 		Integer second = (int) ((endTime - startTime) / (long) (1000)) % 60;
@@ -37,8 +37,8 @@ public class HistoricalQuoteDownload {
 
 	public static void run(Integer splitNumber) {
 		System.out.println("start downloading quotes...");
-		//codeLists = new CodeListsDao().getCodeLists(datasource);
-		codeLists.add("1301");
+		codeLists = new CodeListsDao().getCodeLists(datasource);
+		//codeLists.add("1301");
 		count = codeLists.size();
 		
 		System.out.println(count);

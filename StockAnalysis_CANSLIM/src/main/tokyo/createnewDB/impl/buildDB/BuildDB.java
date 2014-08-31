@@ -2,8 +2,6 @@ package impl.buildDB;
 //create database on a new warehouse
 
 import impl.download.HistoricalQuoteDownload;
-import impl.download.ListOfTSEListedDownloadImpl;
-import impl.update.HistoricalQuoteUpdateMultiThreadVersion;
 
 public class BuildDB {
 	
