@@ -19,7 +19,7 @@ public class CodeListsDao {
 	
 	public ArrayList<String> getCodeLists(DataSource dataSource) {
 		//TODO
-		ArrayList<String> codeList = new ArrayList<>();
+		ArrayList<String> codeList = new ArrayList();
 		String selectCodeListsSql = "SELECT Local_Code FROM listedcompaniestokyo";
 		Connection con = null;
 		try {
