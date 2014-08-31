@@ -253,6 +253,9 @@ public class CreateQuotesTableFromUrl {
 				input += elementString;
 			}
 		}
+		if (input.contains(".")) {
+			input = input.substring(0,input.indexOf("."));
+		}
 		return input;
 	}
 

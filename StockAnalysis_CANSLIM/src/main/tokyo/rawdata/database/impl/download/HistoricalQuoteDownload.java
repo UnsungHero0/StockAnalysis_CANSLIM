@@ -38,7 +38,7 @@ public class HistoricalQuoteDownload {
 	public static void run(Integer splitNumber) {
 		System.out.println("start downloading quotes...");
 		codeLists = new CodeListsDao().getCodeLists(datasource);
-		//codeLists.add("1301");
+		//codeLists.add("1352");
 		count = codeLists.size();
 		
 		System.out.println(count);
