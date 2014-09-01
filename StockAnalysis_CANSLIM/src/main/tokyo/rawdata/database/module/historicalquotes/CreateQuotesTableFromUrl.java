@@ -75,7 +75,7 @@ public class CreateQuotesTableFromUrl {
 		Integer loop = recordNumber / 50 + 1;
 		System.out.println("stock " + code + " start to update.. " + loop
 				+ ": ");
-		ArrayList<String> valueList = new ArrayList();
+		ArrayList<String> valueList = new ArrayList<>();
 		for (page = 1; page <= loop; page++) {
 			String getQuotesUrl = "http://info.finance.yahoo.co.jp/history/?code="
 					+ this.code
@@ -246,8 +246,8 @@ public class CreateQuotesTableFromUrl {
 	}
 
 	public static String formValue(String date, ArrayList<Integer> quotes) {
-		String result = "(";
-		result += date + ",";
+		String result = "('";
+		result += date + "',";
 		for (int i = 0; i < quotes.size(); i++) {
 			result += quotes.get(i) + ",";
 		}
@@ -259,14 +259,12 @@ public class CreateQuotesTableFromUrl {
 	public static void insertQuoteListIntoToDB(ArrayList<String> valueList,
 			String code, Connection con) {
 		String value = combine(valueList);
-		System.out.println(value);
 		String insertOneDayQuoteSql = "INSERT INTO ?_HistoricalQuotes_Tokyo"
 				+ "(Date, Open, High, Low, Close, Volume, AdjClose) VALUES "
-				+ "?";
+				+ value;
 		try {
 			PreparedStatement stmt = con.prepareStatement(insertOneDayQuoteSql);
 			stmt.setInt(1, Integer.parseInt(code));
-			stmt.setString(2, value);
 			stmt.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
