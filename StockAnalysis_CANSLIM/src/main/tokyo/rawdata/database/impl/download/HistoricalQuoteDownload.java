@@ -1,6 +1,5 @@
 package impl.download;
 
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ public class HistoricalQuoteDownload {
 	public static ArrayList<String> codeLists = new ArrayList<>();
 	public static Connection con = null;
 	public static Integer count = 0;
-	public static Integer threadNumber = 1;
+	public static Integer threadNumber = 4;
 
 	public static void main(String args[]) {
 		start();
@@ -38,9 +37,9 @@ public class HistoricalQuoteDownload {
 	public static void run(Integer splitNumber) {
 		System.out.println("start downloading quotes...");
 		codeLists = new CodeListsDao().getCodeLists(datasource);
-		//codeLists.add("1352");
+		// codeLists.add("1352");
 		count = codeLists.size();
-		
+
 		System.out.println(count);
 		ArrayList<updateThread> threadGroup = new ArrayList<>();
 		for (int i = 1; i <= splitNumber; i++) {
@@ -97,16 +96,19 @@ class updateThread extends Thread {
 			}
 		}
 		while (ifHasNext == true) {
-			CreateQuotesTableFromUrl.createNewQuotesTable(code, HistoricalQuoteDownload.con);
+			if (Integer.valueOf(code) >= 1807) {
+				CreateQuotesTableFromUrl create = new CreateQuotesTableFromUrl();
+				create.createNewQuotesTable(code,
+						HistoricalQuoteDownload.con);
+			}
 			synchronized (HistoricalQuoteDownload.count) {
-				System.out.println(super.getName() + ": HistoricalQuotes : " + code + " is downloaded, "
-						+ --HistoricalQuoteDownload.count
-						+ " to go!");
+				System.out.println(super.getName() + ": HistoricalQuotes : "
+						+ code + " is downloaded, "
+						+ --HistoricalQuoteDownload.count + " to go!");
 			}
 			synchronized (HistoricalQuoteDownload.codeLists) {
 				if (HistoricalQuoteDownload.codeLists.size() > 0) {
-					code = HistoricalQuoteDownload.codeLists
-							.get(0);
+					code = HistoricalQuoteDownload.codeLists.get(0);
 					HistoricalQuoteDownload.codeLists.remove(0);
 				} else {
 					ifHasNext = false;

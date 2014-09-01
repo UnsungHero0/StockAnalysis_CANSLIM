@@ -20,10 +20,10 @@ public class CreateQuotesTableFromUrl {
 	private final static String startYear = "1983";
 	private final static String startMonth = "1";
 	private final static String startDay = "1";
-	private static String code = "";
-	private static Integer page = 1;
-	private final static String deleteQutoesTalbeSql = "DROP TABLE IF EXISTS ?_HistoricalQuotes_Tokyo";
-	private final static String initialNewQuotesTableSql = "CREATE TABLE IF NOT EXISTS TokyoExchange."
+	private String code = "";
+	private Integer page = 1;
+	private final String deleteQutoesTalbeSql = "DROP TABLE IF EXISTS ?_HistoricalQuotes_Tokyo";
+	private final String initialNewQuotesTableSql = "CREATE TABLE IF NOT EXISTS TokyoExchange."
 			+ "?_HistoricalQuotes_Tokyo"
 			+ " ("
 			+ "`Country` VARCHAR(50) NOT NULL Default ?,"
@@ -38,22 +38,6 @@ public class CreateQuotesTableFromUrl {
 			+ "`AdjClose` INT NOT NULL,"
 			+ "PRIMARY KEY (`Date`))"
 			+ "ENGINE = InnoDB;";
-
-	public static String getCode() {
-		return code;
-	}
-
-	public static void setCode(String code) {
-		CreateQuotesTableFromUrl.code = code;
-	}
-
-	public static Integer getPage() {
-		return page;
-	}
-
-	public static void setPage(Integer page) {
-		CreateQuotesTableFromUrl.page = page;
-	}
 
 	public static String getYear() {
 		return year;
@@ -79,28 +63,22 @@ public class CreateQuotesTableFromUrl {
 		return startDay;
 	}
 
-	public static String getInitialnewquotestablesql() {
-		return initialNewQuotesTableSql;
-	}
-
-	public static String getDeletequtoestalbesql() {
-		return deleteQutoesTalbeSql;
-	}
-
 	public CreateQuotesTableFromUrl() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static void createNewQuotesTable(String code, Connection con) {
-		setCode(code);
+	public void createNewQuotesTable(String code, Connection con) {
+		this.code = code;
 		deleteQuotesTable(code, con);
 		initialNewQuotesTable(code, con);
 		Integer recordNumber = findRecordNumber(code);
 		Integer loop = recordNumber / 50 + 1;
-		System.out.print("stock " + code + " start to update.. " + loop + ": ");
+		System.out.println("stock " + code + " start to update.. " + loop
+				+ ": ");
+		ArrayList<String> valueList = new ArrayList();
 		for (page = 1; page <= loop; page++) {
 			String getQuotesUrl = "http://info.finance.yahoo.co.jp/history/?code="
-					+ getCode()
+					+ this.code
 					+ ".T&sy="
 					+ startYear
 					+ "&sm="
@@ -114,16 +92,21 @@ public class CreateQuotesTableFromUrl {
 					+ "&ed=" + day + "&tm=d&p=" + page;
 			ArrayList<String> inputList = UrlDao.getUrlBuffer(getQuotesUrl);
 			for (String input : inputList) {
-				insertDayQuoteToDB(input, code, con);
+				String element = extractValueList(input, code);
+				if (element.length() > 2) {
+				valueList.add(element);
+				}
 			}
-			System.out.print(page + " ");
+			// System.out.print(page + " ");
 		}
+		insertQuoteListIntoToDB(valueList, code, con);
 		System.out.println("\n" + "stock " + code + " is finished");
 	}
 
-	public static void deleteQuotesTable(String code, Connection con) {
+	public void deleteQuotesTable(String code, Connection con) {
 		try {
-			PreparedStatement stmt = con.prepareStatement(deleteQutoesTalbeSql);
+			PreparedStatement stmt = con
+					.prepareStatement(this.deleteQutoesTalbeSql);
 			stmt.setInt(1, Integer.valueOf(code));
 			stmt.execute();
 		} catch (SQLException e) {
@@ -131,7 +114,7 @@ public class CreateQuotesTableFromUrl {
 		}
 	}
 
-	public static void initialNewQuotesTable(String code, Connection con) {
+	public void initialNewQuotesTable(String code, Connection con) {
 
 		try {
 			String sqlFindName = "SELECT Name_English FROM listedcompaniestokyo WHERE Local_Code = "
@@ -140,7 +123,7 @@ public class CreateQuotesTableFromUrl {
 			rs.next();
 			String name = rs.getString("Name_English");
 			PreparedStatement stmt = con
-					.prepareStatement(initialNewQuotesTableSql);
+					.prepareStatement(this.initialNewQuotesTableSql);
 			stmt.setInt(1, Integer.valueOf(code));
 			stmt.setString(2, "Japan");
 			stmt.setInt(3, Integer.valueOf(code));
@@ -169,8 +152,8 @@ public class CreateQuotesTableFromUrl {
 		return result;
 	}
 
-	public static void insertDayQuoteToDB(String input, String code,
-			Connection con) {
+	public static String extractValueList(String input, String code) {
+		String finalResult = "";
 		String string1 = "";
 		String date = "";
 		if (input.startsWith("</tr>")) {
@@ -202,7 +185,7 @@ public class CreateQuotesTableFromUrl {
 									result.add(Integer.parseInt(elementString));
 								}
 							}
-							insertIntoDB(date, result, code, con);
+							finalResult = formValue(date, result);
 						} else if (!string.contains("分割")) {
 							string = string.substring(0, string.length() - 5);
 							string += "</td><td>";
@@ -217,14 +200,14 @@ public class CreateQuotesTableFromUrl {
 									result.add(Integer.parseInt(elementString));
 								}
 							}
-							insertIntoDB(date, result, code, con);
+							finalResult = formValue(date, result);
 						}
 					}
 				} catch (StringIndexOutOfBoundsException e) {
 				}
 			}
-
 		}
+		return finalResult;
 	}
 
 	public static String turnToYear(String input) {
@@ -254,27 +237,49 @@ public class CreateQuotesTableFromUrl {
 			}
 		}
 		if (input.contains(".")) {
-			input = input.substring(0,input.indexOf("."));
+			input = input.substring(0, input.indexOf("."));
+		}
+		if (input.contains("--")) {
+			input = "0";
 		}
 		return input;
 	}
 
-	public static void insertIntoDB(String date, ArrayList<Integer> quotes,
+	public static String formValue(String date, ArrayList<Integer> quotes) {
+		String result = "(";
+		result += date + ",";
+		for (int i = 0; i < quotes.size(); i++) {
+			result += quotes.get(i) + ",";
+		}
+		result = result.substring(0, result.length() - 1) + ")";
+		return result;
+
+	}
+
+	public static void insertQuoteListIntoToDB(ArrayList<String> valueList,
 			String code, Connection con) {
+		String value = combine(valueList);
+		System.out.println(value);
 		String insertOneDayQuoteSql = "INSERT INTO ?_HistoricalQuotes_Tokyo"
 				+ "(Date, Open, High, Low, Close, Volume, AdjClose) VALUES "
-				+ "(?,?,?,?,?,?,?)";
+				+ "?";
 		try {
 			PreparedStatement stmt = con.prepareStatement(insertOneDayQuoteSql);
 			stmt.setInt(1, Integer.parseInt(code));
-			stmt.setString(2, date);
-			for (int i = 0; i < quotes.size(); i++) {
-				stmt.setInt(i + 3, quotes.get(i));
-			}
+			stmt.setString(2, value);
 			stmt.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static String combine(ArrayList<String> valueList) {
+		String result = "";
+		for (String element : valueList) {
+			result += element + ",";
+		}
+		result = result.substring(0, result.length() - 1);
+		return result;
 	}
 
 }
