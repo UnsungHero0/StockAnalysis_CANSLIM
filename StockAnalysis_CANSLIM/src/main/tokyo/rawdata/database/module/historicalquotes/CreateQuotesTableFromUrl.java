@@ -94,12 +94,14 @@ public class CreateQuotesTableFromUrl {
 			for (String input : inputList) {
 				String element = extractValueList(input, code);
 				if (element.length() > 2) {
-				valueList.add(element);
+					valueList.add(element);
 				}
 			}
 			// System.out.print(page + " ");
 		}
-		insertQuoteListIntoToDB(valueList, code, con);
+		if (valueList.size() != 0) {
+			insertQuoteListIntoToDB(valueList, code, con);
+		}
 		System.out.println("\n" + "stock " + code + " is finished");
 	}
 

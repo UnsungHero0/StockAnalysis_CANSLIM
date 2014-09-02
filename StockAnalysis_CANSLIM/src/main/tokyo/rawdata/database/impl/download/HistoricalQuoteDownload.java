@@ -17,7 +17,7 @@ public class HistoricalQuoteDownload {
 	public static ArrayList<String> codeLists = new ArrayList<>();
 	public static Connection con = null;
 	public static Integer count = 0;
-	public static Integer threadNumber = 4;
+	public static Integer threadNumber = 1;
 
 	public static void main(String args[]) {
 		start();
@@ -96,7 +96,7 @@ class updateThread extends Thread {
 			}
 		}
 		while (ifHasNext == true) {
-			if (Integer.valueOf(code) >= 1827) {
+			if (Integer.valueOf(code) >= 2230) {
 				CreateQuotesTableFromUrl create = new CreateQuotesTableFromUrl();
 				create.createNewQuotesTable(code,
 						HistoricalQuoteDownload.con);
