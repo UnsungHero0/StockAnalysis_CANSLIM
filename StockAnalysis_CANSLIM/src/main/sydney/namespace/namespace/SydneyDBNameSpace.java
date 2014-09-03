@@ -2,6 +2,7 @@ package namespace;
 
 public class SydneyDBNameSpace {
 
+	private static final String SCHEMA_DB = "sydneyexchange.";
 	private static final String STOCKHISTORICALPRICE_DB = "_HistoricalQuotes_Sydney";
 	private static final String FinancailStatement_DB = "sydneyexchange.FinancialStatement_Sydney";
 	private static final String Section_DB = "sydneyexchange.Section_Sydney";
@@ -59,6 +60,10 @@ public class SydneyDBNameSpace {
 
 	public static String getSectoranalysisDb() {
 		return SectorAnalysis_DB;
+	}
+
+	public static String getSchemaDb() {
+		return SCHEMA_DB;
 	}
 
 }

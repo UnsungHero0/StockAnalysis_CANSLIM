@@ -7,8 +7,8 @@ import module.listedcompanydownload.DownloadHistoricalQuotesSydneyImpl;
 import module.listedcompanydownload.ListedCompanyDownloadISydneympl;
 import datasource.DataSourceUtil;
 
-public class DownLoadListedCompaniesListSydney {
-
+public class DownHistoricalQuotesSydney {
+	
 	private static Connection con = null;
 
 	public static void main(String args[]) {
