@@ -1,6 +1,7 @@
 package dao;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -76,9 +77,14 @@ public class UrlDao {
 				System.out.println("connection timeout");
 				tryTimes++;
 			} catch (IOException e) {
-				set.disconnect();
-				e.printStackTrace();
-				tryTimes++;
+				if (e.toString().contains("java.io.FileNotFoundException")) {
+					e.printStackTrace();
+					ifReaded = true;
+				} else {
+					set.disconnect();
+					e.printStackTrace();
+					tryTimes++;
+				}
 			} catch (TooManyTryTimesException e) {
 				e.printStackTrace();
 				ifReaded = true;
