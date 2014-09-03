@@ -123,5 +123,6 @@ public class DownloadHistoricalQuotesSydneyImpl {
 		String insertDataSql = "INSERT INTO " + tableName + " "
 				+ "(Date, Open, High, Low, Close, Volume, AdjClose) VALUES "
 				+ values;
+		JDBCUtil.excuteQuery(insertDataSql, con);
 	}
 }

@@ -78,7 +78,7 @@ public class UrlDao {
 				tryTimes++;
 			} catch (IOException e) {
 				if (e.toString().contains("java.io.FileNotFoundException")) {
-					e.printStackTrace();
+					System.out.println("no file to download");
 					ifReaded = true;
 				} else {
 					set.disconnect();
