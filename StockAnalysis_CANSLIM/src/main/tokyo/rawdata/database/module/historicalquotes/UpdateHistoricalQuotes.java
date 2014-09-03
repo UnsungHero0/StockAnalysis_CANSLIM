@@ -114,14 +114,16 @@ public class UpdateHistoricalQuotes {
 				}
 			} else {
 				synchronized (HistoricalQuoteUpdateMultiThreadVersion.con) {
-					CreateQuotesTableFromUrl.createNewQuotesTable(code,
+					CreateQuotesTableFromUrl create = new CreateQuotesTableFromUrl();
+					create.createNewQuotesTable(code,
 							HistoricalQuoteUpdateMultiThreadVersion.con);
 				}
 			}
 		} catch (StockSplitException e) {
 			e.printStackTrace();
 			synchronized (HistoricalQuoteUpdateMultiThreadVersion.con) {
-				CreateQuotesTableFromUrl.createNewQuotesTable(code,
+				CreateQuotesTableFromUrl create = new CreateQuotesTableFromUrl();
+				create.createNewQuotesTable(code,
 						HistoricalQuoteUpdateMultiThreadVersion.con);
 			}
 		}

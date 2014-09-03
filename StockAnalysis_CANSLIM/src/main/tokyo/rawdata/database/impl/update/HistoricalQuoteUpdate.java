@@ -186,7 +186,8 @@ public class HistoricalQuoteUpdate {
 					}
 				}
 			} else {
-				CreateQuotesTableFromUrl.createNewQuotesTable(code, con);
+				CreateQuotesTableFromUrl create = new CreateQuotesTableFromUrl();
+				create.createNewQuotesTable(code, con);
 			}
 		} catch (StockSplitException e) {
 			e.printStackTrace();
