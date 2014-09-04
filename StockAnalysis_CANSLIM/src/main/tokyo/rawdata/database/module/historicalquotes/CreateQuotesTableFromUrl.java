@@ -64,7 +64,6 @@ public class CreateQuotesTableFromUrl {
 	}
 
 	public CreateQuotesTableFromUrl() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public void createNewQuotesTable(String code, Connection con) {
@@ -73,8 +72,8 @@ public class CreateQuotesTableFromUrl {
 		initialNewQuotesTable(code, con);
 		Integer recordNumber = findRecordNumber(code);
 		Integer loop = recordNumber / 50 + 1;
-		System.out.println("stock " + code + " start to update.. " + loop
-				+ ": ");
+		System.out.println("\n" + "stock " + code + " start to update.. "
+				+ loop + ": ");
 		ArrayList<String> valueList = new ArrayList<>();
 		for (page = 1; page <= loop; page++) {
 			String getQuotesUrl = "http://info.finance.yahoo.co.jp/history/?code="
@@ -102,7 +101,7 @@ public class CreateQuotesTableFromUrl {
 		if (valueList.size() != 0) {
 			insertQuoteListIntoToDB(valueList, code, con);
 		}
-		System.out.println("\n" + "stock " + code + " is finished");
+		System.out.println("stock " + code + " is finished");
 	}
 
 	public void deleteQuotesTable(String code, Connection con) {

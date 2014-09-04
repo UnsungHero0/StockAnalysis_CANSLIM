@@ -20,9 +20,12 @@ public class DownloadHistoricalQuotesSydneyImpl {
 
 		// 2. loop for each quotes download
 		for (String code : codeList) {
+			Character first = Character.valueOf(code.charAt(0));
+			if(first >= 'S') {
 			createOneHistoricalQuotesTable(code, con);
 			System.out.println(code + " is finished, "
 					+ (codeList.size() - codeList.indexOf(code)) + " to go");
+			}
 		}
 
 	}
