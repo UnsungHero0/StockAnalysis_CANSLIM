@@ -8,9 +8,9 @@ import commontool.JDBCUtil;
 import dao.DateDao;
 import dao.UrlDao;
 
-public class ListedCompanyDownloadISydneympl {
+public class ListedCompanyDownloadISydneyImpl {
 
-	public ListedCompanyDownloadISydneympl() {
+	public ListedCompanyDownloadISydneyImpl() {
 		// TODO Auto-generated constructor stub
 	}
 

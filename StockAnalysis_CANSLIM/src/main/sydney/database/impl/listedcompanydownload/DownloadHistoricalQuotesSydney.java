@@ -4,10 +4,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import module.listedcompanydownload.DownloadHistoricalQuotesSydneyImpl;
-import module.listedcompanydownload.ListedCompanyDownloadISydneympl;
+import module.listedcompanydownload.ListedCompanyDownloadISydneyImpl;
 import datasource.DataSourceUtil;
 
-public class DownHistoricalQuotesSydney {
+public class DownloadHistoricalQuotesSydney {
 	
 	private static Connection con = null;
 

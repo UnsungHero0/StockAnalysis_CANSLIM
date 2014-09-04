@@ -1,8 +1,6 @@
 package impl.buildDB;
 
-import impl.listedcompanydownload.DownHistoricalQuotesSydney;
-import impl.listedcompanydownload.DownLoadListedCompaniesListSydney;
-import dao.downLoadJapaneseToEnglish;
+import impl.listedcompanydownload.DownloadHistoricalQuotesSydney;
 
 public class BuildSydneyDB {
 	
@@ -15,7 +13,7 @@ public class BuildSydneyDB {
 		
 		//2. gather the historical quotes
 		System.out.println("Download historical quotes start");
-		DownHistoricalQuotesSydney.start();
+		DownloadHistoricalQuotesSydney.start();
 		System.out.println("Download historical quotes finished");
 		
 		//3. financial statements
