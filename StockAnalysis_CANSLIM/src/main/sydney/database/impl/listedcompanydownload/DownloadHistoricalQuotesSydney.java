@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import module.listedcompanydownload.DownloadHistoricalQuotesSydneyImpl;
-import module.listedcompanydownload.ListedCompanyDownloadISydneyImpl;
 import datasource.DataSourceUtil;
 
 public class DownloadHistoricalQuotesSydney {

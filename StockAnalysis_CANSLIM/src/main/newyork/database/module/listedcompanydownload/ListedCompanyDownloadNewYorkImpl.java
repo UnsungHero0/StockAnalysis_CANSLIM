@@ -20,10 +20,9 @@ public class ListedCompanyDownloadNewYorkImpl {
 			+ "`Country` VARCHAR(50) NOT NULL,"
 			+ "`Section` VARCHAR(10) NOT NULL,"
 			+ "`Local_Code` VARCHAR(10) NOT NULL,"
-			+ "`Name_English` VARCHAR(100) NOT NULL,"
-			+ "`Market_Cap` BIGINT ," + "`ADR_TSO` VARCHAR(10) ,"
-			+ "`IPO_Year` VARCHAR(4) ," + "`Sector` VARCHAR(30) ,"
-			+ "`Department` VARCHAR(100) NOT NULL,"
+			+ "`Name_English` VARCHAR(100) NOT NULL," + "`Market_Cap` BIGINT ,"
+			+ "`ADR_TSO` VARCHAR(10) ," + "`IPO_Year` VARCHAR(4) ,"
+			+ "`Sector` VARCHAR(30) ," + "`Department` VARCHAR(100) NOT NULL,"
 			+ "PRIMARY KEY (`Local_Code`, `Name_English`))";
 
 	public static void downloadListedCompanyList(Connection con) {
@@ -94,8 +93,11 @@ public class ListedCompanyDownloadNewYorkImpl {
 	public static String changeToValuesString(ArrayList<String> content) {
 		String result = "('" + DateDao.dateTodayInMysqlForm() + "','NewYork','";
 		for (int i = 0; i <= 8; i++) {
-			if (i !=3) {
-			result += dealChar(content.get(i)) + "','";
+			if (i == 1) {
+				result += content.get(i).trim() + "','";
+			}
+			if (i != 3) {
+				result += dealChar(content.get(i)) + "','";
 			}
 		}
 		result = result.substring(0, result.length() - 2) + "),";
@@ -107,6 +109,8 @@ public class ListedCompanyDownloadNewYorkImpl {
 		for (Character ele : input.toCharArray()) {
 			if (ele.toString().equals("'")) {
 				result += "\\'";
+			} else if (ele.toString().equals("\\")) {
+				result += "\\";
 			} else {
 				result += ele;
 			}
