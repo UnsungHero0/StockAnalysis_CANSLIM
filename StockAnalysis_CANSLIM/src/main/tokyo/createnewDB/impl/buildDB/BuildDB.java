@@ -1,7 +1,9 @@
 package impl.buildDB;
-//create database on a new warehouse
 
 import impl.download.HistoricalQuoteDownload;
+
+//create database on a new warehouse
+
 
 public class BuildDB {
 	

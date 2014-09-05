@@ -14,7 +14,7 @@ public static void main(String args[]) {
 		
 		//2. gather the historical quotes
 		System.out.println("Download historical quotes start");
-		DownLoadHistoricalQuotesNewYork.start();
+		//DownLoadHistoricalQuotesNewYork.start();
 		System.out.println("Download historical quotes finished");
 		
 		//3. financial statements
