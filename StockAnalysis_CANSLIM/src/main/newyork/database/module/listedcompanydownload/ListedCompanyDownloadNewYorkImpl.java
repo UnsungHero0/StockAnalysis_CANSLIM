@@ -96,7 +96,7 @@ public class ListedCompanyDownloadNewYorkImpl {
 			if (i == 1) {
 				result += content.get(i).trim() + "','";
 			}
-			if (i != 3) {
+			if (i != 3 && i != 1) {
 				result += dealChar(content.get(i)) + "','";
 			}
 		}

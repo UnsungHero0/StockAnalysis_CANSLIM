@@ -15,16 +15,13 @@ public class DownLoadHistoricalQuotesNewYorkImpl {
 		// 1. collect all local code from listed company DB
 		ArrayList<String> codeList = new ArrayList<>();
 		codeList = DBNewYorkDao.getCodeListFromDB(con);
-		
+
 		// codeList.add("AAC");
 		System.out.println("get Code finished");
 
 		// 2. loop for each quotes download
 		for (String code : codeList) {
-			
-			if (code.charAt(0) >= 'N') {
 			createOneHistoricalQuotesTable(code, con);
-			}
 			System.out.println(code + " is finished, "
 					+ (codeList.size() - codeList.indexOf(code)) + " to go");
 
@@ -34,12 +31,17 @@ public class DownLoadHistoricalQuotesNewYorkImpl {
 
 	public static void createOneHistoricalQuotesTable(String code,
 			Connection con) {
+
 		String tableName = namespace.NewYorkDBNameSpace.getSchemaDb() + code
 				+ namespace.NewYorkDBNameSpace.getStockhistoricalpriceDb();
-
-		// 1. get Data, if no data , skip
-		ArrayList<ArrayList<String>> quotesList = getQuotesList(code);
-		if (quotesList.size() > 0) {
+		
+		if (!JDBCUtil.hasTable(code
+				+ namespace.NewYorkDBNameSpace.getStockhistoricalpriceDb(), con)) {
+			System.out.println(code
+					+ namespace.NewYorkDBNameSpace.getStockhistoricalpriceDb());
+			// 1. get Data, if no data , skip
+			ArrayList<ArrayList<String>> quotesList = getQuotesList(code);
+			if (quotesList.size() > 0) {
 			// 2. drop table (if necessary)
 			JDBCUtil.dropTable(tableName, con);
 
@@ -48,7 +50,7 @@ public class DownLoadHistoricalQuotesNewYorkImpl {
 
 			// 4. insert data
 			insertDataToTable(code, tableName, quotesList, con);
-
+			}
 		}
 
 	}
