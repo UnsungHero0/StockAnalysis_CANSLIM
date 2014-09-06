@@ -96,7 +96,7 @@ class updateThread extends Thread {
 			}
 		}
 		while (ifHasNext == true) {
-			if (Integer.valueOf(code) >= 6770) {
+			if (Integer.valueOf(code) >= 6809) {
 				CreateQuotesTableFromUrl create = new CreateQuotesTableFromUrl();
 				create.createNewQuotesTable(code,
 						HistoricalQuoteDownload.con);
