@@ -13,13 +13,17 @@ public class JDBCUtil {
 	}
 
 	public static Boolean hasTable(String tableName,Connection con){
-		String sql = "SHOW TABLES LIKE '"+ tableName + "'";
-		Boolean result = false;
+		String sql = "DESC "+ tableName + "";
+		Boolean result = true;
 		try {
 			ResultSet rs = con.prepareStatement(sql).executeQuery();
 			result = rs.next();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			result = false;
+			if (!e.getMessage().contains("exist")) {
+				e.printStackTrace();
+				
+			}
 		}
 		return result;
 	}

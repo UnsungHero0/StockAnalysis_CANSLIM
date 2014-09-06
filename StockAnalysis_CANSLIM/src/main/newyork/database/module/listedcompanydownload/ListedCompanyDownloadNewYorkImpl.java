@@ -78,6 +78,7 @@ public class ListedCompanyDownloadNewYorkImpl {
 				+ NewYorkDBNameSpace.getListedcompaniesNewYorkDb()
 				+ " (Effective_Date, Country,Section,Local_Code,Name_English,Market_Cap,ADR_TSO,IPO_Year,Sector,Department) VALUES "
 				+ changeToValues(content);
+		System.out.println(insertDataIntoDB);
 		JDBCUtil.excuteQuery(insertDataIntoDB, con);
 	}
 
@@ -91,13 +92,13 @@ public class ListedCompanyDownloadNewYorkImpl {
 	}
 
 	public static String changeToValuesString(ArrayList<String> content) {
-		String result = "('" + DateDao.dateTodayInMysqlForm() + "','NewYork','";
+		String result = "(\'" + DateDao.dateTodayInMysqlForm() + "\',\'NewYork\',\'";
 		for (int i = 0; i <= 8; i++) {
 			if (i == 1) {
-				result += content.get(i).trim() + "','";
+				result += dealChar(content.get(i).trim()) + "\',\'";
 			}
 			if (i != 3 && i != 1) {
-				result += dealChar(content.get(i)) + "','";
+				result += dealChar(content.get(i)) + "\',\'";
 			}
 		}
 		result = result.substring(0, result.length() - 2) + "),";
@@ -107,10 +108,10 @@ public class ListedCompanyDownloadNewYorkImpl {
 	public static String dealChar(String input) {
 		String result = "";
 		for (Character ele : input.toCharArray()) {
-			if (ele.toString().equals("'")) {
-				result += "\\'";
-			} else if (ele.toString().equals("\\")) {
-				result += "\\";
+			 if (ele.toString().equals("/")) {
+				result += "-";
+			} else if (ele.toString().equals("^")) {
+				result += "-P";
 			} else {
 				result += ele;
 			}

@@ -32,13 +32,10 @@ public class DownLoadHistoricalQuotesNewYorkImpl {
 	public static void createOneHistoricalQuotesTable(String code,
 			Connection con) {
 
-		String tableName = namespace.NewYorkDBNameSpace.getSchemaDb() + code
-				+ namespace.NewYorkDBNameSpace.getStockhistoricalpriceDb();
+		String tableName = namespace.NewYorkDBNameSpace.getSchemaDb() + "`" + code
+				+ namespace.NewYorkDBNameSpace.getStockhistoricalpriceDb()+ "`" ;
 		
-		if (!JDBCUtil.hasTable(code
-				+ namespace.NewYorkDBNameSpace.getStockhistoricalpriceDb(), con)) {
-			System.out.println(code
-					+ namespace.NewYorkDBNameSpace.getStockhistoricalpriceDb());
+		if (!JDBCUtil.hasTable(tableName, con)) {
 			// 1. get Data, if no data , skip
 			ArrayList<ArrayList<String>> quotesList = getQuotesList(code);
 			if (quotesList.size() > 0) {
@@ -58,6 +55,7 @@ public class DownLoadHistoricalQuotesNewYorkImpl {
 	public static ArrayList<ArrayList<String>> getQuotesList(String code) {
 		// Date Open High Low Close Volume AdjClose
 		ArrayList<ArrayList<String>> result = new ArrayList<>();
+		code = converCodeForNet(code);
 		String csvUrl = "http://real-chart.finance.yahoo.com/table.csv?s="
 				+ code + "&a=00&b=1&c=1950&" + "d="
 				+ (Integer.valueOf(DateDao.month) - 1) + "&" + "e="
@@ -77,7 +75,7 @@ public class DownLoadHistoricalQuotesNewYorkImpl {
 	}
 
 	public static void createTable(String code, String tableName, Connection con) {
-		String name = dealChar(DBNewYorkDao.getNameEnglish(code, con));
+		String name = ListedCompanyDownloadNewYorkImpl.dealChar(DBNewYorkDao.getNameEnglish(code, con));
 		String createTableSql = "CREATE TABLE IF NOT EXISTS " + tableName
 				+ " (" + "`Country` VARCHAR(50) NOT NULL Default 'NewYork',"
 				+ "`Local_Code` VARCHAR(10) NOT NULL Default '" + code + "',"
@@ -113,25 +111,23 @@ public class DownLoadHistoricalQuotesNewYorkImpl {
 		return result.substring(0, result.length() - 1);
 	}
 
-	public static String dealChar(String input) {
-		String result = "";
-		for (Character ele : input.toCharArray()) {
-			if (ele.toString().equals("'")) {
-				result += "\'";
-			} else if (ele.toString().equals("\\")) {
-				result += "\\";
-			} else {
-				result += ele;
-			}
-		}
-		return result;
-	}
-
 	public static void insertDB(String tableName, String values, Connection con) {
 		String insertDataSql = "INSERT INTO " + tableName + " "
 				+ "(Date, Open, High, Low, Close, Volume, AdjClose) VALUES "
 				+ values;
 		JDBCUtil.excuteQuery(insertDataSql, con);
+	}
+	
+	public static String converCodeForNet(String input) {
+		String result = "";
+		for (Character ele : input.toCharArray()) {
+			if (ele.toString().equals("_")) {
+				result += "-";
+			} else {
+				result += ele;
+			}
+		}
+		return result;
 	}
 
 }
