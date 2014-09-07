@@ -12,6 +12,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
+import org.junit.rules.Timeout;
+
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
@@ -39,7 +41,7 @@ public class UrlDao {
 				result = new ArrayList<>();
 				URL url = new URL(urlString);
 				set = (HttpURLConnection) url.openConnection();
-				set.setReadTimeout(1000 * 30);
+				set.setReadTimeout(1000 * 20);
 				set.connect();
 				fi = new BufferedReader(new InputStreamReader(
 						set.getInputStream()));
@@ -80,6 +82,13 @@ public class UrlDao {
 				if (e.toString().contains("java.io.FileNotFoundException")) {
 					System.out.println("no file to download");
 					ifReaded = true;
+				} else if (e.getMessage().contains("999 for URL")) {
+					long timeout = 600 * 1000;
+					    try {
+							Thread.sleep(timeout);
+						} catch (InterruptedException e1) {
+							System.out.println("Yahoo rejected connection!");
+						}
 				} else {
 					set.disconnect();
 					e.printStackTrace();
