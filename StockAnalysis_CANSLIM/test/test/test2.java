@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import tool.charDeal;
 import commontool.JDBCUtil;
-
 import dao.DBNewYorkDao;
 import dao.DBSydenyDao;
 import datasource.DataSourceUtil;
@@ -13,6 +13,10 @@ import datasource.DataSourceUtil;
 public class test2 {
 
 	public static void main(String args[]) {
+		
+		System.out.println(charDeal.extractDigital("(gfdg3ff4dad25"));
+		
+		/*
 		Connection con = null;
 		try {
 			con = DataSourceUtil.DINGUNSW().getConnection();
@@ -24,5 +28,6 @@ public class test2 {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 }

@@ -83,11 +83,11 @@ public class UrlDao {
 					System.out.println("no file to download");
 					ifReaded = true;
 				} else if (e.getMessage().contains("999 for URL")) {
+					System.out.println("Yahoo rejected connection!");
 					long timeout = 600 * 1000;
 					    try {
 							Thread.sleep(timeout);
 						} catch (InterruptedException e1) {
-							System.out.println("Yahoo rejected connection!");
 						}
 				} else {
 					set.disconnect();

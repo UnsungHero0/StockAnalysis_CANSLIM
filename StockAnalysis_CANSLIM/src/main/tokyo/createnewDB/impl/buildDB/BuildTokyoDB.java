@@ -5,7 +5,7 @@ import impl.download.HistoricalQuoteDownload;
 //create database on a new warehouse
 
 
-public class BuildDB {
+public class BuildTokyoDB {
 	
 	public static void main(String args[]) {
 		
