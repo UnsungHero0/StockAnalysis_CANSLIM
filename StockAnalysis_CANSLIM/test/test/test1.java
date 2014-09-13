@@ -9,8 +9,8 @@ public class test1 {
 
 	public static void main(String args[]) {
 		Integer years = 3;
-		//ArrayList<String> result = UrlDao
-			//	.getUrlBuffer("https://au.finance.yahoo.com/q/is?s=AA&annual");
+		// ArrayList<String> result = UrlDao
+		// .getUrlBuffer("https://au.finance.yahoo.com/q/is?s=AA&annual");
 		ArrayList<String> result = UrlDao
 				.getUrlBuffer("https://au.finance.yahoo.com/q/is?s=AAPL&annual");
 		System.out.println(result.size());
@@ -36,7 +36,7 @@ public class test1 {
 				}
 			} else if (result.get(j).contains("Cost of Revenue")) {
 				System.out.println("Cost of Revenue :");
-				String[] stringList = result.get(j).split("</td>");
+				String[] stringList = result.get(j).split("</td></tr>");
 				stringList = stringList[1].split("<td align=\"right\">");
 				for (int i = 1; i < stringList.length; i++) {
 					String output = charDeal.extractDigital(stringList[i]
@@ -94,7 +94,10 @@ public class test1 {
 				stringList = stringList[0].split("<td align=\"right\">");
 				for (int i = 1; i < stringList.length; i++) {
 					String output = charDeal.extractDigital(stringList[i]);
-					if (stringList[i].contains("(")) {
+					System.out.println(output.length());
+					if (output.length() == 0) {
+						System.out.println("-");
+					} else if (stringList[i].contains("(")) {
 						System.out.println("-" + output);
 					} else {
 						System.out.println(output);
@@ -227,7 +230,7 @@ public class test1 {
 					}
 				}
 			} else if (result.get(j).contains("Discontinued Operations")) {
-				System.out.println( "Discontinued Operations :");
+				System.out.println("Discontinued Operations :");
 				Integer flag = 0;
 				while (flag < years) {
 					j++;
@@ -245,7 +248,7 @@ public class test1 {
 						flag++;
 					}
 				}
-			}  else if (result.get(j).contains("Extraordinary Items")) {
+			} else if (result.get(j).contains("Extraordinary Items")) {
 				System.out.println("Extraordinary Items :");
 				Integer flag = 0;
 				while (flag < years) {
@@ -264,7 +267,7 @@ public class test1 {
 						flag++;
 					}
 				}
-			}  else if (result.get(j).contains("Effect Of Accounting Changes")) {
+			} else if (result.get(j).contains("Effect Of Accounting Changes")) {
 				System.out.println("Effect Of Accounting Changes :");
 				Integer flag = 0;
 				while (flag < years) {
@@ -283,7 +286,7 @@ public class test1 {
 						flag++;
 					}
 				}
-			}  else if (result.get(j).contains("Other Items")) {
+			} else if (result.get(j).contains("Other Items")) {
 				System.out.println("Other Items :");
 				Integer flag = 0;
 				while (flag < years) {
@@ -302,7 +305,8 @@ public class test1 {
 						flag++;
 					}
 				}
-			} else if (result.get(j).contains("Net Income") && !result.get(j).contains("Applicable")) {
+			} else if (result.get(j).contains("Net Income")
+					&& !result.get(j).contains("Applicable")) {
 				System.out.println("Net Income :");
 				Integer flag = 0;
 				while (flag < years) {
@@ -321,7 +325,8 @@ public class test1 {
 						flag++;
 					}
 				}
-			} else if (result.get(j).contains("Preferred Stock And Other Adjustments")) {
+			} else if (result.get(j).contains(
+					"Preferred Stock And Other Adjustments")) {
 				System.out.println("Preferred Stock And Other Adjustments :");
 				Integer flag = 0;
 				while (flag < years) {
@@ -340,7 +345,8 @@ public class test1 {
 						flag++;
 					}
 				}
-			} else if (result.get(j).contains("Net Income Applicable To Common Shares")) {
+			} else if (result.get(j).contains(
+					"Net Income Applicable To Common Shares")) {
 				System.out.println("Net Income Applicable To Common Shares:");
 				Integer flag = 0;
 				while (flag < years) {
@@ -359,7 +365,7 @@ public class test1 {
 						flag++;
 					}
 				}
-			} 
+			}
 		}
 	}
 
