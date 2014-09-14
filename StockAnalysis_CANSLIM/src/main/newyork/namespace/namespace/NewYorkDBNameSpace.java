@@ -4,6 +4,15 @@ public class NewYorkDBNameSpace {
 	private static final String SCHEMA_DB = "newyorkexchange.";
 	private static final String STOCKHISTORICALPRICE_DB = "_HistoricalQuotes_newyork";
 	private static final String FinancailStatement_DB = "newyorkexchange.FinancialStatement_newyork";
+	private static final String IncomeStatement_DB = "newyorkexchange.IncomeStatement_newyork";
+	public static String getIncomestatementDb() {
+		return IncomeStatement_DB;
+	}
+
+	public static String getListedcompaniesDb() {
+		return LISTEDCOMPANIES_DB;
+	}
+
 	private static final String Section_DB = "newyorkexchange.Section_newyork";
 	private static final String Stocknewyork_DB = "newyorkexchange.Stock_newyork";
 	private static final String QuarterFinancialStatement_DB = "newyorkexchange.QuarterFinancialStatementnewyork_newyork";

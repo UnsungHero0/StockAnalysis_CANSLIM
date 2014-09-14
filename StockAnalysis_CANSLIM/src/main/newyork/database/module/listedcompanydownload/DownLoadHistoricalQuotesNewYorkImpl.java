@@ -75,7 +75,7 @@ public class DownLoadHistoricalQuotesNewYorkImpl {
 	}
 
 	public static void createTable(String code, String tableName, Connection con) {
-		String name = ListedCompanyDownloadNewYorkImpl.dealChar(DBNewYorkDao.getNameEnglish(code, con));
+		String name = DownLoadListedCompanyNewYorkImpl.dealChar(DBNewYorkDao.getNameEnglish(code, con));
 		String createTableSql = "CREATE TABLE IF NOT EXISTS " + tableName
 				+ " (" + "`Country` VARCHAR(50) NOT NULL Default 'NewYork',"
 				+ "`Local_Code` VARCHAR(10) NOT NULL Default '" + code + "',"

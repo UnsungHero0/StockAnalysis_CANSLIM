@@ -12,7 +12,7 @@ import namespace.NewYorkDBNameSpace;
 import dao.DateDao;
 import dao.UrlDao;
 
-public class ListedCompanyDownloadNewYorkImpl {
+public class DownLoadListedCompanyNewYorkImpl {
 
 	private final static String CREATETABLESQL = "CREATE TABLE IF NOT EXISTS "
 			+ NewYorkDBNameSpace.getListedcompaniesNewYorkDb() + " ("

@@ -1,7 +1,7 @@
 package impl.buildDB;
 
 import impl.listedcompanydownload.DownLoadHistoricalQuotesNewYork;
-import impl.listedcompanydownload.DownloadListedCompaniesListNewYork;
+import impl.listedcompanydownload.DownLoadListedCompaniesListNewYork;
 
 public class BuildNewYorkDB {
 	
