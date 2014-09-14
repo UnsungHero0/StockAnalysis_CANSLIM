@@ -13,8 +13,13 @@ import datasource.DataSourceUtil;
 public class test2 {
 
 	public static void main(String args[]) {
-		
-		System.out.println(charDeal.extractDigital("(gfdg3ff4dad25"));
+		String input = "</td></tr><tr><td colspan=\"2\">Cost of Revenue</td><td align=\"right\">"
+				+ "307,625&nbsp;&nbsp;</td><td align=\"right\">"
+				+ "237,413&nbsp;&nbsp;</td></tr><tr><td colspan=\"4\"  style=\"height:0;padding:0; "
+				+ "border-top:3px solid #333;\"><span style=\"display:block; width:5px; height:1px;\" >"
+				+ "</span></td></tr><tr><td colspan=\"2\">";
+		String mark = "</td><td align=\"right\">";
+		System.out.println(charDeal.countMark(input, mark));
 		
 		/*
 		Connection con = null;
