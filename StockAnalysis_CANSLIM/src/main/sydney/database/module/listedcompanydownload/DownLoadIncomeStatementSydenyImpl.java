@@ -63,8 +63,8 @@ public class DownLoadIncomeStatementSydenyImpl {
 		ArrayList<ArrayList<String>> codeListGroup = splitCodeList(codeList);
 
 		// 3. drop Table (if necessary)
-		dropTable(con);
-		System.out.println("Dropped Table!");
+		//dropTable(con);
+		//System.out.println("Dropped Table!");
 
 		// 4. create Table
 		createTable(con);
@@ -77,7 +77,6 @@ public class DownLoadIncomeStatementSydenyImpl {
 			for (String code : codeListGroup.get(i)) {
 				value += downLoadOneIncomeStatement(code, con);
 			}
-
 			// 6. insert Data
 			if (value.length() > 1) {
 				value = value.substring(0, value.length() - 1);
@@ -85,9 +84,7 @@ public class DownLoadIncomeStatementSydenyImpl {
 			}
 			System.out.println((i + 1) + " gourp data is inserted!("
 					+ codeList.size() / groupNumber + " in all)");
-
 		}
-
 	}
 
 	public static ArrayList<ArrayList<String>> splitCodeList(
@@ -157,6 +154,7 @@ public class DownLoadIncomeStatementSydenyImpl {
 				}
 			}
 		}
+		resultList = substractSameRecord(resultList);
 		value = changeToSqlValue(resultList);
 		return value;
 	}
@@ -222,6 +220,28 @@ public class DownLoadIncomeStatementSydenyImpl {
 		return result;
 	}
 
+	public static ArrayList<ArrayList<String>> substractSameRecord(
+			ArrayList<ArrayList<String>> input) {
+		ArrayList<Integer> numberList = new ArrayList<>();
+		for (int i = 0; i < input.size() - 1; i++) {
+			Boolean ifhasSame = false;
+			for (int j = i + 1; j < input.size(); j++) {
+				if (input.get(i).toString().equals(input.get(j))) {
+					ifhasSame = true;
+					break;
+				}
+			}
+			if (ifhasSame == false) {
+				numberList.add(i);
+			}
+		}
+		ArrayList<ArrayList<String>> result = new ArrayList<>();
+		for (Integer element : numberList) {
+			result.add(input.get(element));
+		}
+		return result;
+	}
+
 	public static String changeToOneSqlValue(ArrayList<String> input) {
 		String result = "(";
 		for (int i = 0; i < input.size(); i++) {
@@ -243,7 +263,7 @@ public class DownLoadIncomeStatementSydenyImpl {
 				+ "Interest_Expense,Income_Before_Tax,Income_Tax_Expense,Minority_Interest,Net_Income_From_Continuing_Ops,DiscontinuedvOperations,Extraordinary_Items,"
 				+ "Effect_Of_AccountingvChanges,Other_Items,Net_Income,PreferredvStock_And_Other_Adjustments,Net_Income_Applicable_To_Common_Shares) VALUES "
 				+ value;
-		//System.out.println(insertIntoDBSQL);
+		// System.out.println(insertIntoDBSQL);
 		JDBCUtil.excuteQuery(insertIntoDBSQL, con);
 	}
 
