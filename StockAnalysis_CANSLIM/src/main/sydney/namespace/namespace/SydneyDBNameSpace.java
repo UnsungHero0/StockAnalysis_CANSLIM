@@ -5,6 +5,7 @@ public class SydneyDBNameSpace {
 	private static final String SCHEMA_DB = "sydneyexchange.";
 	private static final String STOCKHISTORICALPRICE_DB = "_HistoricalQuotes_Sydney";
 	private static final String FinancailStatement_DB = "sydneyexchange.FinancialStatement_Sydney";
+	private static final String IncomeStatement_DB = "sydneyexchange.IncomeStatement_Sydney";
 	private static final String Section_DB = "sydneyexchange.Section_Sydney";
 	private static final String StockSydney_DB = "sydneyexchange.Stock_Sydney";
 	private static final String QuarterFinancialStatement_DB = "sydneyexchange.QuarterFinancialStatementSydney_Sydney";
@@ -41,6 +42,19 @@ public class SydneyDBNameSpace {
 	public static String getQuarterfinancialstatementanalysisDb() {
 		return QuarterFinancialStatementAnalysis_DB;
 	}
+	
+	public static String getIncomestatementDb() {
+		return IncomeStatement_DB;
+	}
+
+	public static String getStocksydneyDb() {
+		return StockSydney_DB;
+	}
+
+	public static String getListedcompaniesDb() {
+		return LISTEDCOMPANIES_DB;
+	}
+
 
 	public static String getHistoricalstocksplitDb() {
 		return HistoricalstocksplitDb;

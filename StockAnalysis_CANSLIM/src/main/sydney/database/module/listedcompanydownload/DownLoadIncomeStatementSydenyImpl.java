@@ -6,13 +6,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import commontool.JDBCUtil;
-import namespace.NewYorkDBNameSpace;
+import namespace.SydneyDBNameSpace;
 import tool.charDeal;
-import dao.DBNewYorkDao;
+import commontool.JDBCUtil;
+import dao.DBSydenyDao;
 import dao.UrlDao;
 
-public class DownLoadIncomeStatementNewYorkImpl {
+public class DownLoadIncomeStatementSydenyImpl {
 
 	private static String[] itemList = { "Total Revenue", "Cost of Revenue",
 			"Gross Profit", "Research Development",
@@ -28,9 +28,9 @@ public class DownLoadIncomeStatementNewYorkImpl {
 			"Net Income Applicable To Common Shares" };
 
 	private final static String CREATETABLESQL = "CREATE TABLE IF NOT EXISTS "
-			+ NewYorkDBNameSpace.getIncomestatementDb() + " ("
+			+ SydneyDBNameSpace.getIncomestatementDb() + " ("
 			+ "`Local_Code` VARCHAR(10) NOT NULL,"
-			+ "`Section` VARCHAR(10) NOT NULL,"
+			+ "`Section` VARCHAR(10) NOT NULL Default 'Sydney',"
 			+ "`View` VARCHAR(10) NOT NULL," + "`Ending_Period` DATE NOT NULL,"
 			+ "`Total_Revenue` BIGINT," + "`Cost_of_Revenue` BIGINT,"
 			+ "`Gross_Profit` BIGINT," + "`Research_Development` BIGINT,"
@@ -52,20 +52,18 @@ public class DownLoadIncomeStatementNewYorkImpl {
 			+ "PRIMARY KEY (`Local_Code`, `View`, `Ending_Period`))";
 
 	private static Integer groupNumber = 50;
-	private static HashMap<String, String> sectionInfo = new HashMap<>();
 
 	public static void downloadIncomeStatement(Connection con) {
 
 		// 1. get CodeList
-		ArrayList<String> codeList = DBNewYorkDao.getCodeListFromDB(con);
-		sectionInfo = getSection(con);
+		ArrayList<String> codeList = DBSydenyDao.getCodeListFromDB(con);
 
 		// 2. split codeList into 100 groups to decrease the burden of mysql
 		// write burden
 		ArrayList<ArrayList<String>> codeListGroup = splitCodeList(codeList);
 
 		// 3. drop Table (if necessary)
-		// dropTable(con);
+		dropTable(con);
 		System.out.println("Dropped Table!");
 
 		// 4. create Table
@@ -108,7 +106,7 @@ public class DownLoadIncomeStatementNewYorkImpl {
 	}
 
 	public static void dropTable(Connection con) {
-		JDBCUtil.dropTable(namespace.NewYorkDBNameSpace.getIncomestatementDb(),
+		JDBCUtil.dropTable(namespace.SydneyDBNameSpace.getIncomestatementDb(),
 				con);
 	}
 
@@ -125,9 +123,9 @@ public class DownLoadIncomeStatementNewYorkImpl {
 			Integer duration = 0;
 			ArrayList<String> result = view.equals("Annual") ? UrlDao
 					.getUrlBuffer("https://au.finance.yahoo.com/q/is?s=" + code
-							+ "&annual")
-					: UrlDao.getUrlBuffer("https://au.finance.yahoo.com/q/is?s="
-							+ code);
+							+ ".AX&annual") : UrlDao
+					.getUrlBuffer("https://au.finance.yahoo.com/q/is?s=" + code
+							+ ".AX");
 			Boolean ifHasResult = true;
 			for (String ele : result) {
 				if (ele.contains("The document has moved")
@@ -144,7 +142,6 @@ public class DownLoadIncomeStatementNewYorkImpl {
 									hi[i].indexOf("</th>"));
 							ArrayList<String> oneResultList = new ArrayList<>();
 							oneResultList.add(code);
-							oneResultList.add(sectionInfo.get(code));
 							oneResultList.add(view);
 							oneResultList.add(changeIntoSqlDate(period));
 							resultList.add(oneResultList);
@@ -228,7 +225,7 @@ public class DownLoadIncomeStatementNewYorkImpl {
 	public static String changeToOneSqlValue(ArrayList<String> input) {
 		String result = "(";
 		for (int i = 0; i < input.size(); i++) {
-			if (i < 4) {
+			if (i < 3) {
 				result += "\'" + input.get(i) + "\',";
 			} else {
 				result += input.get(i) + ",";
@@ -240,8 +237,8 @@ public class DownLoadIncomeStatementNewYorkImpl {
 
 	public static void insertDataIntoDB(String value, Connection con) {
 		String insertIntoDBSQL = "INSERT INTO "
-				+ NewYorkDBNameSpace.getIncomestatementDb()
-				+ " (Local_Code,Section,View,Ending_Period,Total_Revenue,Cost_of_Revenue,Gross_Profit,Research_Development,Selling_General_and_Administrative,"
+				+ SydneyDBNameSpace.getIncomestatementDb()
+				+ " (Local_Code,View,Ending_Period,Total_Revenue,Cost_of_Revenue,Gross_Profit,Research_Development,Selling_General_and_Administrative,"
 				+ "Non_Recurring,Others,Total_Operating_Expenses,Operating_Income_or_Loss,`Total_Other_Income/Expenses_Net`,Earnings_Before_Interest_And_Taxes,"
 				+ "Interest_Expense,Income_Before_Tax,Income_Tax_Expense,Minority_Interest,Net_Income_From_Continuing_Ops,DiscontinuedvOperations,Extraordinary_Items,"
 				+ "Effect_Of_AccountingvChanges,Other_Items,Net_Income,PreferredvStock_And_Other_Adjustments,Net_Income_Applicable_To_Common_Shares) VALUES "
@@ -253,7 +250,7 @@ public class DownLoadIncomeStatementNewYorkImpl {
 	public static HashMap<String, String> getSection(Connection con) {
 		HashMap<String, String> result = new HashMap<>();
 		String getCodeSectionSql = "SELECT Local_Code, Section FROM "
-				+ namespace.NewYorkDBNameSpace.getListedcompaniesNewYorkDb();
+				+ namespace.SydneyDBNameSpace.getListedcompaniesSydneyDb();
 		ResultSet rs = null;
 		try {
 			rs = JDBCUtil.excuteQueryWithResult(getCodeSectionSql, con);

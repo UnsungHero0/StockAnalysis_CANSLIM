@@ -12,7 +12,7 @@ public class test3 {
 		// ArrayList<String> result = UrlDao
 		// .getUrlBuffer("https://au.finance.yahoo.com/q/is?s=AA&annual");
 		ArrayList<String> result = UrlDao
-				.getUrlBuffer("https://au.finance.yahoo.com/q/is?s=a&annual");
+				.getUrlBuffer("https://au.finance.yahoo.com/q/is?s=AAC.AX&annual");
 		Boolean ifHasResult = true;
 		for (String ele : result) {
 			if (ele.contains("The document has moved")
