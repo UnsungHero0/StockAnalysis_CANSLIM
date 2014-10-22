@@ -12,7 +12,7 @@ public class test3 {
 		// ArrayList<String> result = UrlDao
 		// .getUrlBuffer("https://au.finance.yahoo.com/q/is?s=AA&annual");
 		ArrayList<String> result = UrlDao
-				.getUrlBuffer("https://au.finance.yahoo.com/q/is?s=AAC.AX&annual");
+				.getUrlBuffer("https://au.finance.yahoo.com/q/bs?s=AA&annual");
 		Boolean ifHasResult = true;
 		for (String ele : result) {
 			if (ele.contains("The document has moved")
@@ -35,19 +35,24 @@ public class test3 {
 					}
 				}
 			}
-			String[] itemList = { "Total Revenue", "Cost of Revenue",
-					"Gross Profit", "Research Development",
-					"Selling General and Administrative", "Non Recurring",
-					"Others", "Total Operating Expenses",
-					"Operating Income or Loss",
-					"Total Other Income/Expenses Net",
-					"Earnings Before Interest And Taxes", "Interest Expense",
-					"Income Before Tax", "Income Tax Expense",
-					"Minority Interest", "Net Income From Continuing Ops",
-					"Discontinued Operations", "Extraordinary Items",
-					"Effect Of Accounting Changes", "Other Items",
-					"Net Income", "Preferred Stock And Other Adjustments",
-					"Net Income Applicable To Common Shares" };
+			String[] itemList = { "Cash And Cash Equivalents", "Short Term Investments",
+					"Net Receivables", "Inventory",
+					"Other Current Assets", "Total Current Assets",
+					"Long Term Investments", "Property Plant and Equipment",
+					"Goodwill",
+					"Intangible Assets",
+					"Accumulated Amortisation", "Other Assets",
+					"Deferred Long Term Asset Charges", "Total Assets",
+					"Accounts Payable", "Short/Current Long Term Debt",
+					"Other Current Liabilities", "Total Current Liabilities",
+					"Long Term Debt", "Other Liabilities",
+					"Deferred Long Term Liability Charges", "Minority Interest",
+					"Negative Goodwill","Total Liabilities","Misc Stocks Options Warrants",
+					"Redeemable Preferred Stock","Preferred Stock",
+					"Common Stock","Retained Earnings",
+					"Treasury Stock","Capital Surplus",
+					"Other Stockholder Equity","Total Stockholder Equity",
+					"Net Tangible Assets"};
 			for (String item : itemList) {
 				findValue(item, result, years);
 			}
