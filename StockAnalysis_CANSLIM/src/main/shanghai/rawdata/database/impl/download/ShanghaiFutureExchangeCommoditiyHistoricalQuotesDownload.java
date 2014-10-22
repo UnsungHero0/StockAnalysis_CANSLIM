@@ -16,21 +16,20 @@ public class ShanghaiFutureExchangeCommoditiyHistoricalQuotesDownload {
 	}
 
 	public static void start() {
-		ShanghaiFutureExchangeCommoditityHistoricalQuotesDwonloadImpl.impl(con);
-//		try {
-//			con = DataSourceUtil.DINGUNSW().getConnection();
-//			ShanghaiFutureExchangeCommoditityHistoricalQuotesDwonloadImpl.impl(con);
-//
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		} finally {
-//			if (con != null) {
-//				try {
-//					con.close();
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
+		try {
+			con = DataSourceUtil.DINGUNSW().getConnection();
+			ShanghaiFutureExchangeCommoditityHistoricalQuotesDwonloadImpl.impl(con);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (con != null) {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }
