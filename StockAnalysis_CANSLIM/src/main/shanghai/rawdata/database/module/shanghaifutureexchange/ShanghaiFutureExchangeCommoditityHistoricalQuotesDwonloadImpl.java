@@ -13,25 +13,26 @@ import jxl.Workbook;
 import tool.charDeal;
 import tool.consolePrint;
 
-public class ShanghaiFutureExchangeCommoditityHistoricalQuotesDwonloadImpl extends consolePrint{
+public class ShanghaiFutureExchangeCommoditityHistoricalQuotesDwonloadImpl
+		extends consolePrint {
 
 	public static void impl(Connection con) {
-//		1. read files from excel
+		// 1. read files from excel
 		ArrayList<ArrayList<String>> input = getInputDataFromExcel();
 
-//		2. turn into MySql input format
-		String inputData = turningFromat(input);
+		// 2. turn into MySql input format
+		ArrayList<String> inputData = turningFromat(input);
 		println("data read is finished");
-		println(inputData);
 
-//		3. delete table if exists
-		deleteTable(con);
+		// 3. delete table if exists
+		// deleteTable(con);
 
-//		4. create table in MySql
+		// 4. create table in MySql
 		createTable(con);
 
-//		5. input data
+		// 5. input data
 		insertDataIntoDB(inputData, con);
+		println("future exchange quotes download finished");
 
 	}
 
@@ -40,9 +41,8 @@ public class ShanghaiFutureExchangeCommoditityHistoricalQuotesDwonloadImpl exten
 		try {
 			String years[] = { "2011", "2012", "2013", "2014" };
 			for (String yr : years) {
-				File sourcefile = new File(
-						"./rawData/"
-								+ yr + "ShanghaiCommoditiyPrice.xls");
+				File sourcefile = new File("./rawData/" + yr
+						+ "ShanghaiCommoditiyPrice.xls");
 				InputStream is = new FileInputStream(sourcefile);
 				jxl.Workbook rwb = Workbook.getWorkbook(is);
 				Sheet rs = rwb.getSheet(0);
@@ -75,73 +75,103 @@ public class ShanghaiFutureExchangeCommoditityHistoricalQuotesDwonloadImpl exten
 		return input;
 	}
 
-	public static String turningFromat(
+	public static ArrayList<String> turningFromat(
 			ArrayList<ArrayList<String>> input) {
+		ArrayList<String> result = new ArrayList<>();
 		ArrayList<String> output = new ArrayList<>();
 		for (ArrayList<String> ele : input) {
 			String strin = turnListIntoMySqlFormatWithBracket(ele);
 			output.add(strin);
 		}
-		
-		return turnListIntoMySqlFormatWithNoBracket(output);
+		Integer groupNumber = 30;
+		Integer interval = (output.size() + 1) / groupNumber;
+		for (int i = 1; i <= groupNumber; i++) {
+			if (i != groupNumber) {
+				ArrayList<String> template = new ArrayList<String>(
+						output.subList((i - 1) * interval, i * interval - 1));
+				result.add(turnListIntoMySqlFormatWithNoBracket(template));
+			} else {
+				ArrayList<String> template = new ArrayList<String>(
+						output.subList((i - 1) * interval, input.size()));
+				result.add(turnListIntoMySqlFormatWithNoBracket(template));
+			}
+		}
+
+		return result;
 	}
 
 	public static void deleteTable(Connection con) {
-		JDBCUtil.dropTable(ShanghaiDBNameSpace.getFutureexchangehistoricalquoteDb(), con);
+		JDBCUtil.dropTable(
+				ShanghaiDBNameSpace.getFutureexchangehistoricalquoteDb(), con);
 	}
 
 	public static void createTable(Connection con) {
-		String tableName = ShanghaiDBNameSpace.getFutureexchangehistoricalquoteDb();
-		String createTableSql = "CREATE TABLE IF NOT EXISTS "
-				+ tableName + " ("
-				+ "`Country` VARCHAR(50) NOT NULL Default 'Shanghai',"
+		String tableName = ShanghaiDBNameSpace
+				.getFutureexchangehistoricalquoteDb();
+		String createTableSql = "CREATE TABLE IF NOT EXISTS " + tableName
+				+ " (" + "`Country` VARCHAR(50) NOT NULL Default 'Shanghai',"
 				+ "`Future_Code` VARCHAR(10) NOT NULL,"
-				+"`Date` DATE NOT NULL," 
-				+"`Preclose` Double,"
-				+"`Presettle` Double,"
-				+ "`Open` Double,"
-				+ "`High` Double," 
-				+ "`Low` Double,"
-				+ "`Close` Double,"
-				+ "`Settle` Double," 
-				+ "`Change1` Double,"
-				+ "`Change2` Double," 
-				+ "`Volume` Double," 
-				+ "`Volume_Figure` Double," 
-				+ "`Inventory` Double," 
-				+ "PRIMARY KEY (`Future_code`,`Date`))";
+				+ "`Date` DATE NOT NULL," + "`Preclose` Double,"
+				+ "`Presettle` Double," + "`Open` Double," + "`High` Double,"
+				+ "`Low` Double," + "`Close` Double," + "`Settle` Double,"
+				+ "`Change1` Double," + "`Change2` Double,"
+				+ "`Volume` Double," + "`Volume_Figure` Double,"
+				+ "`Inventory` Double," + "PRIMARY KEY (`Future_code`,`Date`))";
 		JDBCUtil.excuteQuery(createTableSql, con);
 	}
-	
-	public static void insertDataIntoDB(String input, Connection con) {
-		String tableName = ShanghaiDBNameSpace.getFutureexchangehistoricalquoteDb();
-		String insertDataSql = "INSERT INTO " + tableName + " "
-				+ "(Future_Code, Date, Preclose, Presettle, Open, High, Low, Close, Settle, Change1, Change2, Volume, Volume_Figure, Inventory) VALUES "
-				+ input;
-		println(insertDataSql);
-		JDBCUtil.excuteQuery(insertDataSql, con);
+
+	public static void insertDataIntoDB(ArrayList<String> input, Connection con) {
+		String tableName = ShanghaiDBNameSpace
+				.getFutureexchangehistoricalquoteDb();
+		for (String str : input) {
+			String insertDataSql = "INSERT INTO "
+					+ tableName
+					+ " "
+					+ "(Future_Code, Date, Preclose, Presettle, Open, High, Low, Close, Settle, Change1, Change2, Volume, Volume_Figure, Inventory) VALUES "
+					+ str;
+			JDBCUtil.excuteQuery(insertDataSql, con);
+		}
 	}
-	
-	public static String turnListIntoMySqlFormatWithNoBracket(ArrayList<String> input) {
+
+	public static String turnListIntoMySqlFormatWithNoBracket(
+			ArrayList<String> input) {
 		String result = "";
 		for (String str : input) {
 			result += str + ",";
 		}
-		result = result.substring(0,result.length()-1);
-		return result;
-	}
-	
-	public static String turnListIntoMySqlFormatWithBracket(ArrayList<String> input) {
-		String result = "(";
-		for (String str : input) {
-			if (str.length() ==0) {
-				result += "null,";
-			} else {
-			result += "'" + str + "',";
-			}
-		}
-		result = result.substring(0,result.length()-1) + ")";
+		result = result.substring(0, result.length() - 1);
 		return result;
 	}
 
+	public static String turnListIntoMySqlFormatWithBracket(
+			ArrayList<String> input) {
+		String result = "(";
+		for (String str : input) {
+			if (str.length() == 0) {
+				result += "null,";
+			} else {
+				result += "'" + str + "',";
+			}
+		}
+		result = result.substring(0, result.length() - 1) + ")";
+		return result;
+	}
+
+	public static ArrayList<String> divideMysqlInput(String input) {
+		ArrayList<String> result = new ArrayList<>();
+		Integer groupNumber = 10;
+		Integer firstIndex = 0;
+		for (int i = 1; i <= groupNumber; i++) {
+			Integer lastIndex = (input.length() / groupNumber) * (i);
+			while (!input.substring(lastIndex, lastIndex + 1).equals(")")) {
+				lastIndex++;
+			}
+
+			result.add(input.substring(firstIndex, lastIndex + 1));
+			if (i != groupNumber) {
+				firstIndex = lastIndex + 2;
+			}
+		}
+		return result;
+	}
 }
