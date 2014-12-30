@@ -6,6 +6,7 @@ package impl.download;
  * the data URL is "http://www.cffex.com.cn/fzjy/ccpm/201412/10/IF.xml" detected by Charles (MacOS)
  * loop the data in URL to get all the source from  2010/4/16
  * data format in Mysql will be date/
+ * @author Daytona
  */
 
 import java.sql.Connection;

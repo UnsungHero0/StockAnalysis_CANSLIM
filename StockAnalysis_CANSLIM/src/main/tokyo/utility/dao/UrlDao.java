@@ -27,6 +27,66 @@ public class UrlDao {
 		// TODO Auto-generated constructor stub
 	}
 
+	public static ArrayList<String> getUrlBuffer(String urlString,
+			String charset) {
+		Integer tryTimes = 0;
+		ArrayList<String> result = new ArrayList<>();
+		BufferedReader fi = null;
+		Boolean ifReaded = false;
+		HttpURLConnection set = null;
+		while (ifReaded == false) {
+			try {
+				if (tryTimes > maxTry) {
+					throw new TooManyTryTimesException();
+				}
+				result = new ArrayList<>();
+				URL url = new URL(urlString);
+				set = (HttpURLConnection) url.openConnection();
+				set.setReadTimeout(1000 * 20);
+				set.connect();
+				fi = new BufferedReader(new InputStreamReader(
+						set.getInputStream()));
+				String input = null;
+				set = (HttpURLConnection) url.openConnection();
+				fi = new BufferedReader(new InputStreamReader(
+						set.getInputStream(), charset));
+
+				while ((input = fi.readLine()) != null) {
+					result.add(input);
+				}
+				ifReaded = true;
+			} catch (SocketTimeoutException e) {
+				set.disconnect();
+				System.out.println("time out");
+				tryTimes++;
+			} catch (ConnectException e) {
+				set.disconnect();
+				System.out.println("connection timeout");
+				tryTimes++;
+			} catch (IOException e) {
+				if (e.toString().contains("java.io.FileNotFoundException")) {
+					System.out.println("no file to download");
+					ifReaded = true;
+				} else if (e.getMessage().contains("999 for URL")) {
+					System.out.println("Yahoo rejected connection!");
+					long timeout = 600 * 1000;
+					try {
+						Thread.sleep(timeout);
+					} catch (InterruptedException e1) {
+					}
+				} else {
+					set.disconnect();
+					e.printStackTrace();
+					tryTimes++;
+				}
+			} catch (TooManyTryTimesException e) {
+				e.printStackTrace();
+				ifReaded = true;
+			}
+		}
+		return result;
+	}
+
 	public static ArrayList<String> getUrlBuffer(String urlString) {
 		Integer tryTimes = 0;
 		ArrayList<String> result = new ArrayList<>();
@@ -85,10 +145,10 @@ public class UrlDao {
 				} else if (e.getMessage().contains("999 for URL")) {
 					System.out.println("Yahoo rejected connection!");
 					long timeout = 600 * 1000;
-					    try {
-							Thread.sleep(timeout);
-						} catch (InterruptedException e1) {
-						}
+					try {
+						Thread.sleep(timeout);
+					} catch (InterruptedException e1) {
+					}
 				} else {
 					set.disconnect();
 					e.printStackTrace();

@@ -18,85 +18,32 @@ public class ShanghaiStockIndexExchangeHistoricalBuySellTurnoverVolumeDownloadIm
 
 	public static void impl(Connection con) {
 		// 1. read files from URL
-		ArrayList<ArrayList<String>> input = getInputDataFromURL();
+		ArrayList<ShanghaiStockIndexExchangeHistoricalBuySellTurnoverVolumeDownloadRecordContainer> input = getInputDataFromURL();
 
 		// 2. turn into MySql input format
-		ArrayList<String> inputData = turningFromat(input);
+		ArrayList<String> inputData = null;
 		println("data read is finished");
 
 		// 3. delete table if exists
-//		 deleteTable(con);
+		// deleteTable(con);
 
 		// 4. create table in MySql
-//		createTable(con);
+		// createTable(con);
 
 		// 5. input data
-//		insertDataIntoDB(inputData, con);
-//		println("future exchange quotes download finished");
+		// insertDataIntoDB(inputData, con);
+		// println("future exchange quotes download finished");
 
 	}
 
-	public static ArrayList<ArrayList<String>> getInputDataFromURL() {
-		ArrayList<ArrayList<String>> input = new ArrayList<>();
-		try {
-			String years[] = { "2011", "2012", "2013", "2014" };
-			for (String yr : years) {
-				File sourcefile = new File("./rawData/" + yr
-						+ "ShanghaiCommoditiyPrice.xls");
-				InputStream is = new FileInputStream(sourcefile);
-				jxl.Workbook rwb = Workbook.getWorkbook(is);
-				Sheet rs = rwb.getSheet(0);
-				String item = "";
-				for (int j = 3; j < rs.getRows() - 6; j++) {
-					ArrayList<String> oneInput = new ArrayList<>();
-					for (int i = 0; i < rs.getColumns() - 1; i++) {
-						if (i == 0 && j == 3) {
-							item = rs.getCell(i, j).getContents();
-							oneInput.add(item);
-						} else if ((i == 0 && j > 3)
-								&& !rs.getCell(i, j).getContents().equals("")) {
-							item = rs.getCell(i, j).getContents();
-							oneInput.add(item);
-						} else if ((i == 0 && j > 3)
-								&& rs.getCell(i, j).getContents().equals("")) {
-							oneInput.add(item);
-						} else {
-							String strc = charDeal.subComma(rs.getCell(i, j)
-									.getContents());
-							oneInput.add(strc);
-						}
-					}
-					input.add(oneInput);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public static ArrayList<ShanghaiStockIndexExchangeHistoricalBuySellTurnoverVolumeDownloadRecordContainer> getInputDataFromURL() {
+		ArrayList<ShanghaiStockIndexExchangeHistoricalBuySellTurnoverVolumeDownloadRecordContainer> input = new ArrayList<>();
 		return input;
 	}
 
 	public static ArrayList<String> turningFromat(
-			ArrayList<ArrayList<String>> input) {
+			ArrayList<ShanghaiStockIndexExchangeHistoricalBuySellTurnoverVolumeDownloadRecordContainer> input) {
 		ArrayList<String> result = new ArrayList<>();
-		ArrayList<String> output = new ArrayList<>();
-		for (ArrayList<String> ele : input) {
-			String strin = turnListIntoMySqlFormatWithBracket(ele);
-			output.add(strin);
-		}
-		Integer groupNumber = 30;
-		Integer interval = (output.size() + 1) / groupNumber;
-		for (int i = 1; i <= groupNumber; i++) {
-			if (i != groupNumber) {
-				ArrayList<String> template = new ArrayList<String>(
-						output.subList((i - 1) * interval, i * interval - 1));
-				result.add(turnListIntoMySqlFormatWithNoBracket(template));
-			} else {
-				ArrayList<String> template = new ArrayList<String>(
-						output.subList((i - 1) * interval, input.size()));
-				result.add(turnListIntoMySqlFormatWithNoBracket(template));
-			}
-		}
-
 		return result;
 	}
 
@@ -183,43 +130,55 @@ class ShanghaiStockIndexExchangeHistoricalBuySellTurnoverVolumeDownloadRecordCon
 	private Integer rank = null;
 	private Double volume = null;
 	private Double change = null;
-	
+
 	public ShanghaiStockIndexExchangeHistoricalBuySellTurnoverVolumeDownloadRecordContainer() {
 		// TODO Auto-generated constructor stub
 	}
+
 	public String getDate() {
 		return date;
 	}
+
 	public void setDate(String date) {
 		this.date = date;
 	}
+
 	public String getContract_ID() {
 		return contract_ID;
 	}
+
 	public void setContract_ID(String contract_ID) {
 		this.contract_ID = contract_ID;
 	}
+
 	public String getType() {
 		return type;
 	}
+
 	public void setType(String type) {
 		this.type = type;
 	}
+
 	public Integer getRank() {
 		return rank;
 	}
+
 	public void setRank(Integer rank) {
 		this.rank = rank;
 	}
+
 	public Double getVolume() {
 		return volume;
 	}
+
 	public void setVolume(Double volume) {
 		this.volume = volume;
 	}
+
 	public Double getChange() {
 		return change;
 	}
+
 	public void setChange(Double change) {
 		this.change = change;
 	}
