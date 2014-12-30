@@ -57,4 +57,16 @@ public class DateOperation {
 		}
 		return date;
 	}
+
+	public static Boolean ifSameDate(Calendar date1, Calendar date2) {
+		return ((date1.get(Calendar.YEAR) == date2.get(Calendar.YEAR))
+				&& (date1.get(Calendar.MONTH) == date2.get(Calendar.MONTH)) && (date1
+					.get(Calendar.DATE) == date2.get(Calendar.DATE))) ? true
+				: false;
+	}
+	
+	public static Boolean ifWeekend(Calendar date1) {
+		return (date1.get(Calendar.DAY_OF_WEEK) == 1 || date1.get(Calendar.DAY_OF_WEEK) == 7) ? true
+				: false;
+	}
 }

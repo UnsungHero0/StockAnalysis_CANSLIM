@@ -1,22 +1,20 @@
 package test;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Calendar;
+
+import commontool.DateOperation;
+
+import dao.UrlDao;
 
 
 public class test5 {
 	public static void main(String[] args){  
 	    
-		  try {  
-		     
-		         test5 convert = new test5();  
-		         byte [] fullByte = convert.gbk2utf8("补零");  
-		         String fullStr = new String(fullByte, "UTF-8");  
-		         System.out.println("string from GBK to UTF-8 byte:  " + fullStr);  
-		  
-		  
-		     } catch (Exception e) {  
-		      e.printStackTrace();  
-		     }  
+		Calendar startTime = Calendar.getInstance();
+		startTime.set(2014, 11, 19);
+		System.out.println(DateOperation.ifWeekend(startTime));
 		 }  
 		   
 		 public byte[] gbk2utf8(String chenese){  

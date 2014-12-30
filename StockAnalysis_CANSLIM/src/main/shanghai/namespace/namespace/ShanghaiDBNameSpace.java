@@ -15,6 +15,7 @@ public class ShanghaiDBNameSpace {
 	private static final String ShareHolding_DB = "Shanghaiexchange.ShareHolding_Shanghai";
 	private static final String LISTEDCOMPANIES_DB = "Shanghaiexchange.listedcompanies_Shanghai";
 	private static final String SectorAnalysis_DB = "Shanghaiexchange.SectorAnalysis_Shanghai";
+	private static final String STOCKINDEXFUTUREVOLUMERANK_DB = "Shanghaiexchange.StockIndexFutureVolumeRank_Shanghai";
 	
 	public ShanghaiDBNameSpace() {
 		// TODO Auto-generated constructor stub
@@ -83,6 +84,10 @@ public class ShanghaiDBNameSpace {
 
 	public static String getSchemaDb() {
 		return SCHEMA_DB;
+	}
+
+	public static String getStockindexfuturevolumerankDb() {
+		return STOCKINDEXFUTUREVOLUMERANK_DB;
 	}
 
 }

@@ -2,19 +2,11 @@ package test;
 
 // to import shanghai future exchange data into database from excel
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
-
 import net.sourceforge.pinyin4j.PinyinHelper;
-import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import dao.UrlDao;
-import tool.charDeal;
-import jxl.Sheet;
-import jxl.Workbook;
 
 public class test4 {
 

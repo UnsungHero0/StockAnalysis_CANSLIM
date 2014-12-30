@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import module.shanghaifutureexchange.ShanghaiFutureExchangeCommoditityHistoricalQuotesDwonloadImpl;
+import module.shanghaifutureexchange.ShanghaiStockIndexExchangeHistoricalBuySellTurnoverVolumeDownloadImpl;
 import datasource.DataSourceUtil;
 
 public class ShanghaiStockIndexExchangeHistoricalBuySellTurnoverVolumeDownload {
@@ -27,7 +28,9 @@ public class ShanghaiStockIndexExchangeHistoricalBuySellTurnoverVolumeDownload {
 	public static void start() {
 		try {
 			con = DataSourceUtil.DINGUNSW().getConnection();
-			ShanghaiFutureExchangeCommoditityHistoricalQuotesDwonloadImpl.impl(con);
+			// con = null;
+			ShanghaiStockIndexExchangeHistoricalBuySellTurnoverVolumeDownloadImpl
+					.impl(con);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
