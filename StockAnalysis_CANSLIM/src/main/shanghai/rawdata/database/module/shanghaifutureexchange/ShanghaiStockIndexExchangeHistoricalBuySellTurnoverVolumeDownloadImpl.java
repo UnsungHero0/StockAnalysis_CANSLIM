@@ -26,7 +26,7 @@ public class ShanghaiStockIndexExchangeHistoricalBuySellTurnoverVolumeDownloadIm
 
 		Calendar startTime = Calendar.getInstance();
 		Calendar endTime = Calendar.getInstance();
-		startTime.set(2010, 8, 11);
+		startTime.set(2014, 0, 8);
 		// startTime.set(2014, 11, 25);
 		while (!DateOperation.ifSameDate(startTime, endTime)) {
 			if (!DateOperation.ifWeekend(startTime)) {
