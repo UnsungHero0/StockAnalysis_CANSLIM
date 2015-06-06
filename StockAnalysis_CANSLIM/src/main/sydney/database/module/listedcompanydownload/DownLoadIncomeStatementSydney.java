@@ -1,4 +1,4 @@
-package impl.listedcompanydownload;
+package module.listedcompanydownload;
 
 import java.sql.Connection;
 import java.sql.SQLException;

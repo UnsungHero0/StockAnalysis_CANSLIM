@@ -12,6 +12,17 @@ public class charDeal {
 		}
 		return result;
 	}
+	
+	public static String subSpecificChar(String input, String target) {
+		String result = "";
+		char[] inputList = input.toCharArray();
+		for (int i = 0; i < inputList.length; i++) {
+			if (!String.valueOf(inputList[i]).equals(target)) {
+				result += inputList[i];
+			}
+		}
+		return result;
+	}
 
 	public static Boolean hasDigital(String input) {
 		Boolean result = false;
