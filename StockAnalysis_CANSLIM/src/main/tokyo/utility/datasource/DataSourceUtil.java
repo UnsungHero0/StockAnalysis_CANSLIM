@@ -34,7 +34,7 @@ public class DataSourceUtil {
 	}
 	
 	public static DataSource DINGUNSW(){
-		String host = "149.171.37.249";
+		String host = "149.171.37.193";
 		Integer port = 3306;
 		String dbname = "tokyoexchange";
 		String username = "root";
