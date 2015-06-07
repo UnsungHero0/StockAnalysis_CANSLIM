@@ -3,30 +3,30 @@ package module.listedcompanydownload;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import tool.charDeal;
 import tool.consolePrint;
 import namespace.SydneyDBNameSpace;
 import commontool.JDBCUtil;
 import dao.DBSydenyDao;
+import dao.DateDao;
 import dao.UrlDao;
 
 public class UpdateListedCompanySydeny {
 
 	public static void updateListedCompanyList(Connection con) {
-		
+
 		// 1.get latest list from the web site
 		HashMap<String, ArrayList<String>> latest_listed_company = getLaestListedCompanyFromUrl();
-		
+
 		// 2. get old list from DB
 		ArrayList<String> old_code_list = getOldListedCompanyFromDB(con);
-		
+
 		// 3. find new listed company
 		HashMap<String, ArrayList<String>> new_code_company = getnewListedCompany(
 				latest_listed_company, old_code_list);
-		
+
 		// TODO
-		// 4.update listed company talbe in DB
+		// 4.update listed company table in DB
 		insertDataIntoDB(new_code_company, con);
 
 	}
@@ -65,25 +65,69 @@ public class UpdateListedCompanySydeny {
 				latest_listed_company.remove(latest_code_list.get(i));
 			}
 		}
-		
-		ArrayList<String> new_code_list = new ArrayList<>(latest_listed_company.keySet());
-		if(new_code_list.size() == 0) {
+
+		ArrayList<String> new_code_list = new ArrayList<>(
+				latest_listed_company.keySet());
+		if (new_code_list.size() == 0) {
 			consolePrint.println("No new listed company!");
 		} else {
 			consolePrint.print("New listed company code : ");
-			for (int i = 0; i < new_code_list.size(); i ++) {
+			for (int i = 0; i < new_code_list.size(); i++) {
 				consolePrint.print(new_code_list.get(i) + " , ");
 			}
 			consolePrint.println("");
 		}
-		
+
 		return latest_listed_company;
 	}
 
-	private static void insertDataIntoDB(HashMap<String, ArrayList<String>> new_code_company, Connection con) {
+	private static void insertDataIntoDB(
+			HashMap<String, ArrayList<String>> new_code_company, Connection con) {
 
-		//TODO
+		ArrayList<String> key = new ArrayList<>(new_code_company.keySet());
 
+		if (new_code_company.keySet().size() > 0) {
+			String addedContentQuery = "";
+			for (int i = 0; i < key.size(); i++) {
+				String result = "('" + DateDao.dateTodayInMysqlForm()
+						+ "','Sydney','";
+				for (int j = 2; j >= 0; j--) {
+					result += dealChar(new_code_company.get(key.get(i)).get(j))
+							+ "','";
+				}
+				result = result.substring(0, result.length() - 2) + "),";
+				addedContentQuery += result;
+			}
+			addedContentQuery = addedContentQuery.substring(0, addedContentQuery.length() - 1);
+			String insertDataIntoDB = "INSERT INTO "
+					+ SydneyDBNameSpace.getListedcompaniesSydneyDb()
+					+ " (Effective_Date, Country,Department,Local_Code,Name_English) VALUES "
+					+ addedContentQuery;
+			JDBCUtil.excuteQuery(insertDataIntoDB, con);
+		}
+		consolePrint.println(new_code_company.keySet()
+				+ " has added into table!");
+
+		// 2. update effective data in table
+		String updateEffectiveDateQuery = "update "
+				+ namespace.SydneyDBNameSpace.getListedcompaniesSydneyDb()
+				+ " set Effective_date = '" + DateDao.dateTodayInMysqlForm()
+				+ "'";
+		JDBCUtil.excuteQuery(updateEffectiveDateQuery, con);
+		consolePrint.println("Listed company table is updated to "
+				+ DateDao.dateTodayInMysqlForm());
+	}
+
+	private static String dealChar(String input) {
+		String result = "";
+		for (Character ele : input.toCharArray()) {
+			if (ele.toString().equals("'")) {
+				result += "\\'";
+			} else {
+				result += ele;
+			}
+		}
+		return result;
 	}
 
 }
