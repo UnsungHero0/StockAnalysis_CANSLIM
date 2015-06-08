@@ -3,9 +3,9 @@ package tool;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import module.listedcompanydownload.DownloadHistoricalQuotesSydneyImpl;
+import module.listedcompanydownload.DownloadHistoricalQuotesSydney;
 import datasource.DataSourceUtil;
-import impl.listedcompanydownload.DownloadHistoricalQuotesSydney;
+import impl.listedcompanydownload.DownloadHistoricalQuotesSydneyImpl;
 
 
 public class mysqlConnectionTest {

@@ -1,6 +1,6 @@
 package impl.buildDB;
 
-import impl.listedcompanydownload.DownloadHistoricalQuotesSydney;
+import impl.listedcompanydownload.DownloadHistoricalQuotesSydneyImpl;
 
 public class BuildSydneyDB {
 	
@@ -13,7 +13,7 @@ public class BuildSydneyDB {
 		
 		//2. gather the historical quotes
 		System.out.println("Download historical quotes start");
-		DownloadHistoricalQuotesSydney.start();
+		DownloadHistoricalQuotesSydneyImpl.start();
 		System.out.println("Download historical quotes finished");
 		
 		//3. financial statements

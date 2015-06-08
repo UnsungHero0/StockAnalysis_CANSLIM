@@ -3,32 +3,40 @@ package module.listedcompanydownload;
 import java.sql.Connection;
 import java.util.ArrayList;
 
+import tool.consolePrint;
 import commontool.JDBCUtil;
 import dao.DBSydenyDao;
 import dao.DateDao;
 import dao.UrlDao;
 
-public class DownloadHistoricalQuotesSydneyImpl {
+public class DownloadHistoricalQuotesSydney {
 
-	public static void downloadHistoricalQuotesSydneyImpl(Connection con) {
+	public static void downloadHistoricalQuotesSydney(Connection con) {
 
 		// 1. collect all local code from listed company DB
 		ArrayList<String> codeList = new ArrayList<>();
 		codeList = DBSydenyDao.getCodeListFromDB(con);
-		//codeList.add("AAC");
+		// codeList.add("AAC");
 		System.out.println("get Code finished");
 
 		// 2. loop for each quotes download
 		for (String code : codeList) {
-			Character first = Character.valueOf(code.charAt(0));
-			if(first >= 'S') {
+			// Character first = Character.valueOf(code.charAt(0));
+			// if (first >= 'S') {
+//			deleteTable(code,con);
 			createOneHistoricalQuotesTable(code, con);
 			System.out.println(code + " is finished, "
 					+ (codeList.size() - codeList.indexOf(code)) + " to go");
-			}
+			// }
 		}
-
 	}
+	
+//	public static void deleteTable(String code, Connection con) {
+//		String tableName = namespace.SydneyDBNameSpace.getSchemaDb() + code
+//				+ namespace.SydneyDBNameSpace.getStockhistoricalpriceDb();
+//		JDBCUtil.dropTable(tableName, con);
+//		consolePrint.println(code  + " has droped");
+//	}
 
 	public static void createOneHistoricalQuotesTable(String code,
 			Connection con) {
@@ -43,6 +51,7 @@ public class DownloadHistoricalQuotesSydneyImpl {
 
 			// 3. create the table
 			createTable(code, tableName, con);
+			consolePrint.println(code  + " has droped");
 
 			// 4. insert data
 			insertDataToTable(code, tableName, quotesList, con);
@@ -59,6 +68,7 @@ public class DownloadHistoricalQuotesSydneyImpl {
 				+ (Integer.valueOf(DateDao.month) - 1) + "&" + "e="
 				+ (DateDao.day) + "&" + "f=" + (DateDao.year) + "&"
 				+ "g=d&ignore=.csv";
+		consolePrint.println(csvUrl);
 		ArrayList<String> urlResult = UrlDao.getUrlBuffer(csvUrl);
 		if (urlResult.size() > 0) {
 			for (int i = 1; i < urlResult.size(); i++) {
@@ -74,9 +84,8 @@ public class DownloadHistoricalQuotesSydneyImpl {
 
 	public static void createTable(String code, String tableName, Connection con) {
 		String name = dealChar(DBSydenyDao.getNameEnglish(code, con));
-		String createTableSql = "CREATE TABLE IF NOT EXISTS "
-				+ tableName + " ("
-				+ "`Country` VARCHAR(50) NOT NULL Default 'Sydney',"
+		String createTableSql = "CREATE TABLE IF NOT EXISTS " + tableName
+				+ " (" + "`Country` VARCHAR(50) NOT NULL Default 'Sydney',"
 				+ "`Local_Code` VARCHAR(10) NOT NULL Default '" + code + "',"
 				+ "`Name_English` VARCHAR(100) NOT NULL Default '" + name
 				+ "'," + "`Date` DATE NOT NULL," + "`Open` FLOAT NOT NULL,"

@@ -3,6 +3,7 @@ package module.listedcompanydownload;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import tool.charDeal;
 import tool.consolePrint;
 import namespace.SydneyDBNameSpace;
@@ -22,7 +23,7 @@ public class UpdateListedCompanySydeny {
 		ArrayList<String> old_code_list = getOldListedCompanyFromDB(con);
 
 		// 3. find new listed company
-		HashMap<String, ArrayList<String>> new_code_company = getnewListedCompany(
+		HashMap<String, ArrayList<String>> new_code_company = getNewListedCompany(
 				latest_listed_company, old_code_list);
 
 		// TODO
@@ -55,7 +56,7 @@ public class UpdateListedCompanySydeny {
 		return DBSydenyDao.getCodeListFromDB(con);
 	}
 
-	private static HashMap<String, ArrayList<String>> getnewListedCompany(
+	private static HashMap<String, ArrayList<String>> getNewListedCompany(
 			HashMap<String, ArrayList<String>> latest_listed_company,
 			ArrayList<String> old_code_list) {
 		ArrayList<String> latest_code_list = new ArrayList<>(
@@ -65,20 +66,47 @@ public class UpdateListedCompanySydeny {
 				latest_listed_company.remove(latest_code_list.get(i));
 			}
 		}
-
+		
+		
 		ArrayList<String> new_code_list = new ArrayList<>(
 				latest_listed_company.keySet());
-		if (new_code_list.size() == 0) {
+		// sometime the company is listed in file, but it is just finished IPO, not start exchange in market
+		for (String code : new_code_list) {
+			if (checkIfStartExchange(code) == false) {
+				consolePrint
+						.println(latest_listed_company.get(code).get(0)
+								+ ", "
+								+ latest_listed_company.get(code).get(1)
+								+ " , has finished IPO, but not ready for exchanging yet.");
+				latest_listed_company.remove(code);
+			}
+		}
+		
+		if (latest_listed_company.keySet().size() == 0) {
 			consolePrint.println("No new listed company!");
 		} else {
 			consolePrint.print("New listed company code : ");
-			for (int i = 0; i < new_code_list.size(); i++) {
-				consolePrint.print(new_code_list.get(i) + " , ");
+			for (String code : latest_listed_company.keySet()) {
+				consolePrint.print(code + " , ");
 			}
 			consolePrint.println("");
 		}
 
 		return latest_listed_company;
+	}
+
+	private static Boolean checkIfStartExchange(String code) {
+		String csvUrl = "http://real-chart.finance.yahoo.com/table.csv?s="
+				+ code + ".AX&a=00&b=1&c=1980&" + "d="
+				+ (Integer.valueOf(DateDao.month) - 1) + "&" + "e="
+				+ (DateDao.day) + "&" + "f=" + (DateDao.year) + "&"
+				+ "g=d&ignore=.csv";
+		ArrayList<String> urlResult = UrlDao.getUrlBuffer(csvUrl);
+		if (urlResult.size()==0) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	private static void insertDataIntoDB(
@@ -98,7 +126,8 @@ public class UpdateListedCompanySydeny {
 				result = result.substring(0, result.length() - 2) + "),";
 				addedContentQuery += result;
 			}
-			addedContentQuery = addedContentQuery.substring(0, addedContentQuery.length() - 1);
+			addedContentQuery = addedContentQuery.substring(0,
+					addedContentQuery.length() - 1);
 			String insertDataIntoDB = "INSERT INTO "
 					+ SydneyDBNameSpace.getListedcompaniesSydneyDb()
 					+ " (Effective_Date, Country,Department,Local_Code,Name_English) VALUES "
