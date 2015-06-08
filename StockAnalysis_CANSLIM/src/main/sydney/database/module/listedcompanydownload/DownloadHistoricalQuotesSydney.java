@@ -21,22 +21,11 @@ public class DownloadHistoricalQuotesSydney {
 
 		// 2. loop for each quotes download
 		for (String code : codeList) {
-			// Character first = Character.valueOf(code.charAt(0));
-			// if (first >= 'S') {
-//			deleteTable(code,con);
 			createOneHistoricalQuotesTable(code, con);
 			System.out.println(code + " is finished, "
 					+ (codeList.size() - codeList.indexOf(code)) + " to go");
-			// }
 		}
 	}
-	
-//	public static void deleteTable(String code, Connection con) {
-//		String tableName = namespace.SydneyDBNameSpace.getSchemaDb() + code
-//				+ namespace.SydneyDBNameSpace.getStockhistoricalpriceDb();
-//		JDBCUtil.dropTable(tableName, con);
-//		consolePrint.println(code  + " has droped");
-//	}
 
 	public static void createOneHistoricalQuotesTable(String code,
 			Connection con) {
@@ -47,11 +36,11 @@ public class DownloadHistoricalQuotesSydney {
 		ArrayList<ArrayList<String>> quotesList = getQuotesList(code);
 		if (quotesList.size() > 0) {
 			// 2. drop table (if necessary)
-			JDBCUtil.dropTable(tableName, con);
+			// JDBCUtil.dropTable(tableName, con);
+			// consolePrint.println(code + " has droped");
 
 			// 3. create the table
 			createTable(code, tableName, con);
-			consolePrint.println(code  + " has droped");
 
 			// 4. insert data
 			insertDataToTable(code, tableName, quotesList, con);
@@ -123,7 +112,7 @@ public class DownloadHistoricalQuotesSydney {
 		String result = "";
 		for (Character ele : input.toCharArray()) {
 			if (ele.toString().equals("'")) {
-				result += "\'";
+				result += "\\'";
 			} else {
 				result += ele;
 			}
