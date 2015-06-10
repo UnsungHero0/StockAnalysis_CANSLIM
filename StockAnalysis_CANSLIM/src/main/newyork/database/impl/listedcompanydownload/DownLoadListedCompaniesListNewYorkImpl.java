@@ -3,10 +3,10 @@ package impl.listedcompanydownload;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import module.listedcompanydownload.DownLoadListedCompanyNewYorkImpl;
+import module.listedcompanydownload.DownLoadListedCompanyNewYork;
 import datasource.DataSourceUtil;
 
-public class DownLoadListedCompaniesListNewYork {
+public class DownLoadListedCompaniesListNewYorkImpl {
 	
 	private static Connection con = null;
 
@@ -17,7 +17,7 @@ public class DownLoadListedCompaniesListNewYork {
 	public static void start() {
 		try {
 			con = DataSourceUtil.DINGUNSW().getConnection();
-			DownLoadListedCompanyNewYorkImpl.downloadListedCompanyList(con);
+			DownLoadListedCompanyNewYork.downloadListedCompanyList(con);
 
 		} catch (SQLException e) {
 			e.printStackTrace();

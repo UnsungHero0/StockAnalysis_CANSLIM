@@ -26,7 +26,6 @@ public class UpdateListedCompanySydeny {
 		HashMap<String, ArrayList<String>> new_code_company = getNewListedCompany(
 				latest_listed_company, old_code_list);
 
-		// TODO
 		// 4.update listed company table in DB
 		insertDataIntoDB(new_code_company, con);
 

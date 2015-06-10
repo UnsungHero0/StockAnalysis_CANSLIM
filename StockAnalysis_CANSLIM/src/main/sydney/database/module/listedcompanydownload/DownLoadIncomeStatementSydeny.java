@@ -12,7 +12,7 @@ import commontool.JDBCUtil;
 import dao.DBSydenyDao;
 import dao.UrlDao;
 
-public class DownLoadIncomeStatementSydenyImpl {
+public class DownLoadIncomeStatementSydeny {
 
 	private static String[] itemList = { "Total Revenue", "Cost of Revenue",
 			"Gross Profit", "Research Development",

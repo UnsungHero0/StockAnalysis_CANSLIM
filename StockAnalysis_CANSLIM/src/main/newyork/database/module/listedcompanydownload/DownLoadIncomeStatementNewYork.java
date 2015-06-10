@@ -12,7 +12,7 @@ import tool.charDeal;
 import dao.DBNewYorkDao;
 import dao.UrlDao;
 
-public class DownLoadIncomeStatementNewYorkImpl {
+public class DownLoadIncomeStatementNewYork {
 
 	private static String[] itemList = { "Total Revenue", "Cost of Revenue",
 			"Gross Profit", "Research Development",

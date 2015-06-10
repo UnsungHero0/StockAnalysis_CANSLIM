@@ -140,7 +140,7 @@ public class UpdateHistoricalQuotesSydney {
 		String result = "";
 		for (Character ele : input.toCharArray()) {
 			if (ele.toString().equals("'")) {
-				result += "\'";
+				result += "\\'";
 			} else {
 				result += ele;
 			}

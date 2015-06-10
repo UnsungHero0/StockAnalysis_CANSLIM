@@ -8,7 +8,7 @@ import dao.DBNewYorkDao;
 import dao.DateDao;
 import dao.UrlDao;
 
-public class DownLoadHistoricalQuotesNewYorkImpl {
+public class DownLoadHistoricalQuotesNewYork {
 
 	public static void downloadHistoricalQuotesNewYorkImpl(Connection con) {
 
@@ -75,7 +75,7 @@ public class DownLoadHistoricalQuotesNewYorkImpl {
 	}
 
 	public static void createTable(String code, String tableName, Connection con) {
-		String name = DownLoadListedCompanyNewYorkImpl.dealChar(DBNewYorkDao.getNameEnglish(code, con));
+		String name = DownLoadListedCompanyNewYork.dealChar(DBNewYorkDao.getNameEnglish(code, con));
 		String createTableSql = "CREATE TABLE IF NOT EXISTS " + tableName
 				+ " (" + "`Country` VARCHAR(50) NOT NULL Default 'NewYork',"
 				+ "`Local_Code` VARCHAR(10) NOT NULL Default '" + code + "',"

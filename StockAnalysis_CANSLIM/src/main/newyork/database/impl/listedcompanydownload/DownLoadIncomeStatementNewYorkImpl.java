@@ -4,10 +4,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
 
-import module.listedcompanydownload.DownLoadIncomeStatementNewYorkImpl;
+import module.listedcompanydownload.DownLoadIncomeStatementNewYork;
 import datasource.DataSourceUtil;
 
-public class DownLoadIncomeStatementNewYork {
+public class DownLoadIncomeStatementNewYorkImpl {
 	
 	private static Connection con = null;
 
@@ -20,7 +20,7 @@ public class DownLoadIncomeStatementNewYork {
 
 		try {
 			con = DataSourceUtil.DINGUNSW().getConnection();
-			DownLoadIncomeStatementNewYorkImpl.downloadIncomeStatement(con);
+			DownLoadIncomeStatementNewYork.downloadIncomeStatement(con);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
